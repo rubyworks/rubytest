@@ -1,0 +1,7 @@
+---
+name: ruby-test
+title: Ruby Test
+
+resources:
+  home: http://rubyworks.github.com/test
+
