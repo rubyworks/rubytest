@@ -1,7 +1,25 @@
 ---
-name: ruby-test
-title: Ruby Test
+name   : test
+title  : Ruby Test
+summary: Ruby Universal Test Harness
+created: 2011-07-23
+
+description:
+  Ruby Test is a universal test runner for Ruby
+  test frameworks. It can handle any compliant
+  test system, even running tests from multiple
+  frameworks in a single pass.
+
+authors:
+  - Thomas Sawyer <transfire@gmail.com>
+
+requirements:
+  - ansi
+  - detroit (build)
 
 resources:
   home: http://rubyworks.github.com/test
+
+copyrights:
+  - 2011 Thomas Sawyer, RubyWorks (FreeBSD)
 
