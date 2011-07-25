@@ -36,14 +36,11 @@ module Test
     #
     def self.cli_options(argv)
       require 'optparse'
-      options = { :select=>[], :tags=>[], :loadpath=>[], :requires=>[], :namespace=>[] }
+      options = { :loadpath=>[], :requires=>[], :namespace=>[], :tags=>[], :casematch=>[] }
       OptionParser.new do |opt|
         opt.banner = "Usage: ruby-test [options] [files ...]"
         opt.on '-f', '--format NAME', 'report format' do |name|
           options[:format] = name
-        end
-        opt.on '-s', '--search TEXT', 'select tests by description' do |text|
-          options[:select] << text 
         end
         #opt.on '-t', '--tag TAG', 'select tests by tag' do |tag|
         #  options[:tags] << tag
@@ -51,6 +48,9 @@ module Test
         #opt.on '-n', '--namespace NAME', 'select tests by target component' do |namespace|
         #  options[:namespace] << namespace
         #end
+        opt.on '-c', '--case TEXT', 'select testcase by description' do |text|
+          options[:casematch] << text 
+        end
         opt.on '-I', '--loadpath PATH',  'add to $LOAD_PATH' do |path|
           paths = path.split(/[:;]/)
           options[:loadpath].concat(paths)

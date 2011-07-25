@@ -25,6 +25,9 @@ module Test
     # reporter instances.
     attr :observers
 
+    #
+    attr :casematch
+
     # TODO: need better ways to select and filter out tests.
     # Namespaces option specifies the selection of test cases
     # to run. Is is an array of strings which are matched
@@ -48,6 +51,8 @@ module Test
       #@options   = options
 
       @format    = options[:format] || DEFAULT_REPORT_FORMAT
+      @casematch = options[:casematch]
+
       @reporter  = reporter_load(format)
       @recorder  = Recorder.new
       @observers = [ @reporter, @recorder ]
@@ -68,13 +73,14 @@ module Test
 
     # Run a test case.
     #
-    # TODO: Filter out exclude namespaces.
+    # TODO; Filter cases upfront.
     def run_case(cases)
       cases.each do |tc|
         if tc.respond_to?(:call)
           run_test(tc)
         end
         if tc.respond_to?(:each)
+          next unless casematch.empty? or casematch.any?{ |m| m =~ tc.to_s } # here
           observers.each{ |o| o.start_case(tc) }
           run_case(tc)
           observers.each{ |o| o.finish_case(tc) }
