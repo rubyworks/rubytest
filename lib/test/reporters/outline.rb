@@ -22,9 +22,9 @@ module Test::Reporters
 
     #
     def start_test(test)
-       if test.subject
-         @start_test_cache[test.subject] ||= (
-           tabs "#{test.subject}"
+       if test.respond_to?(:subtext) && test.subtext
+         @start_test_cache[test.subtext] ||= (
+           tabs "#{test.subtext}"
            true
          )
        end

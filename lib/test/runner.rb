@@ -28,7 +28,6 @@ module Test
     #
     attr :casematch
 
-    # TODO: need better ways to select and filter out tests.
     # Namespaces option specifies the selection of test cases
     # to run. Is is an array of strings which are matched
     # against the module/class names using #start_wtih?
