@@ -40,6 +40,11 @@ selected or filtered independent of each other during the test run.
 If any test object responds to `#omit?` it indicates if the test unit or case
 should be skipped, though it still may be mentioned in the test output.
 
+A test object can also supply a `#subtext`, which can be used to describe
+the _setup_ assiciated with a test. (Note, this may never be used if the test
+framework only supports one subtext per test case, i.e. the context, in which 
+case the context and subtext effectively share a single description.)
+
 A test framework may raise a `Pending` exception and a test will be recorded
 as a "todo" item. Ruby Test defines `class Pending < Excpetion; end`. A test
 framework can also to define this class, if need be.
