@@ -1,18 +1,21 @@
 require 'rake/tasklib'
 
-module Lemon
+module Test
 
   module Rake
 
-    # Define a lemon test rake task.
+    # Define a test rake task.
     #
     # The `TEST` environment variable can be used to select tests
     # when using the task.
     #
-    # TODO: The test task uses #fork. Maybe it should shell out instead?
+    #--
+    #   TODO: The test task uses #fork. Maybe it should shell out instead?
+    #         Or provide the option for either?
+    #++
     class TestTask < ::Rake::TaskLib
 
-      #
+      # Glob patterns are used by default to select test scripts.
       DEFAULT_TESTS = [
         'test/**/case_*.rb',
         'test/**/*_case.rb',
@@ -20,23 +23,26 @@ module Lemon
         'test/**/*_test.rb'
       ]
 
-      #
+      # Test scripts to load. Can be a file glob.
       attr_accessor :tests
 
-      #
+      # Paths to add to $LOAD_PATH.
       attr_accessor :loadpath
 
-      #
+      # Scripts to load prior to loading tests.
       attr_accessor :requires
 
-      #
-      attr_accessor :namespaces
-
-      #
+      # Report format to use.
       attr_accessor :format
 
+      # Filter tests based by tags.
+      attr_accessor :tags
+
+      # Filter tests by matching description.
+      attr_accessor :match
+
       #
-      def initialize(name='lemon:test', desc="run lemon tests", &block)
+      def initialize(name='test', desc="run tests", &block)
         @name       = name
         @desc       = desc
 
@@ -44,7 +50,8 @@ module Lemon
         @requires   = []
         @tests      = [ENV['TEST']] || DEFAULT_TESTS
         @format     = nil
-        @namespaces = []
+        @match      = nil
+        @tags       = []
 
         block.call(self)
 
@@ -55,16 +62,7 @@ module Lemon
       def define_task
         desc @desc
         task @name do
-          require 'open3'
-
-          @tests ||= (
-            if ENV['tests']
-              ENV['tests'].split(/[:;]/)
-            else
-              DEFAULT_TESTS
-            end
-          )
-
+          @tests ||= default_tests
           run
         end
       end
@@ -72,23 +70,42 @@ module Lemon
       #
       def run
         fork {
-          #require 'lemon'
-          require 'lemon/controller/test_runner'
-          loadpath.each do |path|
-            $LOAD_PATH.unshift(path)
-          end
-          requires.each do |file|
-            require file
-          end
-          runner = Lemon::TestRunner.new(
-            tests,
-            :format => format,
-            :namespaces => namespaces
-          )
+          #require 'test'
+          require 'test/runner'
+
+          loadpath.each   { |d| $LOAD_PATH.unshift(d) }
+          requires.each   { |f| require f }
+          test_files.each { |f| require f }
+
+          suite   = $TEST_SUITE || []
+          runner  = new(suite, :format=>format, :tags=>tags, :match=>match)
           success = runner.run
+
           exit -1 unless success
         }
         Process.wait
+      end
+
+      # Resolve test globs.
+      #--
+      # TODO: simplify?
+      #++
+      def test_files
+        files = tests
+        files = files.map{ |f| Dir[f] }.flatten
+        files = files.map{ |f| File.directory?(f) ? Dir[File.join(f, '**/*.rb')] : f }
+        files = files.flatten.uniq
+        files = files.map{ |f| File.expand_path(f) }
+        files
+      end
+
+      #
+      def default_tests
+        if ENV['tests']
+          ENV['tests'].split(/[:;]/)
+        else
+          DEFAULT_TESTS
+        end
       end
 
       #
