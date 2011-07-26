@@ -6,7 +6,7 @@ module Test
   #
   class Runner
 
-    #
+    # Default report is in the old "dot-progress" format.
     DEFAULT_REPORT_FORMAT = 'dotprogress'
 
     # Test suite to run. This is a list of complient of tests and testcases.
@@ -15,18 +15,11 @@ module Test
     # Reporter format name, or name fragment, used to look up reporter class.
     attr :format
 
-    # The reporter to use for ouput.
-    attr :reporter
+    # Matching text used to filter which tests are run.
+    attr :match
 
-    # Record pass, fail, error, pending and omitted tests.
-    attr :recorder
-
-    # Array of observers, typically this just contains the recorder and
-    # reporter instances.
-    attr :observers
-
-    #
-    attr :casematch
+    # Selected tags used to filter which tests are run.
+    attr :tags
 
     # Namespaces option specifies the selection of test cases
     # to run. Is is an array of strings which are matched
@@ -40,6 +33,16 @@ module Test
     #  @options[:cover]
     #end
 
+    # The reporter to use for ouput.
+    attr :reporter
+
+    # Record pass, fail, error, pending and omitted tests.
+    attr :recorder
+
+    # Array of observers, typically this just contains the recorder and
+    # reporter instances.
+    attr :observers
+
     # New Runner.
     #
     # @param [Array] suite
@@ -50,14 +53,15 @@ module Test
       #@options   = options
 
       @format    = options[:format] || DEFAULT_REPORT_FORMAT
-      @casematch = options[:casematch]
+      @match     = options[:match]
+      @tags      = options[:tags]
 
       @reporter  = reporter_load(format)
       @recorder  = Recorder.new
       @observers = [ @reporter, @recorder ]
     end
 
-    # Ruby test suite.
+    # Run test suite.
     #
     # @return [Boolean]
     #   That the tests ran without error or failure.
@@ -72,38 +76,38 @@ module Test
 
     # Run a test case.
     #
-    # TODO; Filter cases upfront.
     def run_case(cases)
-      cases.each do |tc|
+      select(cases).each do |tc|
         if tc.respond_to?(:call)
           run_test(tc)
         end
         if tc.respond_to?(:each)
-          next unless casematch.empty? or casematch.any?{ |m| m =~ tc.to_s } # here
-          observers.each{ |o| o.start_case(tc) }
+          observers.start_case(tc)
           run_case(tc)
-          observers.each{ |o| o.finish_case(tc) }
+          observers.finish_case(tc)
         end
       end
     end
 
-    # Run a test.
+    # Run a test unit.
     #
     # @param [TestProc] test
     #   The test to run.
     #
     def run_test(test)
-      if test.respond_to?(:omit) && test.omit?
-        observers.each{ |o| o.omit(test) }
-        return
-      end
-
+      #if test.respond_to?(:skip?) && test.skip?
+      #  return observers.each{ |o| o.skip(test) }
+      #end
       observers.each{ |o| o.start_test(test) }
       begin
         test.call
         observers.each{ |o| o.pass(test) }
-      rescue Pending => exception
-        observers.each{ |o| o.pending(test, exception) }
+      rescue NotImplementedError => exception
+        if exception.assertion?
+          observers.each{ |o| o.omit(test, exception) }
+        else
+          observers.each{ |o| o.todo(test, exception) }
+        end
       rescue Exception => exception
         if exception.assertion?
           observers.each{ |o| o.fail(test, exception) }
@@ -114,23 +118,33 @@ module Test
       observers.each{ |o| o.finish_test(test) }
     end
 
-=begin
-    # Iterate over suite's test cases, filtering out unselected cases
-    # if any namespaces constraints are provided.
+    # TODO: Make sure this filtering code is correct for the complex 
+    #       condition that that ordered testcases can't have their tests
+    #       filtered individually (since they may depend on one another).
+
+    # Filter cases based on selection criteria.
     #
-    def each(&block)
-      if namespaces.empty?
-        suite.each do |test_case|
-          block.call(test_case)
+    # @return [Array] selected test cases
+    def select(cases)
+      selected = []
+      if cases.respond_to?(:ordered?) && cases.ordered?
+        cases.each do |tc|
+          next if tc.respond_to?(:skip?) && tc.skip?
+          selected << tc
         end
       else
-        suite.each do |test_case|
-          next unless namespaces.any?{ |n| test_case.target.name.start_with?(n) }
-          block.call(test_case)
+        cases.each do |tc|
+          next if tc.respond_to?(:skip?) && tc.skip?
+          next if match && match !~ tc.to_s
+          if tc.respond_to?(:tags)
+            tc_tags = [tc.tags].flatten
+            next if (tags & tc_tags).empty?
+          end
+          selected << tc
         end
       end
+      selected
     end
-=end
 
     # Get a reporter instance be name fragment.
     #
@@ -162,15 +176,33 @@ module Test
 
   end
 
+  #
+  class Selection
+    def initialize(test_object)
+      @test_object
+    end
+    def call
+      @test_object.call
+    end
+    def each(&block)
+      @test_object.each(&block)
+    end
+    def to_s
+      @test_object.to_s
+    end
+    def subtext
+      @test_object.subtext
+    end
+    # any others?
+  end
+
 end
 
 # Runner will need the Recorder and Pending classes.
 if RUBY_VERSION < '1.9'
   require 'test/recorder'
-  require 'test/pending'
   require 'test/exception'
 else
   require_relative 'recorder'
-  require_relative 'pending'
   require_relative 'exception'
 end

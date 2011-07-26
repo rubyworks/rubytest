@@ -48,8 +48,8 @@ module Test
         #opt.on '-n', '--namespace NAME', 'select tests by target component' do |namespace|
         #  options[:namespace] << namespace
         #end
-        opt.on '-c', '--case TEXT', 'select testcase by description' do |text|
-          options[:casematch] << text 
+        opt.on '-m', '--match TEXT', 'select tests by description' do |text|
+          options[:match] << text 
         end
         opt.on '-I', '--loadpath PATH',  'add to $LOAD_PATH' do |path|
           paths = path.split(/[:;]/)
