@@ -1,9 +1,10 @@
 # Ruby Test
 
-|-----------|-----------------------------------|
-| Author    | Thomas Sawyer                     |
-| License   | FreeBSD                           |
-| Copyright | (c) 2011 Thomas Sawyer, Rubyworks |
+<table>
+<tr><td>*Author*</td><td>Thomas Sawyer</td></tr>
+<tr><td>*License*</td><td>FreeBSD</td></tr>
+<tr><td>*Copyright*</td><td>(c) 2011 Thomas Sawyer, Rubyworks</td></tr>
+</table>
 
 
 ## Description
