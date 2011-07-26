@@ -126,7 +126,7 @@ module Test::Reporters
       sizes = %w{pass fail error todo omit}.map{ |r| record[r.to_sym].size }
       data  = [total] + sizes
 
-      s = "%s tests: %s passing, %s failures, %s errors, %s pending, %s omitted " % data
+      s = "%s tests: %s passing, %s failures, %s errors, %s pending, %s omissions" % data
       #s += "(#{uncovered_units.size} uncovered, #{undefined_units.size} undefined)" if cover?
       s
     end
