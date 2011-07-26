@@ -1,15 +1,18 @@
 # Ruby Test
 
-| Author    | Thomas Sawyer |
-| License   | FreeBSD |
+|-----------|-----------------------------------|
+| Author    | Thomas Sawyer                     |
+| License   | FreeBSD                           |
 | Copyright | (c) 2011 Thomas Sawyer, Rubyworks |
 
 
 ## Description
 
-Ruby Test is a universal test harness for Ruby test framworks. It defines
-a simple specification for compliant test framworks to conform. By doing
-so Ruby Test can be used to run the frameworks tests.
+Ruby Test is a universal test harness for Ruby test frameworks. It defines
+a simple specification for compliant test frameworks to adhear. By doing
+so Ruby Test can be used to run the framework's tests, and even test across
+multiple frameworks in one go.
+
 
 ## Synopsis
 
@@ -26,54 +29,62 @@ to `#to_s` for their descriptions to be used in output.
 
 Some _optional_ interfaces can be used to enable aditional features.
 
-If the return value of `#to_s` is a multi-line string, the first line is
-taken to be the _label_ or summary of the test unit or test case, and the 
-remaining lines are taken to be additional _detail_. A report format may
-only show the details if the verbose command line flag it used.
-
-If a test case responds to `#ordered?`, it indicates if its tests must be run
+A test case that responds to `#ordered?` indicates if its tests must be run
 in order. If false, which is the default, then the test runner can randomize
-the order for more rigorous testing. If true, the the tests will always be 
+the order for more rigorous testing. But if true, then the tests will always be
 run in the order given. Also, if ordered, a test case's test units cannot be
-selected or filtered independent of each other during the test run.
+selected or filtered independent of one another.
 
-If any test object responds to `#omit?` it indicates if the test unit or case
-should be skipped, though it still may be mentioned in the test output.
+If the return value of `#to_s` is a multi-line string, the first line is
+taken to be the _label_ or _summary_ of the test object. The remaining
+lines are taken to be additional _detail_. A report format may only show
+the details if the verbose command line flag it used.
 
 A test object can also supply a `#subtext`, which can be used to describe
-the _setup_ assiciated with a test. (Note, this may never be used if the test
-framework only supports one subtext per test case, i.e. the context, in which 
-case the context and subtext effectively share a single description.)
+the _setup_ associated with a test. [NOTE: A test framework will not use
+this if it only supports one setup per context (the testcase). In that
+case the context and subtext effectively share a single description.]
 
 A test object can provide `#tags` which must return a one-word string or
-array of one-word strings. The test runner can use this field to limit the
+array of one-word strings. The test runner can use the tags to limit the
 particular tests that are run.
 
-Likewise a test object may provide `#component` which must give the full name
-of a class, module or method. Methods must also be representd by their
-full name. For example, `MyClass#foo` and `MyClass::bar` for an instance method
-and a class method, respectively.
+Likewise a test object may respond to `#covers` to identify the particular
+"component" of the program being tested. The return value must be the
+the fullname of a constant, class, module or method. Methods must also be
+represented with fully qualified names, e.g. `FooClass#foo` and `FooClass.bar`
+for an instance method and a class method, respectively.
 
-A test framework may raise a `Pending` exception and a test will be recorded
-as a "todo" item. Ruby Test defines `class Pending < Excpetion; end`. A test
-framework can also to define this class, if need be.
+If any test object responds to `#skip?` it indicates that the test unit or
+test case should be skipped and not tested (it may or may not be mentioned
+in the test output, as being skipped, depending on the reporter used).
 
-Any raised excpetion that responds to `#assertion?` in the affirmative is taken
+A test framework may raise a `NotImplementedError` to have a test recorded
+as "pending" --a sort of "todo" item to remind the developer of tests
+that still need to be written. The `NotImplementedError` is a standard Ruby
+exception and a subclass of `ScriptError`.
+
+If the `NotImplmentedError` responds in the affirmative to `#assertion?` then
+the test is taken to be a purposeful omission, rather than simply pending.
+
+Any raised exception that responds to `#assertion?` in the affirmative is taken
 to a failed assertion rather than an error. Ruby Test extends the Extension
 class to support this method for all exceptions.
 
 
-## Future Considerations
+## Considerations
 
-The original specification utlized an `Assertion` base class (defined as
-`class Assertion < Excpetion; end`) to distinguish assertion failures from
-regular exceptions. It was later determined that a common `#assertion` method
-was more flexible and easier for test frameworks to support.
+The original specification utlized an `Assertion` base class, defined as
+`class Assertion < Excpetion; end`, to distinguish assertion failures from
+regular exceptions. All test frameworks (AFAIK) have some variation of this
+class, e.g. Test::Unit has `FailureError`. For this to work, it would be
+necessary for all such classes to inherit from the common `Assertion` class.
+While likely not difficult to implement, it was determined that utilizing a
+common `#assertion` method was more flexible and easier for test frameworks
+to support.
 
-Likewise the `Pending` class might not be the best approach, but a #pending
-method in the Exception class does not seem correct. And, on the other hand,
-it is not clear if a `#pending?` method on the test object suffices (in which
-case it is essentially the same as `#omit?`, simply labeled differently).
+Test/Unit provides for _notifications_. Support for notifications is something
+to consider for a future version.
 
 Feedback on any of these consideration is greatly appreciated. Just
 post up an new [issue](http://rubyworks.github/test/issues).
@@ -105,6 +116,12 @@ A Detroit plugin is in the works and should be availabe soon.
 ## Requirements
 
 Ruby test uses the [ANSI](http://rubyworks.github.com/ansi) gem for color output.
+
+Ruby Facets is also required for formating methods, in particular, String#tabto.
+
+Becuase of the "fondational" nature of this library we will work on removing
+these dependecies for future versions, but for early development these
+requirements do their job and do it well.
 
 
 ## Development
