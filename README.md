@@ -45,12 +45,38 @@ the _setup_ assiciated with a test. (Note, this may never be used if the test
 framework only supports one subtext per test case, i.e. the context, in which 
 case the context and subtext effectively share a single description.)
 
+A test object can provide `#tags` which must return a one-word string or
+array of one-word strings. The test runner can use this field to limit the
+particular tests that are run.
+
+Likewise a test object may provide `#component` which must give the full name
+of a class, module or method. Methods must also be representd by their
+full name. For example, `MyClass#foo` and `MyClass::bar` for an instance method
+and a class method, respectively.
+
 A test framework may raise a `Pending` exception and a test will be recorded
 as a "todo" item. Ruby Test defines `class Pending < Excpetion; end`. A test
 framework can also to define this class, if need be.
 
-Any raised excpetion that repsonds to `#assertion?` in the affirmative is taken
-to a failed assertion rather than an error.
+Any raised excpetion that responds to `#assertion?` in the affirmative is taken
+to a failed assertion rather than an error. Ruby Test extends the Extension
+class to support this method for all exceptions.
+
+
+## Future Considerations
+
+The original specification utlized an `Assertion` base class (defined as
+`class Assertion < Excpetion; end`) to distinguish assertion failures from
+regular exceptions. It was later determined that a common `#assertion` method
+was more flexible and easier for test frameworks to support.
+
+Likewise the `Pending` class might not be the best approach, but a #pending
+method in the Exception class does not seem correct. And, on the other hand,
+it is not clear if a `#pending?` method on the test object suffices (in which
+case it is essentially the same as `#omit?`, simply labeled differently).
+
+Feedback on any of these consideration is greatly appreciated. Just
+post up an new [issue](http://rubyworks.github/test/issues).
 
 
 ## Usage
@@ -69,6 +95,11 @@ There is also a Rake task.
     require 'test/rake'
 
 A Detroit plugin is in the works and should be availabe soon.
+
+
+## Installation
+
+    $ gem install test
 
 
 ## Requirements
