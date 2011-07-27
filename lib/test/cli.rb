@@ -9,11 +9,13 @@ module Test
     # Test configuration file. The name of the file is an ode
     # to the original Ruby cli test tool.
     #
-    # @example
+    # @examples
+    #   .test
+    #   .testrb
     #   .test.rb
     #   .config/test.rb
     #
-    RC_GLOB = '{.,.config/,config/}test.rb'
+    RC_GLOB = '{.testrb,.test.rb,.testrb,.config/test.rb,config/test.rb}'
 
     # Test runner command line interface.
     #
