@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 require 'test/reporters/abstract'
 
 module Test::Reporters
@@ -16,14 +18,16 @@ module Test::Reporters
 
       max = @total_count.to_s.size
 
-      @layout      = "%#{max}u)  %-14s   %11s  %11s  %4u%%   %s"
+      @layout_head = "%#{max}s   %-14s   %11s  %11s  %4u%%   %s"
+      @layout      = "%#{max}u.  %-14s   %11s  %11s  %4u%%   %s"
 
       timer_reset
     end
 
     #
     def start_case(tc)
-      tabs tc.to_s.ansi(:bold)
+      #tabs tc.to_s.ansi(:bold)
+      show_header(' '.ansi(:cyan), tc.to_s)
       @tab += 2
     end
 
@@ -31,7 +35,8 @@ module Test::Reporters
     def start_test(test)
        if test.respond_to?(:subtext) && test.subtext
          @test_cache[test.subtext] ||= (
-           puts "#{test.subtext}".tabto(@tab)
+           #puts "#{test.subtext}".tabto(@tab)
+           show_header(' '.ansi(:cyan), test.subtext)
            true
          )
        end
@@ -127,10 +132,19 @@ module Test::Reporters
     end
 
     #
+    def show_header(status, text)
+      text = text[0...text.index("\n")||-1]
+      data = [" ", status, timer, clock, counter, (' ' * @tab) + text.to_s.ansi(:bold)]
+      #puts (" " * @tab) + (@layout_head % data)
+      puts @layout_head % data
+    end
+
+    #
     def show_line(status, test)
       @count += 1
-      data = [@count, status, timer, clock, counter, test.to_s.ansi(:bold)]
-      puts (" " * @tab) + (@layout % data)
+      data = [@count, status, timer, clock, counter, (' ' * @tab) + test.to_s.ansi(:bold)]
+      #puts (" " * @tab) + (@layout % data)
+      puts @layout % data
     end
 
     #
