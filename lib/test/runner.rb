@@ -154,9 +154,9 @@ module Test
           run_test(tc)
         end
         if tc.respond_to?(:each)
-          observers.start_case(tc)
+          observers.each{ |o| o.start_case(tc) }
           run_case(tc)
-          observers.finish_case(tc)
+          observers.each{ |o| o.finish_case(tc) }
         end
       end
     end

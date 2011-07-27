@@ -4,7 +4,7 @@ require 'test/reporters/abstract'
 
 module Test::Reporters
 
-  # Progess reporter give test counter, precentage and times.
+  # Progess reporter gives test counter, precentage and times.
   #
   class Progress < Abstract
 
