@@ -1,5 +1,6 @@
 module Test
 
+  require 'test/config'
   require 'test/runner'
 
   # Command line interface.
@@ -9,23 +10,26 @@ module Test
     # to the original Ruby cli test tool.
     #
     # @example
-    #   .testrb
+    #   .test.rb
     #   .config/test.rb
     #
-    RC_GLOB = '{.testrb,.test.rb,.config/test.rb,config/test.rb}'
+    RC_GLOB = '{.,.config/,config/}test.rb'
 
     # Test runner command line interface.
     #
     def self.cli(*argv)
+      runner = new
+
+      config_file = Dir[RC_GLOB].first
+      load config_file if config_file
+
+      cli_options(runner, argv)
+
       begin
-        files, options = cli_options(argv)
+        # Add standarad location if it exists.
+        $LOAD_PATH.unshift(File.expand_path('lib')) if File.directory?('lib')
 
-        cli_loadrc(files, options)
-
-        suite   = $TEST_SUITE || []
-        runner  = new(suite, options)
         success = runner.run
-
         exit -1 unless success
       rescue => error
         raise error if $DEBUG
@@ -34,33 +38,56 @@ module Test
     end
 
     #
-    def self.cli_options(argv)
+    def self.cli_options(runner, argv)
       require 'optparse'
-      options = { :loadpath=>[], :requires=>[], :namespace=>[], :tags=>[], :casematch=>[] }
+
+      config = Test.config.dup
+      config_loaded = false
+
+      common  = config.delete('common')
+      default = config.delete('default')
+
+      common.call(runner) if common
+
       OptionParser.new do |opt|
         opt.banner = "Usage: ruby-test [options] [files ...]"
-        opt.on '-f', '--format NAME', 'report format' do |name|
-          options[:format] = name
+
+        unless config.empty?
+          opt.separator "PRESET OPTIONS:"
+          config.each do |name, block|
+            opt.on("--#{name}") do
+              block.call(runner)
+            end
+          end
         end
-        #opt.on '-t', '--tag TAG', 'select tests by tag' do |tag|
-        #  options[:tags] << tag
-        #end
+
+        opt.separator "CONFIG OPTIONS:"
+
+        opt.on '-f', '--format NAME', 'report format' do |name|
+          runner.format = name
+        end
+        opt.on '-t', '--tag TAG', 'select tests by tag' do |tag|
+          runner.tags << tag
+        end
         #opt.on '-n', '--namespace NAME', 'select tests by target component' do |namespace|
         #  options[:namespace] << namespace
         #end
         opt.on '-m', '--match TEXT', 'select tests by description' do |text|
-          options[:match] << text 
+          runner.match << text 
         end
-        opt.on '-I', '--loadpath PATH',  'add to $LOAD_PATH' do |path|
-          paths = path.split(/[:;]/)
-          options[:loadpath].concat(paths)
+        opt.on '-I', '--loadpath PATH',  'add to $LOAD_PATH' do |paths|
+          paths.split(/[:;]/).reverse_each do |path|
+            $LOAD_PATH.unshift path
+          end
         end
-        opt.on "-r FILE" , 'require file(s) (before doing anything else)' do |files|
-          files = files.split(/[:;]/)
-          options[:requires].concat(files)
+        opt.on '-r', '--require FILE', 'require file' do |file|
+          files.each{ |file| require file }
         end
-        #opt.on('-o', '--output DIRECTORY', 'log directory'){ |dir|
-        #  options[:output] = dir
+        opt.on '-v' , '--verbose', 'provide extra detailed report' do
+          runner.verbose = true
+        end
+        #opt.on('--log DIRECTORY', 'log directory'){ |dir|
+        #  options[:log] = dir
         #}
         opt.on_tail("--[no-]ansi" , 'turn on/off ANSI colors'){ |v| $ansi = v }
         opt.on_tail("--debug" , 'turn on debugging mode'){ $DEBUG = true }
@@ -75,28 +102,9 @@ module Test
         }
       end.parse!(argv)
 
-      files = argv
-      files = files.map{ |f| Dir[f] }.flatten
-      files = files.map{ |f| File.directory?(f) ? Dir[File.join(f, '**/*.rb')] : f }
-      files = files.flatten.uniq
-      files = files.map{ |f| File.expand_path(f) }
+      default.call(runner) if default && !config_loaded
 
-      return files, options
-    end
-
-    #
-    def self.cli_loadrc(files, options)
-      if file = Dir[RC_GLOB].first
-        load File.expand_path(file)
-      end
-
-      loadpath = options.delete(:loadpath) || ['lib']  # + ['lib'] ?
-      requires = options.delete(:requires) || []
-
-      loadpath.each{ |path| $LOAD_PATH.unshift(path) }
-      requires.each{ |path| require(path) }
-
-      files.each{ |path| require(path) }
+      runner.files.concat(argv)
     end
 
   end
