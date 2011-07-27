@@ -18,8 +18,8 @@ module Test::Reporters
 
       max = @total_count.to_s.size
 
-      @layout_head = "%#{max}s   %-14s   %11s  %11s  %4u%%   %s"
-      @layout      = "%#{max}u.  %-14s   %11s  %11s  %4u%%   %s"
+      @layout_head = " %3u%%  %#{max}s %#{max}s  %8s %11s  %1s  %s"
+      @layout      = " %3u%%  %#{max}u/%#{max}u  %8s %11s  %1s  %s"
 
       timer_reset
     end
@@ -27,7 +27,7 @@ module Test::Reporters
     #
     def start_case(tc)
       #tabs tc.to_s.ansi(:bold)
-      show_header(' '.ansi(:cyan), tc.to_s)
+      show_header(' ', tc.to_s)
       @tab += 2
     end
 
@@ -36,7 +36,7 @@ module Test::Reporters
        if test.respond_to?(:subtext) && test.subtext
          @test_cache[test.subtext] ||= (
            #puts "#{test.subtext}".tabto(@tab)
-           show_header(' '.ansi(:cyan), test.subtext)
+           show_header(' ', test.subtext)
            true
          )
        end
@@ -45,37 +45,35 @@ module Test::Reporters
 
     #
     def omit(test)
-      show_line("OMIT".ansi(:cyan), test)
+      show_line("O", test, :cyan)
     end
 
     #
     def pass(test)
-      show_line("PASS".ansi(:green), test)
+      show_line(".", test, :green)
     end
 
     #
     def fail(test, exception)
-      show_line("FAIL".ansi(:red), test)
+      show_line("F", test, :red)
     end
 
     #
     def error(test, exception)
-      show_line("ERROR".ansi(:red), test)
+      show_line("E", test, :red)
     end
 
     #
     def todo(test, exception)
-      show_line("PENDING".ansi(:yellow), test)
+      show_line("P", test, :yellow)
     end
 
     #
     def finish_test(test)
-      #@_last = :test
     end
 
     #
     def finish_case(tcase)
-      #@_last = :test
       @tab -= 2
     end
 
@@ -92,8 +90,10 @@ module Test::Reporters
       unless record[:pending].empty?
         puts "PENDING:\n\n"
         record[:pending].reverse_each do |test, exception|
-          puts "#{test}".tabto(4)
-          puts "#{file_and_line(exception)}".tabto(4)
+          s = []
+          s << "#{test}"
+          s << "#{file_and_line(exception)}"
+          puts s.join("\n").tabto(4)
           puts
         end
       end
@@ -101,9 +101,11 @@ module Test::Reporters
       unless record[:fail].empty?
         puts "FAILURES:\n\n"
         record[:fail].reverse_each do |test, exception|
-          puts "#{test}".ansi(:bold).tabto(4)
-          puts "#{exception}".ansi(:red).tabto(4)
-          puts "#{file_and_line(exception)}".tabto(4)
+          s = []
+          s << "#{test}".ansi(:bold)
+          s << "#{exception}".ansi(:red)
+          s << "#{file_and_line(exception)}"
+          puts s.join("\n").tabto(4)
           puts code_snippet(exception).tabto(4)
           #puts "    #{exception.backtrace[0]}"
           puts
@@ -115,10 +117,12 @@ module Test::Reporters
         record[:error].reverse_each do |test, exception|
           trace = clean_backtrace(exception)[1..-1]
 
-          puts "#{test}".ansi(:bold).tabto(4)
-          puts "#{exception.class}".ansi(:red).tabto(4)
-          puts "#{exception}".ansi(:red).tabto(4)
-          puts "#{file_and_line(exception)}".tabto(4)
+          s = []
+          s << "#{test}".ansi(:bold)
+          s << "#{exception.class}".ansi(:red)
+          s << "#{exception}".ansi(:red)
+          s << "#{file_and_line(exception)}"
+          puts s.join("\n").tabto(4)
           puts code_snippet(exception).tabto(4)
           puts trace.join("\n").tabto(4) unless trace.empty?
           puts
@@ -134,35 +138,38 @@ module Test::Reporters
     #
     def show_header(status, text)
       text = text[0...text.index("\n")||-1]
-      data = [" ", status, timer, clock, counter, (' ' * @tab) + text.to_s.ansi(:bold)]
+      data = [prcnt, ' ', ' ', clock, timer, status, (' ' * @tab) + text.to_s]
       #puts (" " * @tab) + (@layout_head % data)
-      puts @layout_head % data
+      puts (@layout_head % data).ansi(:bold)
     end
 
     #
-    def show_line(status, test)
+    def show_line(status, test, color)
       @count += 1
-      data = [@count, status, timer, clock, counter, (' ' * @tab) + test.to_s.ansi(:bold)]
+      data = [prcnt, @count, @total_count, clock, timer, status, (' ' * @tab) + test.to_s]
       #puts (" " * @tab) + (@layout % data)
-      puts @layout % data
+      puts (@layout % data).ansi(color)
     end
 
     #
-    def counter
+    def prcnt
       ((@count.to_f / @total_count) * 100).round.to_s
     end
 
     #
     def clock
-      secs = Time.now - @start_time
-      return "%0.5fs" % [secs.to_s]
+      secs  = Time.now - @start_time
+      m, s  = secs.divmod(60)
+      #s, ms = s.divmod(1)
+      #ms = ms * 1000
+      return "%u:%02u" % [m, s]
     end
 
     #
     def timer
       secs  = Time.now - @time
       @time = Time.now
-      return "%0.5fs" % [secs.to_s]
+      return "%0.5fs" % secs
     end
 
     #
@@ -182,41 +189,3 @@ module Test::Reporters
   end
 
 end
-
-
-
-
-=begin
-      if cover?
-
-        unless uncovered_cases.empty?
-          unc = uncovered_cases.map do |mod|
-            yellow(mod.name)
-          end.join(", ")
-          puts "\nUncovered Cases: " + unc
-        end
-
-        unless uncovered_units.empty?
-          unc = uncovered_units.map do |unit|
-            yellow(unit)
-          end.join(", ")
-          puts "\nUncovered Units: " + unc
-        end
-
-        #unless uncovered.empty?
-        #  unc = uncovered.map do |unit|
-        #    yellow(unit)
-        #  end.join(", ")
-        #  puts "\nUncovered: " + unc
-        #end
-
-        unless undefined_units.empty?
-          unc = undefined_units.map do |unit|
-            yellow(unit)
-          end.join(", ")
-          puts "\nUndefined Units: " + unc
-        end
-
-      end
-=end
-
