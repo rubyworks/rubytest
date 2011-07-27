@@ -52,8 +52,12 @@ module Test::Reporters
     def test(test)
     end
 
-    # Report an omitted unit test.
-    def omit(unit)
+    #
+    def skip(unit)
+    end
+
+    #
+    def skip_case(cases)
     end
 
     #
@@ -69,7 +73,15 @@ module Test::Reporters
     end
 
     #
-    def finish_test(test)
+    def todo(unit, exception)
+    end
+
+    # Report an omitted unit test.
+    def omit(unit)
+    end
+
+    #
+    def finish_test(unit)
     end
 
     #

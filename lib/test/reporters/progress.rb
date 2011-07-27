@@ -59,7 +59,7 @@ module Test::Reporters
     end
 
     #
-    def pending(test, exception)
+    def todo(test, exception)
       show_line("PENDING".ansi(:yellow), test)
     end
 

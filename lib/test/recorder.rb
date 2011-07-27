@@ -13,6 +13,11 @@ module Test
       @table[key.to_sym]
     end
 
+    #
+    def skip(test)
+      self[:skip] << test
+    end
+
     # Add `test` to pass set.
     def pass(test)
       self[:pass] << test

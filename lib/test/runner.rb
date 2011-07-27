@@ -145,6 +145,10 @@ module Test
     # Run a test case.
     #
     def run_case(cases)
+      if cases.respond_to?(:skip?) && cases.skip?
+        return observers.each{ |o| o.skip_case(cases) }
+      end
+
       select(cases).each do |tc|
         if tc.respond_to?(:call)
           run_test(tc)
@@ -163,9 +167,10 @@ module Test
     #   The test to run.
     #
     def run_test(test)
-      #if test.respond_to?(:skip?) && test.skip?
-      #  return observers.each{ |o| o.skip(test) }
-      #end
+      if test.respond_to?(:skip?) && test.skip?
+        return observers.each{ |o| o.skip(test) }
+      end
+
       observers.each{ |o| o.start_test(test) }
       begin
         test.call
@@ -197,7 +202,6 @@ module Test
       selected = []
       if cases.respond_to?(:ordered?) && cases.ordered?
         cases.each do |tc|
-          next if tc.respond_to?(:skip?) && tc.skip?
           selected << tc
         end
       else
