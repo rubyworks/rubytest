@@ -1,5 +1,6 @@
 require 'facets/string/tabto'
 require 'ansi/core'
+require 'test/code_snippet'
 
 ignore_path   = File.expand_path(File.join(__FILE__, '..', '..', '..'))
 ignore_regexp = Regexp.new(Regexp.escape(ignore_path))
@@ -8,7 +9,8 @@ RUBY_IGNORE_CALLERS = [] unless defined? RUBY_IGNORE_CALLERS
 RUBY_IGNORE_CALLERS << ignore_regexp
 RUBY_IGNORE_CALLERS << /bin\/ruby-test/
 
-module Test::Reporters
+module Test
+module Reporters
 
   # Test Reporter Base Class
   class Abstract
@@ -92,7 +94,7 @@ module Test::Reporters
     def finish_suite(suite)
     end
 
-    protected
+  protected
 
     def record
       runner.recorder
@@ -155,10 +157,10 @@ module Test::Reporters
     def clean_backtrace(exception)
       trace = (Exception === exception ? exception.backtrace : exception)
       trace = trace.reject{ |t| RUBY_IGNORE_CALLERS.any?{ |r| r =~ t }}
-      #trace = trace.map do |t|
-      #  i = t.index(':in')
-      #  i ? t[0...i] : t
-      #end
+      trace = trace.map do |t|
+        i = t.index(':in')
+        i ? t[0...i] : t
+      end
       #if trace.empty?
       #  exception
       #else
@@ -166,6 +168,16 @@ module Test::Reporters
       #  exception
       #end
       trace
+    end
+
+    #
+    def code(source, line=nil)
+      case source
+      when Exception, Array
+        CodeSnippet.from_backtrace(clean_backtrace(source))
+      else
+        CodeSnippet.new(source, line)
+      end
     end
 
     # Have to thank Suraj N. Kurapati for the crux of this code.
@@ -261,4 +273,5 @@ module Test::Reporters
 
   end
 
+end
 end
