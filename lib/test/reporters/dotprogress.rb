@@ -23,7 +23,7 @@ module Test::Reporters
       print "E".ansi(:red, :bold)
     end
 
-    def pending(unit, exception)
+    def todo(unit, exception)
       print "P".ansi(:yellow)
     end
 
@@ -46,7 +46,7 @@ module Test::Reporters
           puts "    #{test_unit}".ansi(:bold)
           puts "    #{exception}"
           puts "    #{file_and_line(exception)}"
-          puts code_snippet(exception)
+          puts code(exception)
           puts
         end
       end
@@ -57,7 +57,7 @@ module Test::Reporters
           puts "    #{test_unit}".ansi(:bold)
           puts "    #{exception}"
           puts "    #{file_and_line(exception)}"
-          puts code_snippet(exception)
+          puts code(exception)
           puts
         end
       end
@@ -68,7 +68,7 @@ module Test::Reporters
           puts "    #{test_unit}".ansi(:bold)
           puts "    #{exception}"
           puts "    #{file_and_line(exception)}"
-          puts code_snippet(exception)
+          puts code(exception)
           puts
         end
       end

@@ -106,7 +106,7 @@ module Test::Reporters
           s << "#{exception}".ansi(:red)
           s << "#{file_and_line(exception)}"
           puts s.join("\n").tabto(4)
-          puts code_snippet(exception).tabto(4)
+          puts code(exception).to_s.tabto(4)
           #puts "    #{exception.backtrace[0]}"
           puts
         end
@@ -123,7 +123,7 @@ module Test::Reporters
           s << "#{exception}".ansi(:red)
           s << "#{file_and_line(exception)}"
           puts s.join("\n").tabto(4)
-          puts code_snippet(exception).tabto(4)
+          puts code(exception).to_s.tabto(4)
           puts trace.join("\n").tabto(4) unless trace.empty?
           puts
         end

@@ -48,7 +48,7 @@ module Test::Reporters
       s = []
       s << "#{exception}"
       s << "#{file_and_line(exception)}"
-      s << code_snippet(exception)
+      s << code(exception)
       #puts "    #{exception.backtrace[0]}"
       tabs s.join("\n"), 4
     end
@@ -61,17 +61,16 @@ module Test::Reporters
       s << "#{exception.class}"
       s << "#{exception}"
       s << "#{file_and_line(exception)}"
-      s << code_snippet(exception)
+      s << code(exception)
       #s << trace.join("\n") unless trace.empty?
       tabs s.join("\n"), 4
     end
 
     #
-    def pending(test, exception)
+    def todo(test, exception)
       tabs "#{test}".ansi(:yellow)
       tabs "#{file_and_line(exception)}", 4
     end
-    alias_method :todo, :pending
 
     #
     def finish_test(test)
