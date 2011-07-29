@@ -9,12 +9,6 @@ a simple specification for compliant test frameworks to adhere. By doing
 so Ruby Test can be used to run the framework's tests, and even test across
 multiple frameworks in one go.
 
-<table>
-<tr><td><b>Author</b></td><td>Thomas Sawyer</td></tr>
-<tr><td><b>License</b></td><td>FreeBSD</td></tr>
-<tr><td><b>Copyright</b></td><td>(c) 2011 Thomas Sawyer, Rubyworks</td></tr>
-</table>
-
 ## Synopsis
 
 The universal access point for testing is the $TEST_SUITE global variable.
@@ -28,18 +22,19 @@ to `#each` it is iterated over as a test case. All test objects must respond
 to `#to_s` for their description to be used in test reports.
 
 Any raised exception that responds to `#assertion?` in the affirmative is taken
-to a failed assertion rather than an error. Ruby Test extends the Extension
-class to support this method for all exceptions.
+to be a failed assertion rather than an error. Ruby Test extends the
+[Exception class](http://github.com/rubyworks/test/blob/master/lib/test/exception.rb)
+to support this method for all exceptions.
 
 A test framework may raise a `NotImplementedError` to have a test recorded
-as _pending_, a _todo_ item to remind the developer of tests that still
+as _pending_ --a _todo_ item to remind the developer of tests that still
 need to be written. The `NotImplementedError` is a standard Ruby exception
 and a subclass of `ScriptError`.
 
 If the `NotImplmentedError` responds in the affirmative to `#assertion?` then
 the test is taken to be a purposeful _omission_, rather than simply pending.
 
-Some *_optional_* interfaces can be used to enable additional features...
+Some <i>*optional*</i> interfaces can be used to enable additional features...
 
 ### Multi-line Description
 
@@ -76,15 +71,13 @@ identify the file and line in which the the test was defined. The
 return value of `#source_location` must be a two-element array of
 `[file, line]`.
 
-### Coverage
-
-NOTE: This is still expiremental and subjet to change.
+### Covers
 
 A test object may respond to `#covers` to identify the particular
 "component" of the program being tested. The return value must be the
-the full name of a constant, class, module or method. Methods must also be
-represented with fully qualified names, e.g. `FooClass#foo` and `FooClass.bar`
-for an instance method and a class method, respectively.
+the full name of a constant, class, module or method. Methods
+must be represented with fully qualified names, e.g. `FooClass#foo` and
+`FooClass.bar` for an instance method and a class method, respectively.
 
 ### Selection Tags
 
@@ -140,7 +133,7 @@ Ruby Facets is also required for formatting methods, in particular, String#tabto
 
 Because of the "foundational" nature of this library we will work on removing
 these dependencies for future versions, but for early development these
-requirements do their job and do it well.
+requirements do the job and do it well.
 
 
 ## Development
@@ -157,4 +150,4 @@ Copyright (c) 2011 Thomas Sawyer, Rubyworks
 
 Made available according to the terms of the <b>FreeBSD license</b>.
 
-See COPYING.md for details.
+See COPYING.rdoc for details.
