@@ -82,6 +82,16 @@ module Test
     # Selected tags used to filter which tests are run.
     attr :tags
 
+    # Show extra details in reports.
+    def verbose?
+      @verbose
+    end
+
+    #
+    def verbose=(boolean)
+      @verbose = !!boolean
+    end
+
     # Namespaces option specifies the selection of test cases
     # to run. Is is an array of strings which are matched
     # against the module/class names using #start_wtih?
@@ -100,11 +110,12 @@ module Test
     #   A list of compliant tests/testcases.
     #
     def initialize(options={}, &block)
-      @suite     = options[:suite]  || self.class.suite
-      @files     = options[:files]  || self.class.files
-      @format    = options[:format] || self.class.format
-      @tags      = options[:tags]   || self.class.tags
-      @match     = options[:match]  || self.class.match
+      @suite     = options[:suite]   || self.class.suite
+      @files     = options[:files]   || self.class.files
+      @format    = options[:format]  || self.class.format
+      @tags      = options[:tags]    || self.class.tags
+      @match     = options[:match]   || self.class.match
+      @verbose   = options[:verbose] || self.class.verbose
 
       block.call(self) if block
     end
