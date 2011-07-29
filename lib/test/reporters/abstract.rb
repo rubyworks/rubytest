@@ -79,7 +79,7 @@ module Reporters
     end
 
     # Report an omitted unit test.
-    def omit(unit)
+    def omit(unit, exception)
     end
 
     #

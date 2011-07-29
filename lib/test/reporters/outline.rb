@@ -32,10 +32,6 @@ module Test::Reporters
     end
 
     #
-    def omit(test)
-      tabs "#{test}".ansi(:cyan)
-    end
-
     #
     def pass(test)
       tabs "#{test}".ansi(:green)
@@ -70,6 +66,11 @@ module Test::Reporters
     def todo(test, exception)
       tabs "#{test}".ansi(:yellow)
       tabs "#{file_and_line(exception)}", 4
+    end
+
+    #
+    def omit(test, exception)
+      tabs "#{test}".ansi(:cyan)
     end
 
     #

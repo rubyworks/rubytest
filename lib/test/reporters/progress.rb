@@ -44,11 +44,6 @@ module Test::Reporters
     end
 
     #
-    def omit(test)
-      show_line("O", test, :cyan)
-    end
-
-    #
     def pass(test)
       show_line(".", test, :green)
     end
@@ -66,6 +61,11 @@ module Test::Reporters
     #
     def todo(test, exception)
       show_line("P", test, :yellow)
+    end
+
+    #
+    def omit(test, exception)
+      show_line("O", test, :cyan)
     end
 
     #

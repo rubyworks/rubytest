@@ -27,6 +27,10 @@ module Test::Reporters
       print "P".ansi(:yellow)
     end
 
+    def omit(unit, exception)
+      print "O".ansi(:cyan)
+    end
+
     def finish_suite(suite)
       puts; puts
       puts timestamp
