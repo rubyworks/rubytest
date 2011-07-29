@@ -1,5 +1,5 @@
 ---
-name   : ruby-test
+name   : test
 title  : Ruby Test
 summary: Ruby Universal Test Harness
 created: 2011-07-23
@@ -21,6 +21,9 @@ resources:
   home: http://rubyworks.github.com/test
   code: http://github.com/rubyworks/test
   mail: http://groups.google.com/group/rubyworks-mailinglist
+
+repositories:
+  upstream: git@github.com:rubyworks/test.git
 
 copyrights:
   - 2011 Thomas Sawyer, RubyWorks (FreeBSD)
