@@ -9,7 +9,7 @@ module Test
     # Test configuration file. The name of the file is an ode
     # to the original Ruby cli test tool.
     #
-    # @examples
+    # @example
     #   .test
     #   .testrb
     #   .test.rb
@@ -68,6 +68,13 @@ module Test
         opt.on '-f', '--format NAME', 'report format' do |name|
           runner.format = name
         end
+        opt.on '-y', '--tapy', 'shortcut for -f tapy' do
+          runner.format = 'tapy'
+        end
+        opt.on '-j', '--tapj', 'shortcut for -f tapj' do
+          runner.format = 'tapj'
+        end
+
         opt.on '-t', '--tag TAG', 'select tests by tag' do |tag|
           runner.tags << tag
         end
