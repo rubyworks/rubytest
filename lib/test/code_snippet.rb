@@ -50,8 +50,8 @@ module Test
     # TODO: ensure proper alignment by zero-padding line numbers
     #++
     def to_s(radius=2)
-      f = " %2s %0#{rng.last.to_s.length}d %s"
       r = range(radius)
+      f = " %2s %0#{r.last.to_s.length}d %s"
       r.map do |n|
         f % [('=>' if n == line), n, code[n-1].chomp]
       end.join("\n")
