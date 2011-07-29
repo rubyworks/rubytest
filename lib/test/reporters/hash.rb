@@ -49,7 +49,7 @@ module Test::Reporters
     #
     def pass(unit) #, backtrace=nil)
       h = {}
-      h['type'  ] = 'test'
+      h['type'  ] = 'unit'
       h['status'] = 'pass'
 
       merge_subtype      h, unit
@@ -66,7 +66,7 @@ module Test::Reporters
     #
     def fail(unit, exception)
       h = {}
-      h['type'  ] = 'test'
+      h['type'  ] = 'unit'
       h['status'] = 'fail'
 
       merge_subtype      h, unit
@@ -84,7 +84,7 @@ module Test::Reporters
     #
     def error(unit, exception)
       h = {}
-      h['type'  ] = 'test'
+      h['type'  ] = 'unit'
       h['status'] = 'error'
 
       merge_subtype      h, unit
@@ -100,10 +100,10 @@ module Test::Reporters
     end
 
     #
-    def omit(unit, exception)
+    def todo(unit, exception)
       h = {}
-      h['type'  ] = 'test'
-      h['status'] = 'omit'
+      h['type'  ] = 'unit'
+      h['status'] = 'todo'
 
       merge_subtype      h, unit
       merge_setup        h, unit
@@ -118,10 +118,10 @@ module Test::Reporters
     end
 
     #
-    def todo(unit, exception)
+    def omit(unit, exception)
       h = {}
-      h['type'  ] = 'test'
-      h['status'] = 'todo'
+      h['type'  ] = 'unit'
+      h['status'] = 'omit'
 
       merge_subtype      h, unit
       merge_setup        h, unit
@@ -161,7 +161,7 @@ module Test::Reporters
 
     #
     def merge_subtype(hash, test)
-      hash['subtype'] = test_case.type.to_s if test_case.respond_to?(:type)
+      hash['subtype'] = test.type.to_s if test.respond_to?(:type)
     end
 
     # TODO: setup or subtext ?
@@ -169,7 +169,7 @@ module Test::Reporters
       hash['setup'] = test.setup.to_s if test.respond_to?(:setup)
     end
 
-    #
+    # Add test description to hash.
     def merge_description(hash, test)
       hash['description'] = test.to_s.strip
     end
@@ -180,17 +180,18 @@ module Test::Reporters
       hash['expected'] = exception.expected
     end
 
-    #
+    # Add source location information to hash.
     def merge_source(hash, test)
-      if test.respond_to?('file') && test.respond_to?('line')
-        hash['file'   ] = test.file
-        hash['line'   ] = test.line
-        hash['source' ] = code(test.file, test.line).to_str
-        hash['snippet'] = code(test.file, test.line).to_omap
+      if test.respond_to?('source_location')
+        file, line = source_location
+        hash['file'   ] = file
+        hash['line'   ] = line
+        hash['source' ] = code(file, line).to_str
+        hash['snippet'] = code(file, line).to_omap
       end
     end
 
-    #
+    # Add exception subsection of hash.
     def merge_exception(hash, test, exception, bt=false)
       hash['exception'] = {}
       hash['exception']['file'     ] = code(exception).file
