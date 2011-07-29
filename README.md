@@ -17,56 +17,65 @@ multiple frameworks in one go.
 
 ## Synopsis
 
-The universal access point for universal testing is the $TEST_SUITE
-global variable.
+The universal access point for testing is the $TEST_SUITE global variable.
 
     $TEST_SUITE = []
 
 A test framework need only add compliant test objects to the `$TEST_SUITE` global
-array. The Ruby Test Runner will iterate through these objects. If a test object
+array. The Ruby Test will iterate through these objects. If a test object
 responds to `#call`, it is run as a test unit. If the test object responds
-to `#each` it is iterated over as a test case. All test objects should respond
-to `#to_s` for their descriptions to be used in output.
+to `#each` it is iterated over as a test case. All test objects must respond
+to `#to_s` for their description to be used in test reports.
 
 Some _optional_ interfaces can be used to enable additional features.
+
+If the return value of `#to_s` is a multi-line string, the first line is
+taken to be the _label_ or _summary_ of the test object. The remaining
+lines are taken to be additional _detail_. A report format _might_ only show
+the details if the verbose command line flag it used.
 
 A test case that responds to `#ordered?` indicates if its tests must be run
 in order. If false, which is the default, then the test runner can randomize
 the order for more rigorous testing. But if true, then the tests will always be
-run in the order given. Also, if ordered, a test case's test units cannot be
+run in the order given. Also, if ordered, a case's test units cannot be
 selected or filtered independent of one another.
 
-If the return value of `#to_s` is a multi-line string, the first line is
-taken to be the _label_ or _summary_ of the test object. The remaining
-lines are taken to be additional _detail_. A report format may only show
-the details if the verbose command line flag it used.
+A test object may provide a `#type`, which can be used to characterize the
+type of test case or test unit. For example, RSpec might return `describe`
+as the type of a test case and `it` as the type of a test unit, where as 
+Cucumber would use `feature` and `scenario` for test cases and `then` for
+test units (depending on choices made by the implementors).
 
 A test object can also supply a `#subtext`, which can be used to describe
-the _setup_ associated with a test. [NOTE: A test framework will not use
-this if it only supports one setup per context (the test case). In that
-case the context and subtext effectively share a single description.]
+the _setup_ associated with a test.
 
-A test object can provide `#tags` which must return a one-word string or
-array of one-word strings. The test runner can use the tags to limit the
-particular tests that are run.
+If a test object responds to `#source_location` it will be taken to 
+identify the file and line in which the the test was defined. The
+return value of `#source_location` must be a two-element array of
+`[file, line]`.
 
-Likewise a test object may respond to `#covers` to identify the particular
+(TODO: coverage needs to change a bit)
+A test object may respond to `#covers` to identify the particular
 "component" of the program being tested. The return value must be the
 the full name of a constant, class, module or method. Methods must also be
 represented with fully qualified names, e.g. `FooClass#foo` and `FooClass.bar`
 for an instance method and a class method, respectively.
 
+A test object can provide `#tags` which must return a one-word string or
+array of one-word strings. The test runner can use the tags to limit the
+particular tests that are run.
+
 If any test object responds to `#skip?` it indicates that the test unit or
 test case should be skipped and not tested (it may or may not be mentioned
-in the test output, as being skipped, depending on the reporter used).
+in the test output depending on the reporter used).
 
 A test framework may raise a `NotImplementedError` to have a test recorded
-as "pending" --a sort of "todo" item to remind the developer of tests
+as _pending_, a kind of _todo_ item to remind the developer of tests
 that still need to be written. The `NotImplementedError` is a standard Ruby
 exception and a subclass of `ScriptError`.
 
 If the `NotImplmentedError` responds in the affirmative to `#assertion?` then
-the test is taken to be a purposeful omission, rather than simply pending.
+the test is taken to be a purposeful _omission_, rather than simply pending.
 
 Any raised exception that responds to `#assertion?` in the affirmative is taken
 to a failed assertion rather than an error. Ruby Test extends the Extension
