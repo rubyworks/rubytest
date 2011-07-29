@@ -1,23 +1,19 @@
 # Ruby Test
 
-[Homepage](http://rubyworks.github.com/test)
-[Development](http://github.com/rubyworks/test)
+[Homepage](http://rubyworks.github.com/test) ~
+[Development](http://github.com/rubyworks/test) ~
 [Issues](http://github.com/rubyworks/test/issues)
-
-<table>
-<tr><td><b>Author</b></td><td>Thomas Sawyer</td></tr>
-<tr><td><b>License</b></td><td>FreeBSD</td></tr>
-<tr><td><b>Copyright</b></td><td>(c) 2011 Thomas Sawyer, Rubyworks</td></tr>
-</table>
-
-
-## Description
 
 Ruby Test is a universal test harness for Ruby test frameworks. It defines
 a simple specification for compliant test frameworks to adhere. By doing
 so Ruby Test can be used to run the framework's tests, and even test across
 multiple frameworks in one go.
 
+<table>
+<tr><td><b>Author</b></td><td>Thomas Sawyer</td></tr>
+<tr><td><b>License</b></td><td>FreeBSD</td></tr>
+<tr><td><b>Copyright</b></td><td>(c) 2011 Thomas Sawyer, Rubyworks</td></tr>
+</table>
 
 ## Synopsis
 
