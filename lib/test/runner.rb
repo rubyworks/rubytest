@@ -161,6 +161,9 @@ module Test
       end
     end
 
+    # Exceptions that are not caught by test runner.
+    OPEN_ERRORS = [NoMemoryError, SignalException, Interrupt, SystemExit]
+
     # Run a test unit.
     #
     # @param [TestProc] test
@@ -175,6 +178,8 @@ module Test
       begin
         test.call
         observers.each{ |o| o.pass(test) }
+      rescue *OPEN_ERRORS => exception
+        raise exception
       rescue NotImplementedError => exception
         if exception.assertion?
           observers.each{ |o| o.omit(test, exception) }
@@ -243,7 +248,7 @@ module Test
     def reporter_list
       Dir[File.dirname(__FILE__) + '/reporters/*.rb'].map do |rb|
         File.basename(rb).chomp('.rb')
-      end
+      end.sort
     end
 
     # Files can be globs and directories which need to be
