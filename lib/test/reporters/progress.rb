@@ -77,19 +77,28 @@ module Test::Reporters
     def end_suite(suite)
       puts
 
-      unless record[:omit].empty?
-        puts "OMITTED:\n\n"
-        puts record[:omit].map{ |u| u.to_s }.sort.join('  ')
-        puts
+      if runner.verbose?
+        unless record[:omit].empty?
+          puts "OMISSIONS:\n\n"
+          record[:omit].reverse_each do |test, exception|
+            s = []
+            s << "#{test}".ansi(:bold)
+            s << "#{file_and_line(exception)}"
+            puts s.join("\n").tabto(4)
+            puts code(exception).to_s.tabto(7)
+            puts
+          end
+        end
       end
 
-      unless record[:pending].empty?
+      unless record[:todo].empty?
         puts "PENDING:\n\n"
-        record[:pending].reverse_each do |test, exception|
+        record[:todo].reverse_each do |test, exception|
           s = []
-          s << "#{test}"
+          s << "#{test}".ansi(:bold)
           s << "#{file_and_line(exception)}"
           puts s.join("\n").tabto(4)
+          puts code(exception).to_s.tabto(7)
           puts
         end
       end
@@ -102,7 +111,7 @@ module Test::Reporters
           s << "#{exception}".ansi(:red)
           s << "#{file_and_line(exception)}"
           puts s.join("\n").tabto(4)
-          puts code(exception).to_s.tabto(4)
+          puts code(exception).to_s.tabto(7)
           #puts "    #{exception.backtrace[0]}"
           puts
         end
@@ -111,15 +120,14 @@ module Test::Reporters
       unless record[:error].empty?
         puts "ERRORS:\n\n"
         record[:error].reverse_each do |test, exception|
-          trace = clean_backtrace(exception)[1..-1]
-
+          trace = clean_backtrace(exception)[1..-1].map{ |bt| bt.sub(Dir.pwd+'/', '') }
           s = []
           s << "#{test}".ansi(:bold)
           s << "#{exception.class}".ansi(:red)
           s << "#{exception}".ansi(:red)
           s << "#{file_and_line(exception)}"
           puts s.join("\n").tabto(4)
-          puts code(exception).to_s.tabto(4)
+          puts code(exception).to_s.tabto(7)
           puts trace.join("\n").tabto(4) unless trace.empty?
           puts
         end
