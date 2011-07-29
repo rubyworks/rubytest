@@ -1,8 +1,10 @@
 # Ruby Test
 
-[Homepage](http://rubyworks.github.com/test) ~
-[Development](http://github.com/rubyworks/test) ~
-[Issues](http://github.com/rubyworks/test/issues)
+/
+[Homepage](http://rubyworks.github.com/test) /
+[Development](http://github.com/rubyworks/test) /
+[Issues](http://github.com/rubyworks/test/issues) /
+
 
 Ruby Test is a universal test harness for Ruby test frameworks. It defines
 a simple specification for compliant test frameworks to adhere. By doing
@@ -99,10 +101,13 @@ There are a few ways to run tests. First, there is a command line tool:
     $ ruby-test
 
 The command line tool takes various options, use `--help` to see them.
-Also, preconfigurations can be defined in a `.test` file, e.g.
+Be sure to load in you rtest framework or framework's ruby-test adapter.
+
+Preconfigurations can be defined in a `.test` file, e.g.
 
     Test.run 'default' do |r|
       r.format = 'progress'
+      r.requires << 'lemon'
       r.files << 'test/*_case.rb'
     end
 

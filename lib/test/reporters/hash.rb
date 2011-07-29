@@ -8,7 +8,7 @@ module Test::Reporters
   class HashAbstract < Abstract
 
     #
-    def start_suite(suite)
+    def begin_suite(suite)
       require 'yaml'
 
       @start_time = Time.now
@@ -27,7 +27,7 @@ module Test::Reporters
     end
 
     #
-    def start_case(test_case)
+    def begin_case(test_case)
       h = {}
       h['type' ] = 'case'
       h['level'] = @case_level
@@ -42,7 +42,7 @@ module Test::Reporters
     end
 
     #
-    def start_test(unit)
+    def begin_unit(unit)
       @test_index += 1
     end
 
@@ -136,12 +136,12 @@ module Test::Reporters
     end
 
     #
-    def finish_case(test_case)
+    def end_case(test_case)
       @case_level -= 1
     end
 
     #
-    def finish_suite(suite)
+    def end_suite(suite)
       h = {
         'type'  => 'tally',
         'time'  => Time.now - @start_time,

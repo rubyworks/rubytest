@@ -13,12 +13,12 @@ module Test::Reporters
     end
 
     #
-    def start_suite(suite)
+    def begin_suite(suite)
       puts super(suite).to_json
     end
 
     #
-    def start_case(test_case)
+    def begin_case(test_case)
       puts super(test_case).to_json
     end
 
@@ -43,7 +43,7 @@ module Test::Reporters
     end
 
     #
-    def finish_suite(suite)
+    def end_suite(suite)
       puts super(suite).to_json
       puts "..."
     end

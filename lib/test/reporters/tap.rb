@@ -2,18 +2,21 @@ require 'test/reporters/abstract'
 
 module Test::Reporters
 
-  # Timed Reporter
+  # Classic TAP Reporter
+  #
+  # This reporter conforms to v12 of TAP. It could do with some
+  # imporvements yet, and eventually upgraded to v13 of standard.
   class Tap < Abstract
 
     #
-    def start_suite(suite)
+    def begin_suite(suite)
       @start_time = Time.now
       @i = 0
       @n = total_count(suite)
       puts "1..#{@n}"
     end
 
-    def start_test(unit)
+    def begin_test(unit)
       @i += 1
     end
 
@@ -46,7 +49,7 @@ module Test::Reporters
     end
 
     #
-    def todo(unit, exception)
+    def omit(unit, exception)
       puts "ok #{@i} - #{unit}"
       puts "  OMIT"
       puts "  #{clean_backtrace(exception)[1]}"

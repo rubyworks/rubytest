@@ -6,15 +6,18 @@ module Test::Reporters
   class Summary < Abstract
 
     #
-    def start_suite(suite)
+    SEP = '  '
+
+    #
+    def begin_suite(suite)
       timer_reset
+      @tc = []
     end
 
     #
-    #def start_case(tc)
-    #  puts
-    #  puts tc.to_s.ansi(:bold)
-    #end
+    def begin_case(tc)
+      @tc << tc.to_s.split("\n").first
+    end
 
     #
     #def report_instance(instance)
@@ -24,12 +27,7 @@ module Test::Reporters
     #end
 
     #
-    def omit(unit)
-      puts "  %s  %s %s" % ["   OMIT".ansi(:cyan), unit.name, unit.aspect]
-    end
-
-    #
-    #def start_unit(unit)
+    #def begin_unit(unit)
     #   context = unit.context
     #   if @instance != context
     #     @context = context
@@ -40,41 +38,54 @@ module Test::Reporters
     #end
 
     #
-    def omit(unit)
-      puts "  %s  %s %s" % ["   OMIT".ansi(:cyan), unit.to_s.ansi(:bold), unit.aspect]
-    end
-
-    #
     def pass(unit)
-      puts "  %s  %s %s" % ["   PASS".ansi(:green), unit.to_s.ansi(:bold), unit.aspect]
+      print "PASS  ".ansi(:green, :bold)
+      e = @tc + [unit.to_s]
+      puts e.join(SEP).ansi(:green)
     end
 
     #
     def fail(unit, exception)
-      puts "  %s  %s %s" % ["   FAIL".ansi(:red), unit.to_s.ansi(:bold), unit.aspect]
-      #puts
-      #puts "        FAIL #{exception.backtrace[0]}"
-      #puts "        #{exception}"
-      #puts
+      print "FAIL  ".ansi(:red, :bold)
+      e = @tc + [unit.to_s]
+      puts e.join(SEP).ansi(:red)
     end
 
     #
     def error(unit, exception)
-      puts "  %s  %s %s" % ["  ERROR".ansi(:red), unit.to_s.ansi(:bold), unit.aspect]
-      #puts
-      #puts "        ERROR #{exception.class}"
-      #puts "        #{exception}"
-      #puts "        " + exception.backtrace.join("\n        ")
-      #puts
+      print "ERROR  ".ansi(:red, :bold)
+      e = @tc + [unit.to_s]
+      puts e.join(SEP).ansi(:red)
     end
 
     #
-    def pending(unit, exception)
-      puts "  %s  %s %s" % ["PENDING".ansi(:yellow), unit.to_s.ansi(:bold), unit.aspect]
+    def todo(unit, exception)
+      print "TODO  ".ansi(:yellow, :bold)
+      e = @tc + [unit.to_s]
+      puts e.join(SEP).ansi(:yellow)
     end
 
     #
-    def finish_suite(suite)
+    def omit(unit)
+      print "OMIT  ".ansi(:cyan, :bold)
+      e = @tc + [unit.to_s]
+      puts e.join(SEP).ansi(:cyan)
+    end
+
+    #
+    def skip(unit)
+      print "SKIP ".ansi(:blue, :bold)
+      e = @tc + [unit.to_s]
+      puts e.join(SEP).ansi(:blue)
+    end
+
+    #
+    def end_case(test_case)
+      @tc.pop
+    end
+
+    #
+    def end_suite(suite)
       puts
 
       unless record[:pending].empty?
@@ -92,7 +103,7 @@ module Test::Reporters
           puts "    #{unit}"
           puts "    #{file_and_line(exception)}"
           puts "    #{exception}"
-          puts code_snippet(exception)
+          puts code(exception).to_s
           #puts "    #{exception.backtrace[0]}"
           puts
         end
@@ -104,14 +115,18 @@ module Test::Reporters
           puts "    #{unit}"
           puts "    #{file_and_line(exception)}"
           puts "    #{exception}"
-          puts code_snippet(exception)
+          puts code(exception).to_s
           #puts "    #{exception.backtrace[0]}"
           puts
         end
       end
 
+      puts timestamp
+      puts
       puts tally
     end
+
+  private
 
     #
     def timer
@@ -128,4 +143,3 @@ module Test::Reporters
   end
 
 end
-

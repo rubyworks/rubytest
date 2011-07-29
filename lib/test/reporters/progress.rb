@@ -9,7 +9,7 @@ module Test::Reporters
   class Progress < Abstract
 
     #
-    def start_suite(suite)
+    def begin_suite(suite)
       @tab   = 0
       @total_count = total_count(suite)
       @start_time  = Time.now
@@ -25,18 +25,18 @@ module Test::Reporters
     end
 
     #
-    def start_case(tc)
+    def begin_case(tc)
       #tabs tc.to_s.ansi(:bold)
       show_header(' ', tc.to_s)
       @tab += 2
     end
 
     #
-    def start_test(test)
-       if test.respond_to?(:subtext) && test.subtext
-         @test_cache[test.subtext] ||= (
-           #puts "#{test.subtext}".tabto(@tab)
-           show_header(' ', test.subtext)
+    def begin_unit(unit)
+       if unit.respond_to?(:subtext) && unit.subtext
+         @test_cache[unit.subtext] ||= (
+           #puts "#{unit.subtext}".tabto(@tab)
+           show_header(' ', unit.subtext)
            true
          )
        end
@@ -69,16 +69,12 @@ module Test::Reporters
     end
 
     #
-    def finish_test(test)
-    end
-
-    #
-    def finish_case(tcase)
+    def end_case(tcase)
       @tab -= 2
     end
 
     #
-    def finish_suite(suite)
+    def end_suite(suite)
       puts
 
       unless record[:omit].empty?
@@ -134,6 +130,8 @@ module Test::Reporters
       puts
       puts tally
     end
+
+  private
 
     #
     def show_header(status, text)

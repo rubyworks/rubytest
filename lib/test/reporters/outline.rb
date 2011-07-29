@@ -6,7 +6,7 @@ module Test::Reporters
   class Outline < Abstract
 
     #
-    def start_suite(suite)
+    def begin_suite(suite)
       @tab   = 0
       @start_time = Time.now
       @start_test_cache = {}
@@ -15,13 +15,21 @@ module Test::Reporters
     end
 
     #
-    def start_case(tc)
-      tabs "#{tc}".ansi(:bold)
+    def begin_case(tc)
+      lines = tc.to_s.split("\n")
+      label = lines.shift
+      if tc.respond_to?(:type)
+        tabs "#{tc.type}: #{label}".ansi(:bold)
+        tabs lines.join("\n"), 2 unless lines.empty?
+      else
+        tabs "#{label}".ansi(:bold)
+        tabs lines.join("\n"), 2 unless lines.empty?
+      end
       @tab += 2
     end
 
     #
-    def start_test(test)
+    def begin_unit(test)
        if test.respond_to?(:subtext) && test.subtext
          @start_test_cache[test.subtext] ||= (
            tabs "#{test.subtext}"
@@ -74,18 +82,12 @@ module Test::Reporters
     end
 
     #
-    def finish_test(test)
-      #@_last = :test
-    end
-
-    #
-    def finish_case(tcase)
-      #@_last = :test
+    def end_case(tcase)
       @tab -= 2
     end
 
     #
-    def finish_suite(suite)
+    def end_suite(suite)
       puts
 
       #unless record[:omit].empty?

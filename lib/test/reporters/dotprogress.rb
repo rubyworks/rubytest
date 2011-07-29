@@ -17,28 +17,32 @@ module Test::Reporters
 
     def fail(unit, exception)
       print "F".ansi(:red)
+      $stdout.flush
     end
 
     def error(unit, exception)
       print "E".ansi(:red, :bold)
+      $stdout.flush
     end
 
     def todo(unit, exception)
       print "P".ansi(:yellow)
+      $stdout.flush
     end
 
     def omit(unit, exception)
       print "O".ansi(:cyan)
+      $stdout.flush
     end
 
-    def finish_suite(suite)
+    def end_suite(suite)
       puts; puts
       puts timestamp
       puts
 
       ## if verbose
       unless record[:omit].empty?
-        puts "OMITTED:\n\n"
+        puts "OMISSIONS:\n\n"
         puts record[:omit].map{ |u| u.to_s }.sort.join('  ')
         puts
       end
@@ -83,4 +87,3 @@ module Test::Reporters
   end
 
 end
-

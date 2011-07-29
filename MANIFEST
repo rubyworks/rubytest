@@ -1,0 +1,27 @@
+#!mast .ruby .yaropts bin lib spec test [A-Z][A-Z]*
+.ruby
+bin/ruby-test
+lib/test/cli.rb
+lib/test/code_snippet.rb
+lib/test/config.rb
+lib/test/exception.rb
+lib/test/rake.rb
+lib/test/recorder.rb
+lib/test/reporters/abstract.rb
+lib/test/reporters/dotprogress.rb
+lib/test/reporters/hash.rb
+lib/test/reporters/html.rb
+lib/test/reporters/outline.rb
+lib/test/reporters/progress.rb
+lib/test/reporters/summary.rb
+lib/test/reporters/tap.rb
+lib/test/reporters/tapj.rb
+lib/test/reporters/tapy.rb
+lib/test/runner.rb
+lib/test.rb
+test/basic_case.rb
+PROFILE
+LICENSE.txt
+README.md
+VERSION
+COPYING.rdoc
