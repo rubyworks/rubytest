@@ -247,8 +247,8 @@ module Test
     #
     def reporter_list
       list = Dir[File.dirname(__FILE__) + '/reporters/*.rb']
-      list = list.map{ |rb| File.basename(rb).chomp('.rb') }
-      list = list - ['abstract', 'hash']
+      list = list.map{ |r| File.basename(r).chomp('.rb') }
+      list = list.reject{ |r| /^abstract/ =~ r }
       list.sort
     end
 

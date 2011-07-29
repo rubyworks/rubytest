@@ -5,7 +5,7 @@ module Test::Reporters
   # Hash Abstract is a base class for the TAP-Y
   # and TAP-J reporters.
   #
-  class HashAbstract < Abstract
+  class AbstractHash < Abstract
 
     #
     def begin_suite(suite)

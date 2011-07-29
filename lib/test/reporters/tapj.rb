@@ -4,7 +4,7 @@ module Test::Reporters
 
   # TAP-J Reporter
   #
-  class Tapj < HashAbstract
+  class Tapj < AbstractHash
 
     #
     def initialize(runner)

@@ -1,10 +1,10 @@
-require 'test/reporters/hash'
+require 'test/reporters/abstract_hash'
 
 module Test::Reporters
 
   # TAP-Y Reporter
   #
-  class Tapy < HashAbstract
+  class Tapy < AbstractHash
 
     #
     def initialize(runner)
