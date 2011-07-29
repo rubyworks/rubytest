@@ -3,10 +3,10 @@ module Test
   # Runner will need the Recorder and Pending classes.
   if RUBY_VERSION < '1.9'
     require 'test/recorder'
-    require 'test/exception'
+    require 'test/core_ext'
   else
     require_relative 'recorder'
-    require_relative 'exception'
+    require_relative 'core_ext'
   end
 
   $TEST_SUITE = [] unless defined?($TEST_SUITE)
@@ -133,9 +133,9 @@ module Test
       @recorder  = Recorder.new
       @observers = [@reporter, @recorder]
 
-      observers.each{ |o| o.start_suite(suite) }
+      observers.each{ |o| o.begin_suite(suite) }
       run_case(suite)
-      observers.each{ |o| o.finish_suite(suite) }
+      observers.each{ |o| o.end_suite(suite) }
 
       recorder.success?
     end
@@ -151,12 +151,12 @@ module Test
 
       select(cases).each do |tc|
         if tc.respond_to?(:call)
-          run_test(tc)
+          run_unit(tc)
         end
         if tc.respond_to?(:each)
-          observers.each{ |o| o.start_case(tc) }
+          observers.each{ |o| o.begin_case(tc) }
           run_case(tc)
-          observers.each{ |o| o.finish_case(tc) }
+          observers.each{ |o| o.end_case(tc) }
         end
       end
     end
@@ -166,34 +166,34 @@ module Test
 
     # Run a test unit.
     #
-    # @param [TestProc] test
-    #   The test to run.
+    # @param [TestProc] unit test
+    #   The test unit to run.
     #
-    def run_test(test)
-      if test.respond_to?(:skip?) && test.skip?
-        return observers.each{ |o| o.skip(test) }
+    def run_unit(unit)
+      if unit.respond_to?(:skip?) && unit.skip?
+        return observers.each{ |o| o.skip(unit) }
       end
 
-      observers.each{ |o| o.start_test(test) }
+      observers.each{ |o| o.begin_unit(unit) }
       begin
-        test.call
-        observers.each{ |o| o.pass(test) }
+        unit.call
+        observers.each{ |o| o.pass(unit) }
       rescue *OPEN_ERRORS => exception
         raise exception
       rescue NotImplementedError => exception
         if exception.assertion?
-          observers.each{ |o| o.omit(test, exception) }
+          observers.each{ |o| o.omit(unit, exception) }
         else
-          observers.each{ |o| o.todo(test, exception) }
+          observers.each{ |o| o.todo(unit, exception) }
         end
       rescue Exception => exception
         if exception.assertion?
-          observers.each{ |o| o.fail(test, exception) }
+          observers.each{ |o| o.fail(unit, exception) }
         else
-          observers.each{ |o| o.error(test, exception) }
+          observers.each{ |o| o.error(unit, exception) }
         end
       end
-      observers.each{ |o| o.finish_test(test) }
+      observers.each{ |o| o.end_unit(unit) }
     end
 
     # TODO: Make sure this filtering code is correct for the complex 
@@ -246,9 +246,10 @@ module Test
     #   The names of available reporters.
     #
     def reporter_list
-      Dir[File.dirname(__FILE__) + '/reporters/*.rb'].map do |rb|
-        File.basename(rb).chomp('.rb')
-      end.sort
+      list = Dir[File.dirname(__FILE__) + '/reporters/*.rb']
+      list = list.map{ |rb| File.basename(rb).chomp('.rb') }
+      list = list - ['abstract', 'hash']
+      list.sort
     end
 
     # Files can be globs and directories which need to be
