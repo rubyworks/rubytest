@@ -15,6 +15,13 @@ so Ruby Test can be used to run the framework's tests, and even test across
 multiple frameworks in one go.
 
 
+## Resources
+
+* [Homepage](http://rubyworks.github.com/test)
+* [Development](http://github.com/rubyworks/test)
+* [Issues](http://github.com/rubyworks/test/issues)
+
+
 ## Synopsis
 
 The universal access point for testing is the $TEST_SUITE global variable.
@@ -41,7 +48,7 @@ the test is taken to be a purposeful _omission_, rather than simply pending.
 
 Some *_optional_* interfaces can be used to enable additional features...
 
-### Multi-line Descriptions
+### Multi-line Description
 
 If the return value of `#to_s` is a multi-line string, the first line is
 taken to be the _label_ or _summary_ of the test object. The remaining
@@ -59,10 +66,10 @@ selected or filtered independent of one another.
 ### Test Type
 
 A test object may provide a `#type`, which can be used to characterize the
-type of test case or test unit. For example, RSpec might return `describe`
-as the type of a test case and `it` as the type of a test unit, where as 
-Cucumber would use `feature` and `scenario` for test cases and `then` for
-test units (depending on choices made by the implementors).
+type of test case or test unit. For example, RSpec might return `"describe"`
+as the type of a test case and `"it"` as the type of a test unit, where as 
+Cucumber would use `"Feature"` and `"Scenario"` for test cases and `"Then"`
+for test units (depending on choices made by the implementors).
 
 ### Subtext
 
@@ -86,13 +93,13 @@ the full name of a constant, class, module or method. Methods must also be
 represented with fully qualified names, e.g. `FooClass#foo` and `FooClass.bar`
 for an instance method and a class method, respectively.
 
-### Tags
+### Selection Tags
 
 A test object can provide `#tags` which must return a one-word string or
 array of one-word strings. The test runner can use the tags to limit the
 particular tests that are run.
 
-### Skip
+### Skipping Tests Altogether
 
 If any test object responds to `#skip?` it indicates that the test unit or
 test case should be skipped and not tested. It may or may not be mentioned
