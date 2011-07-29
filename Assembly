@@ -12,6 +12,11 @@ dnote:
 yard:
   yardopts: true
 
+#rdoc:
+#  output: site
+#  format: longfish
+#  main: README.rdoc
+
 qed:
   files    : ~
   #exclude : ~

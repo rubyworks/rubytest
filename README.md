@@ -25,8 +25,7 @@ to `#to_s` for their description to be used in test reports.
 
 Any raised exception that responds to `#assertion?` in the affirmative is taken
 to be a failed assertion rather than an error. Ruby Test extends the
-[Exception class](http://github.com/rubyworks/test/blob/master/lib/test/exception.rb)
-to support this method for all exceptions.
+Exception class to support this method for all exceptions.
 
 A test framework may raise a `NotImplementedError` to have a test recorded
 as _pending_ --a _todo_ item to remind the developer of tests that still
@@ -81,6 +80,8 @@ the full name of a constant, class, module or method. Methods
 must be represented with fully qualified names, e.g. `FooClass#foo` and
 `FooClass.bar` for an instance method and a class method, respectively.
 
+(NOTE: This might get renamed to `#target`.)
+
 ### Selection Tags
 
 A test object can provide `#tags` which must return a one-word string or
@@ -134,11 +135,9 @@ Ruby Test is available as Gem package.
 
 Ruby test uses the [ANSI](http://rubyworks.github.com/ansi) gem for color output.
 
-Ruby Facets is also required for formatting methods, in particular, String#tabto.
-
-Because of the "foundational" nature of this library we will work on removing
-these dependencies for future versions, but for early development these
-requirements do the job and do it well.
+Because of the "foundational" nature of this library we will look at removing
+this dependencies for future versions, but for early development the 
+requirements does the job and does it well.
 
 
 ## Development
