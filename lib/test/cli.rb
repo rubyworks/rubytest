@@ -83,7 +83,7 @@ module Test
           end
         end
         opt.on '-r', '--require FILE', 'require file' do |file|
-          files.each{ |file| require file }
+          require file
         end
         opt.on '-v' , '--verbose', 'provide extra detailed report' do
           runner.verbose = true
