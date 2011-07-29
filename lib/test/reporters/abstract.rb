@@ -157,9 +157,7 @@ module Test
       #++
       def clean_backtrace(exception)
         trace = (Exception === exception ? exception.backtrace : exception)
-
         return trace if $DEBUG
-
         trace = trace.reject{ |t| RUBY_IGNORE_CALLERS.any?{ |r| r =~ t }}
         trace = trace.map do |t|
           i = t.index(':in')
@@ -171,7 +169,7 @@ module Test
         #  exception.set_backtrace(trace) if Exception === exception
         #  exception
         #end
-        trace
+        trace.uniq
       end
 
       #
