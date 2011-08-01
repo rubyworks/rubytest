@@ -1,34 +1,39 @@
 # Ruby Test
 
-/
 [Homepage](http://rubyworks.github.com/test) /
 [Development](http://github.com/rubyworks/test) /
-[Issues](http://github.com/rubyworks/test/issues) /
+[Issues](http://github.com/rubyworks/test/issues)
 
+Ruby Test is a universal test harness for use by any Ruby test framework.
+It defines a simple specification for compliance, which allows Ruby Test
+to run the framework's tests, and even test across multiple frameworks
+in a single pass.
 
-Ruby Test is a universal test harness for Ruby test frameworks. It defines
-a simple specification for compliant test frameworks to adhere. By doing
-so Ruby Test can be used to run the framework's tests, and even test across
-multiple frameworks in one go.
+## Specification
 
-## Synopsis
+### $TEST_SUITE
 
 The universal access point for testing is the $TEST_SUITE global variable.
 
     $TEST_SUITE = []
 
-A test framework need only add compliant test objects to the `$TEST_SUITE` global
-array. Ruby Test will iterate through these objects. If a test object
-responds to `#call`, it is run as a test unit. If the test object responds
-to `#each` it is iterated over as a test case. All test objects must respond
-to `#to_s` for their description to be used in test reports.
+A test framework need only add compliant test objects to the `$TEST_SUITE`
+global array. Ruby Test will iterate through these objects. If a test object
+responds to `#call`, it is run as a test procedure. If it responds to `#each`
+it is iterated over as a test case, where each entry goes though the same process.
+All test objects must respond to `#to_s` so their description can be used in
+test reports.
+
+### Exception#assertion?
 
 Any raised exception that responds to `#assertion?` in the affirmative is taken
-to be a failed assertion rather than an error. Ruby Test extends the
+to be a failed assertion rather than simply an error. Ruby Test extends the
 Exception class to support this method for all exceptions.
 
+### NotImplementedError
+
 A test framework may raise a `NotImplementedError` to have a test recorded
-as _pending_ --a _todo_ item to remind the developer of tests that still
+as pending --a _todo_ item to remind the developer of tests that still
 need to be written. The `NotImplementedError` is a standard Ruby exception
 and a subclass of `ScriptError`.
 
@@ -42,17 +47,17 @@ Some <i>*optional*</i> interfaces can be used to enable additional features...
 If the return value of `#to_s` is a multi-line string, the first line is
 taken to be the _label_ or _summary_ of the test object. The remaining
 lines are taken to be additional _detail_. A report format _might_ only
-show the detail if the verbose command line flag it used.
+show the detail if the verbose option is set.
 
-### Ordered Cases
+### Ordered
 
 A test case that responds to `#ordered?` indicates if its tests must be run
 in order. If false, which is the default, then the test runner can randomize
-the order for more rigorous testing. But if true, then the tests will always be
-run in the order given. Also, if ordered, a case's test units cannot be
+the order for more rigorous testing. But if true, then the tests will always
+be run in the order given. Also, if ordered, a case's test units cannot be
 selected or filtered independent of one another.
 
-### Test Type
+### Type
 
 A test object may provide a `#type`, which can be used to characterize the
 type of test case or test unit. For example, RSpec might return `"describe"`
@@ -62,8 +67,10 @@ for test units (depending on choices made by the implementors).
 
 ### Subtext
 
-A test object can also supply a `#subtext`, which can be used to describe
-the _setup_ associated with a test.
+(NOTE: Is there a better name for this?)
+
+A test object can also supply a `#subtext`, which can be used to provide
+a descritpion of the _setup_ associated with a test.
 
 ### Source Location
 
@@ -72,23 +79,21 @@ identify the file and line in which the the test was defined. The
 return value of `#source_location` must be a two-element array of
 `[file, line]`.
 
-### Covers
+### Unit
 
-A test object may respond to `#covers` to identify the particular
-"component" of the program being tested. The return value must be the
-the full name of a constant, class, module or method. Methods
+A test object may respond to `#unit` to identify the particular
+component of the software being tested. The return value must be the
+the full name of a constant, class or module, or a method. Methods
 must be represented with fully qualified names, e.g. `FooClass#foo` and
 `FooClass.bar` for an instance method and a class method, respectively.
 
-(NOTE: This might get renamed to `#target`.)
-
-### Selection Tags
+### Tags
 
 A test object can provide `#tags` which must return a one-word string or
 array of one-word strings. The test runner can use the tags to limit the
 particular tests that are run.
 
-### Skipping Tests Altogether
+### Skip
 
 If any test object responds to `#skip?` it indicates that the test unit or
 test case should be skipped and not tested. It may or may not be mentioned
@@ -146,6 +151,11 @@ Ruby Test is still a "nuby" gem. Please feel OBLIGATED to help improve it ;-)
 
 Ruby Test is a [RubyWorks](http://rubyworks.github.com) project. If you can't
 contribue code, you can still help out by contributing to our development fund.
+
+
+## Reference Material
+
+[1] [Standard Definition Of Unit Test](http://c2.com/cgi/wiki?StandardDefinitionOfUnitTest)
 
 
 ## Copyrights
