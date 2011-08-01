@@ -48,11 +48,15 @@ module Test
       end
 
       #
+      def begin_test(test)
+      end
+
+      #
       def skip_case(test_case)
       end
 
       #
-      def begin_unit(test_unit)
+      def skip_test(test)
       end
 
       #
@@ -60,31 +64,27 @@ module Test
       #end
 
       #
-      def skip(test_unit)
+      def pass(test)
       end
 
       #
-      def pass(test_unit)
+      def fail(test, exception)
       end
 
       #
-      def fail(test_unit, exception)
+      def error(test, exception)
       end
 
       #
-      def error(test_unit, exception)
-      end
-
-      #
-      def todo(test_unit, exception)
+      def todo(test, exception)
       end
 
       # Report an omitted unit test.
-      def omit(test_unit, exception)
+      def omit(test, exception)
       end
 
       #
-      def end_unit(test_unit)
+      def end_test(test)
       end
 
       #

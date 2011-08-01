@@ -162,7 +162,7 @@ module Test
 
       select(cases).each do |tc|
         if tc.respond_to?(:call)
-          run_unit(tc)
+          run_test(tc)
         end
         if tc.respond_to?(:each)
           observers.each{ |o| o.begin_case(tc) }
@@ -175,36 +175,36 @@ module Test
     # Exceptions that are not caught by test runner.
     OPEN_ERRORS = [NoMemoryError, SignalException, Interrupt, SystemExit]
 
-    # Run a test unit.
+    # Run a test.
     #
-    # @param [TestProc] unit test
-    #   The test unit to run.
+    # @param [Object] test
+    #   The test to run, must repsond to #call.
     #
-    def run_unit(unit)
-      if unit.respond_to?(:skip?) && unit.skip?
-        return observers.each{ |o| o.skip(unit) }
+    def run_test(test)
+      if test.respond_to?(:skip?) && test.skip?
+        return observers.each{ |o| o.skip_test(test) }
       end
 
-      observers.each{ |o| o.begin_unit(unit) }
+      observers.each{ |o| o.begin_test(test) }
       begin
-        unit.call
-        observers.each{ |o| o.pass(unit) }
+        test.call
+        observers.each{ |o| o.pass(test) }
       rescue *OPEN_ERRORS => exception
         raise exception
       rescue NotImplementedError => exception
         if exception.assertion?
-          observers.each{ |o| o.omit(unit, exception) }
+          observers.each{ |o| o.omit(test, exception) }
         else
-          observers.each{ |o| o.todo(unit, exception) }
+          observers.each{ |o| o.todo(test, exception) }
         end
       rescue Exception => exception
         if exception.assertion?
-          observers.each{ |o| o.fail(unit, exception) }
+          observers.each{ |o| o.fail(test, exception) }
         else
-          observers.each{ |o| o.error(unit, exception) }
+          observers.each{ |o| o.error(test, exception) }
         end
       end
-      observers.each{ |o| o.end_unit(unit) }
+      observers.each{ |o| o.end_test(test) }
     end
 
     # TODO: Make sure this filtering code is correct for the complex 

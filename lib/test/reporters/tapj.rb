@@ -23,23 +23,23 @@ module Test::Reporters
     end
 
     #
-    def pass(unit) #, backtrace=nil)
-      puts super(unit).to_json
+    def pass(test) #, backtrace=nil)
+      puts super(test).to_json
     end
 
     #
-    def fail(unit, exception)
-      puts super(unit, exception).to_json
+    def fail(test, exception)
+      puts super(test, exception).to_json
     end
 
     #
-    def error(unit, exception)
-      puts super(unit, exception).to_json
+    def error(test, exception)
+      puts super(test, exception).to_json
     end
 
     #
-    def todo(unit, exception)
-      puts super(unit, exception).to_json
+    def todo(test, exception)
+      puts super(test, exception).to_json
     end
 
     #

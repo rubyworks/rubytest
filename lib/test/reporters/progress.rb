@@ -32,11 +32,11 @@ module Test::Reporters
     end
 
     #
-    def begin_unit(unit)
-       if unit.respond_to?(:subtext) && unit.subtext
-         @test_cache[unit.subtext] ||= (
-           #puts "#{unit.subtext}".tabto(@tab)
-           show_header(' ', unit.subtext)
+    def begin_test(test)
+       if test.respond_to?(:subtext) && test.subtext
+         @test_cache[test.subtext] ||= (
+           #puts "#{test.subtext}".tabto(@tab)
+           show_header(' ', test.subtext)
            true
          )
        end

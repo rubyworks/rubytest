@@ -23,23 +23,23 @@ module Test::Reporters
     end
 
     #
-    def pass(unit) #, backtrace=nil)
-      puts super(unit).to_yaml
+    def pass(test) #, backtrace=nil)
+      puts super(test).to_yaml
     end
 
     #
-    def fail(unit, exception)
-      puts super(unit, exception).to_yaml
+    def fail(test, exception)
+      puts super(test, exception).to_yaml
     end
 
     #
-    def error(unit, exception)
-      puts super(unit, exception).to_yaml
+    def error(test, exception)
+      puts super(test, exception).to_yaml
     end
 
     #
-    def todo(unit, exception)
-      puts super(unit, exception).to_yaml
+    def todo(test, exception)
+      puts super(test, exception).to_yaml
     end
 
     #

@@ -29,7 +29,7 @@ module Test::Reporters
     end
 
     #
-    def begin_unit(test)
+    def begin_test(test)
        if test.respond_to?(:subtext) && test.subtext
          @start_test_cache[test.subtext] ||= (
            tabs "#{test.subtext}"

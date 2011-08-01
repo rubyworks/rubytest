@@ -42,94 +42,94 @@ module Test::Reporters
     end
 
     #
-    def begin_unit(unit)
+    def begin_test(test)
       @test_index += 1
     end
 
     #
-    def pass(unit) #, backtrace=nil)
+    def pass(test) #, backtrace=nil)
       h = {}
-      h['type'  ] = 'unit'
+      h['type'  ] = 'test'
       h['status'] = 'pass'
 
-      merge_subtype      h, unit
-      merge_setup        h, unit
-      merge_description  h, unit
-      #merge_comparison  h, unit, exception
-      #merge_coverage    h, unit
-      merge_source       h, unit
+      merge_subtype      h, test
+      merge_setup        h, test
+      merge_description  h, test
+      #merge_comparison  h, test, exception
+      #merge_coverage    h, test
+      merge_source       h, test
       merge_time         h
 
       return h
     end
 
     #
-    def fail(unit, exception)
+    def fail(test, exception)
       h = {}
-      h['type'  ] = 'unit'
+      h['type'  ] = 'test'
       h['status'] = 'fail'
 
-      merge_subtype      h, unit
-      merge_setup        h, unit
-      merge_description  h, unit
-      #merge_comparison  h, unit, exception
-      #merge_coverage    h, unit
-      merge_source       h, unit
-      merge_exception    h, unit, exception
+      merge_subtype      h, test
+      merge_setup        h, test
+      merge_description  h, test
+      #merge_comparison  h, test, exception
+      #merge_coverage    h, test
+      merge_source       h, test
+      merge_exception    h, test, exception
       merge_time         h
  
       return h
     end
 
     #
-    def error(unit, exception)
+    def error(test, exception)
       h = {}
-      h['type'  ] = 'unit'
+      h['type'  ] = 'test'
       h['status'] = 'error'
 
-      merge_subtype      h, unit
-      merge_setup        h, unit
-      merge_description  h, unit
-      #merge_comparison  h, unit, exception
-      #merge_coverage    h, unit
-      merge_source       h, unit
-      merge_exception    h, unit, exception, true
+      merge_subtype      h, test
+      merge_setup        h, test
+      merge_description  h, test
+      #merge_comparison  h, test, exception
+      #merge_coverage    h, test
+      merge_source       h, test
+      merge_exception    h, test, exception, true
       merge_time         h
 
       return h
     end
 
     #
-    def todo(unit, exception)
+    def todo(test, exception)
       h = {}
-      h['type'  ] = 'unit'
+      h['type'  ] = 'test'
       h['status'] = 'todo'
 
-      merge_subtype      h, unit
-      merge_setup        h, unit
-      merge_description  h, unit
-      #merge_comparison  h, unit, exception
-      #merge_coverage    h, unit
-      merge_source       h, unit
-      merge_exception    h, unit, exception
+      merge_subtype      h, test
+      merge_setup        h, test
+      merge_description  h, test
+      #merge_comparison  h, test, exception
+      #merge_coverage    h, test
+      merge_source       h, test
+      merge_exception    h, test, exception
       merge_time         h
 
       return h
     end
 
     #
-    def omit(unit, exception)
+    def omit(test, exception)
       h = {}
-      h['type'  ] = 'unit'
+      h['type'  ] = 'test'
       h['status'] = 'omit'
 
-      merge_subtype      h, unit
-      merge_setup        h, unit
-      merge_description  h, unit
-      #merge_comparison  h, unit, exception
-      #merge_coverage    h, unit
-      merge_source       h, unit
-      merge_exception    h, unit, exception
+      merge_subtype      h, test
+      merge_setup        h, test
+      merge_description  h, test
+      #merge_comparison  h, test, exception
+      #merge_coverage    h, test
+      merge_source       h, test
+      merge_exception    h, test, exception
       merge_time         h
 
       return h

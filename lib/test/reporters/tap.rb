@@ -16,41 +16,41 @@ module Test::Reporters
       puts "1..#{@n}"
     end
 
-    def begin_test(unit)
+    def begin_test(test)
       @i += 1
     end
 
     #
-    def pass(unit)
-      puts "ok #{@i} - #{unit}"
+    def pass(test)
+      puts "ok #{@i} - #{test}"
     end
 
     #
-    def fail(unit, exception)
-      puts "not ok #{@i} - #{unit}"
+    def fail(test, exception)
+      puts "not ok #{@i} - #{test}"
       puts "  FAIL #{exception.class}"
       puts "  #{exception}"
       puts "  #{clean_backtrace(exception)[0]}"
     end
 
     #
-    def error(unit, exception)
-      puts "not ok #{@i} - #{unit}"
+    def error(test, exception)
+      puts "not ok #{@i} - #{test}"
       puts "  ERROR #{exception.class}"
       puts "  #{exception}"
       puts "  " + clean_backtrace(exception).join("\n        ")
     end
 
     #
-    def todo(unit, exception)
-      puts "not ok #{@i} - #{unit}"
+    def todo(test, exception)
+      puts "not ok #{@i} - #{test}"
       puts "  PENDING"
       puts "  #{clean_backtrace(exception)[1]}"
     end
 
     #
-    def omit(unit, exception)
-      puts "ok #{@i} - #{unit}"
+    def omit(test, exception)
+      puts "ok #{@i} - #{test}"
       puts "  OMIT"
       puts "  #{clean_backtrace(exception)[1]}"
     end

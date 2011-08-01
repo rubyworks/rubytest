@@ -5,11 +5,6 @@ module Test::Reporters
   # Simple Dot-Progress Reporter
   class Dotprogress < Abstract
 
-    def omit(unit)
-      print "O"
-      $stdout.flush
-    end
-
     def pass(unit)
       print "."
       $stdout.flush

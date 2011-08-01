@@ -56,9 +56,9 @@ module Test::Reporters
     end
 
     #
-    def begin_unit(unit)
-      if unit.respond_to?(:subtext)
-        subtext = unit.subtext
+    def begin_test(test)
+      if test.respond_to?(:subtext)
+        subtext = test.subtext
         if @subtext != subtext
           @subtext = subtext
           @body << "<h3>"
@@ -69,16 +69,16 @@ module Test::Reporters
     end
 
     #
-    def pass(unit)
+    def pass(test)
       @body << %[<li class="pass">]
-      @body << "%s %s" % ["PASS", unit.to_s]
+      @body << "%s %s" % ["PASS", test.to_s]
       @body << %[</li>]
     end
 
     #
-    def fail(unit, exception)
+    def fail(test, exception)
       @body << %[<li class="fail">]
-      @body << "%s %s" % ["FAIL", unit.to_s]
+      @body << "%s %s" % ["FAIL", test.to_s]
       @body << "<pre>"
       @body << "  FAIL #{clean_backtrace(exception)[0]}"
       @body << "  #{exception}"
@@ -87,9 +87,9 @@ module Test::Reporters
     end
 
     #
-    def error(unit, exception)
+    def error(test, exception)
       @body << %[<li class="error">]
-      @body << "%s %s" % ["ERROR", unit.to_s]
+      @body << "%s %s" % ["ERROR", test.to_s]
       @body << "<pre>"
       @body << "  ERROR #{exception.class}"
       @body << "  #{exception}"
@@ -99,16 +99,16 @@ module Test::Reporters
     end
 
     #
-    def todo(unit, exception)
+    def todo(test, exception)
       @body << %[<li class="pending">]
-      @body << "%s %s" % ["PENDING", unit.to_s]
+      @body << "%s %s" % ["PENDING", test.to_s]
       @body << %[</li>]
     end
 
     #
-    def omit(unit, exception)
+    def omit(test, exception)
       @body << %[<li class="omit">]
-      @body << "%s %s" % ["OMIT", unit.to_s]
+      @body << "%s %s" % ["OMIT", test.to_s]
       @body << %[</li>]
     end
 
