@@ -20,12 +20,12 @@ module Test
     # Default report is in the old "dot-progress" format.
     DEFAULT_FORMAT = 'dotprogress'
 
-    #
+    # Default test suite ($TEST_SUITE).
     def self.suite
       $TEST_SUITE
     end
 
-    #
+    # Default list of test files to load.
     def self.files
       @files ||= []
     end
@@ -50,14 +50,19 @@ module Test
       @verbose = !!boolean
     end
 
-    #
+    # Default description match for filtering tests.
     def self.match
       @match ||= []
     end
 
-    #
+    # Default selection of tags for filtering tests.
     def self.tags
       @tags ||= []
+    end
+
+    # Default selection of units for filtering tests.
+    def self.units
+      @unit ||= []
     end
 
     # / / / A T T R I B U T E S / / /
@@ -82,6 +87,10 @@ module Test
     # Selected tags used to filter which tests are run.
     attr :tags
 
+    # List of units with which to filter tests. It is an array of strings
+    # which are matched against module, class and method names.
+    attr :units
+
     # Show extra details in reports.
     def verbose?
       @verbose
@@ -91,18 +100,6 @@ module Test
     def verbose=(boolean)
       @verbose = !!boolean
     end
-
-    # Namespaces option specifies the selection of test cases
-    # to run. Is is an array of strings which are matched
-    # against the module/class names using #start_wtih?
-    #def namespaces
-    #  @options[:namespaces] || []
-    #end
-
-    # Provide coverage information?
-    #attr :coverage
-    #  @options[:cover]
-    #end
 
     # New Runner.
     #
@@ -114,6 +111,7 @@ module Test
       @files     = options[:files]   || self.class.files
       @format    = options[:format]  || self.class.format
       @tags      = options[:tags]    || self.class.tags
+      @units     = options[:units]   || self.class.units
       @match     = options[:match]   || self.class.match
       @verbose   = options[:verbose] || self.class.verbose
 
@@ -224,10 +222,18 @@ module Test
         cases.each do |tc|
           next if tc.respond_to?(:skip?) && tc.skip?
           next if !match.empty? && !match.any?{ |m| m =~ tc.to_s }
-          if tc.respond_to?(:tags)
+
+          if !units.empty?
+            next unless tc.respond_to?(:unit)
+            next unless units.find{ |u| tc.unit.start_with?(u) }
+          end
+
+          if !tags.empty?
+            next unless tc.respond_to?(:tags)
             tc_tags = [tc.tags].flatten.map{ |t| t.to_s }
             next if (tags & tc_tags).empty?
           end
+
           selected << tc
         end
       end

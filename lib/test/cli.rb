@@ -78,12 +78,13 @@ module Test
         opt.on '-t', '--tag TAG', 'select tests by tag' do |tag|
           runner.tags << tag
         end
-        #opt.on '-n', '--namespace NAME', 'select tests by target component' do |namespace|
-        #  options[:namespace] << namespace
-        #end
+        opt.on '-u', '--unit TAG', 'select tests by software unit' do |unit|
+          runner.units << unit
+        end
         opt.on '-m', '--match TEXT', 'select tests by description' do |text|
           runner.match << text 
         end
+
         opt.on '-I', '--loadpath PATH',  'add to $LOAD_PATH' do |paths|
           paths.split(/[:;]/).reverse_each do |path|
             $LOAD_PATH.unshift path
