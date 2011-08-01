@@ -35,18 +35,23 @@ module Test::Reporters
       puts timestamp
       puts
 
-      ## if verbose
-      unless record[:omit].empty?
-        puts "OMISSIONS:\n\n"
-        puts record[:omit].map{ |u| u.to_s }.sort.join('  ')
-        puts
+      if runner.verbose?
+        unless record[:omit].empty?
+          puts "OMISSIONS:\n\n"
+          record[:omit].each do |test, exception|
+            puts "    #{test}".ansi(:bold)
+            puts "    #{exception}"
+            puts "    #{file_and_line(exception)}"
+            #puts code(exception)
+            puts
+          end
+        end
       end
-      ## end
 
-      unless record[:pending].empty?
+      unless record[:todo].empty?
         puts "PENDING:\n\n"
-        record[:pending].each do |test_unit, exception|
-          puts "    #{test_unit}".ansi(:bold)
+        record[:todo].each do |test, exception|
+          puts "    #{test}".ansi(:bold)
           puts "    #{exception}"
           puts "    #{file_and_line(exception)}"
           puts code(exception)
