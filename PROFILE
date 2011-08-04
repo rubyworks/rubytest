@@ -16,6 +16,7 @@ authors:
 requirements:
   - ansi
   - detroit (build)
+  - qed     (test)
 
 resources:
   home: http://rubyworks.github.com/test

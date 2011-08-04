@@ -13,24 +13,24 @@ in a single pass.
 
 ## Specification
 
-Ruby Test defines a straight-forward specification that almost any test framework can 
-easily support, which allows Ruby Test to run the frameworks tests through a single
-uniform user interface.
+Ruby Test defines a straight-forward specification that any test framework can 
+easily support, which allows Ruby Test to run the frameworks tests through a
+single uniform user interface.
 
-The universal access point for testing is the `$TEST_SUITE` global variable, 
-defined `$TEST_SUITE = []`. A test framework need only add compliant test objects
-to the `$TEST_SUITE` global array. Ruby Test will iterate through these objects. 
-If a test object responds to `#call`, it is run as a test procedure. If it responds
-to `#each` it is iterated over as a test case, where each entry goes though the
-same condition. All test objects must respond to `#to_s` so their description can
-be used in test reports.
+The universal access point for testing is the `$TEST_SUITE` global array. A test
+framework need only add compliant test objects to `$TEST_SUITE` global array. 
+Ruby Test will iterate through these objects. If a test object responds to
+`#call`, it is run as a test procedure. If it responds to `#each` it is iterated
+over as a test case with each entry handled in the same manner. All test 
+objects must respond to `#to_s` so their description can be used in test
+reports.
 
 Any raised exception that responds to `#assertion?` in the affirmative is taken
 to be a failed assertion rather than simply an error. Ruby Test extends the
 Exception class to support this method for all exceptions.
 
 A test framework may raise a `NotImplementedError` to have a test recorded
-as pending --a _todo_ item to remind the developer of tests that still
+as "pending" --a _todo_ item to remind the developer of tests that still
 need to be written. The `NotImplementedError` is a standard Ruby exception
 and a subclass of `ScriptError`.
 
@@ -39,7 +39,7 @@ the test is taken to be a purposeful _omission_, rather than simply pending.
 
 That is the crux of Ruby Test specification. Ruby Test supports some
 additional features that can makes it's usage even more convenient.
-See the Wiki[http://github.com/rubyworks/test/wiki] for further details.
+See the [Wiki](http://github.com/rubyworks/test/wiki) for further details.
 
 
 ## Usage
@@ -49,7 +49,7 @@ There are a few ways to run tests. First, there is a command line tool:
     $ ruby-test
 
 The command line tool takes various options, use `--help` to see them.
-Be sure to load in you rtest framework or framework's ruby-test adapter.
+Be sure to load in your test framework or framework's Ruby Test adapter.
 
 Preconfigurations can be defined in a `.test` file, e.g.
 
