@@ -1,8 +1,7 @@
 .yardoc
-.yardopts
 doc
 log
 pkg
 tmp
-site
+site/api
 QED.rdoc

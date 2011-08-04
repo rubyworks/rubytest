@@ -1,0 +1,7 @@
+--output-dir site/api
+--protected
+--readme README.md
+lib
+-
+[A-Z]*.*
+
