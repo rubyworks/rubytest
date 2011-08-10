@@ -39,5 +39,5 @@ summary: Ruby Universal Test Harness
 created: '2011-07-23'
 description: Ruby Test is a universal test harness for Ruby. It can handle any compliant  test
   framework, even running tests from multiple frameworks in a single pass.
-version: 0.1.0
+version: 0.2.0
 date: '2011-08-10'
