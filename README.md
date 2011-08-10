@@ -1,7 +1,8 @@
 # Ruby Test
 
-[Homepage](http://rubyworks.github.com/test) /
-[Development](http://github.com/rubyworks/test) /
+[Homepage](http://rubyworks.github.com/test) |
+[User Guide](http://wiki.github.com/rubyworks/test) |
+[Development](http://github.com/rubyworks/test) |
 [Issues](http://github.com/rubyworks/test/issues)
 
 ## Description
@@ -14,11 +15,11 @@ in a single pass.
 ## Specification
 
 Ruby Test defines a straight-forward specification that any test framework can 
-easily support, which allows Ruby Test to run the frameworks tests through a
+easily support which allows Ruby Test to run the frameworks tests through a
 single uniform user interface.
 
 The universal access point for testing is the `$TEST_SUITE` global array. A test
-framework need only add compliant test objects to `$TEST_SUITE` global array. 
+framework need only add compliant test objects to `$TEST_SUITE`. 
 Ruby Test will iterate through these objects. If a test object responds to
 `#call`, it is run as a test procedure. If it responds to `#each` it is iterated
 over as a test case with each entry handled in the same manner. All test 
@@ -38,7 +39,7 @@ If the `NotImplmentedError` responds in the affirmative to `#assertion?` then
 the test is taken to be a purposeful _omission_, rather than simply pending.
 
 That is the crux of Ruby Test specification. Ruby Test supports some
-additional features that can makes it's usage even more convenient.
+additional features that can makes its usage even more convenient.
 See the [Wiki](http://github.com/rubyworks/test/wiki) for further details.
 
 
