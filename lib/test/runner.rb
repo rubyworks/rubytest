@@ -15,13 +15,13 @@ module Test
   #
   class Runner
 
-    # / / / D E F A U L T S / / /
-
     # Default report is in the old "dot-progress" format.
     DEFAULT_FORMAT = 'dotprogress'
 
     # Exceptions that are not caught by test runner.
     OPEN_ERRORS = [NoMemoryError, SignalException, Interrupt, SystemExit]
+
+    # / / / D E F A U L T S / / /
 
     # Default test suite ($TEST_SUITE).
     def self.suite
@@ -166,9 +166,11 @@ module Test
       @recorder  = Recorder.new
       @observers = [@reporter, @recorder]
 
-      observers.each{ |o| o.begin_suite(suite) }
-      run_thru(suite)
-      observers.each{ |o| o.end_suite(suite) }
+      #cd_tmp do
+        observers.each{ |o| o.begin_suite(suite) }
+        run_thru(suite)
+        observers.each{ |o| o.end_suite(suite) }
+      #end
 
       recorder.success?
     end
@@ -319,6 +321,21 @@ module Test
       list = list.map{ |f| File.expand_path(f) } 
       list
     end
+
+=begin
+    # TODO ?
+    def cd_tmp(&block)
+      dir = Test::Config.root + '/tmp'
+      if Directory.exist?(dir)
+        dir = File.join(dir, 'test')
+        FileUtils.mkdir(dir) unless File.exist?(dir)
+      else
+        dir = File.join(Dir.tmpdir)
+      end
+
+      Dir.chdir(dir, &block)
+    end
+=end
 
   end
 

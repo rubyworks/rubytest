@@ -6,24 +6,12 @@ module Test
   # Command line interface.
   class Runner
 
-    # Test configuration file. The name of the file is an ode
-    # to the original Ruby cli test tool.
-    #
-    # @example
-    #   .test
-    #   .testrb
-    #   .test.rb
-    #   .config/test.rb
-    #
-    RC_GLOB = '{.testrb,.test.rb,.test,.config/test.rb,config/test.rb}'
-
     # Test runner command line interface.
     #
     def self.cli(*argv)
       runner = new
 
-      config_file = Dir[RC_GLOB].first
-      load config_file if config_file
+      Test::Config.load
 
       cli_options(runner, argv)
 
