@@ -20,6 +20,9 @@ module Test
     # Default report is in the old "dot-progress" format.
     DEFAULT_FORMAT = 'dotprogress'
 
+    # Exceptions that are not caught by test runner.
+    OPEN_ERRORS = [NoMemoryError, SignalException, Interrupt, SystemExit]
+
     # Default test suite ($TEST_SUITE).
     def self.suite
       $TEST_SUITE
@@ -65,6 +68,16 @@ module Test
       @unit ||= []
     end
 
+    #
+    def self.hard
+      @hard
+    end
+
+    #
+    def self.hard=(boolean)
+      @hard = !!boolean
+    end
+
     # / / / A T T R I B U T E S / / /
 
     # Test suite to run. This is a list of compliant test units and test cases.
@@ -101,6 +114,16 @@ module Test
       @verbose = !!boolean
     end
 
+    # Use "hard" test mode?
+    def hard?
+      @hard
+    end
+
+    #
+    def hard=(boolean)
+      @hard = !!boolean
+    end
+
     # New Runner.
     #
     # @param [Array] suite
@@ -114,6 +137,7 @@ module Test
       @units     = options[:units]   || self.class.units
       @match     = options[:match]   || self.class.match
       @verbose   = options[:verbose] || self.class.verbose
+      @hard      = options[:hard]    || self.class.hard
 
       block.call(self) if block
     end
@@ -143,7 +167,7 @@ module Test
       @observers = [@reporter, @recorder]
 
       observers.each{ |o| o.begin_suite(suite) }
-      run_case(suite)
+      run_thru(suite)
       observers.each{ |o| o.end_suite(suite) }
 
       recorder.success?
@@ -151,27 +175,38 @@ module Test
 
   private
 
-    # Run a test case.
     #
-    def run_case(cases)
-      if cases.respond_to?(:skip?) && cases.skip?
-        return observers.each{ |o| o.skip_case(cases) }
-      end
-
-      select(cases).each do |tc|
-        if tc.respond_to?(:call)
-          run_test(tc)
-        end
-        if tc.respond_to?(:each)
-          observers.each{ |o| o.begin_case(tc) }
-          run_case(tc)
-          observers.each{ |o| o.end_case(tc) }
+    def run_thru(list)
+      list.each do |t|
+        if t.respond_to?(:each)
+          run_case(t)
+        elsif t.respond_to?(:call)
+          run_test(t)
+        else
+          #run_note(t) ?
         end
       end
     end
 
-    # Exceptions that are not caught by test runner.
-    OPEN_ERRORS = [NoMemoryError, SignalException, Interrupt, SystemExit]
+    # Run a test case.
+    #
+    def run_case(tcase)
+      if tcase.respond_to?(:skip?) && tcase.skip?
+        return observers.each{ |o| o.skip_case(tcase) }
+      end
+
+      observers.each{ |o| o.begin_case(tcase) }
+
+      if tcase.respond_to?(:call)
+        tc.call do
+          run_thru( select(tcase) )
+        end
+      else
+        run_thru( select(tcase) )
+      end
+
+      observers.each{ |o| o.end_case(tcase) }
+    end
 
     # Run a test.
     #
@@ -185,8 +220,12 @@ module Test
 
       observers.each{ |o| o.begin_test(test) }
       begin
-        test.call
-        observers.each{ |o| o.pass(test) }
+        success = test.call
+        if hard? && !success  # TODO: separate run_test method to speed things up?
+          raise Assertion, "failure of #{test}"
+        else
+          observers.each{ |o| o.pass(test) }
+        end
       rescue *OPEN_ERRORS => exception
         raise exception
       rescue NotImplementedError => exception

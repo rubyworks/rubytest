@@ -33,10 +33,10 @@ module Test::Reporters
 
     #
     def begin_test(test)
-       if test.respond_to?(:subtext) && test.subtext
-         @test_cache[test.subtext] ||= (
-           #puts "#{test.subtext}".tabto(@tab)
-           show_header(' ', test.subtext)
+       if test.respond_to?(:topic) && test.topic
+         topic = test.topic.to_s.rstrip
+         @test_cache[topic] ||= (
+           show_header(' ', topic) unless topic.empty?
            true
          )
        end
@@ -143,7 +143,7 @@ module Test::Reporters
 
     #
     def show_header(status, text)
-      text = text[0...text.index("\n")||-1]
+      text = text[0..text.index("\n")||-1]
       data = [prcnt, ' ', ' ', clock, timer, status, (' ' * @tab) + text.to_s]
       #puts (" " * @tab) + (@layout_head % data)
       puts (@layout_head % data).ansi(:bold)

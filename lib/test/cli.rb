@@ -15,7 +15,7 @@ module Test
     #   .test.rb
     #   .config/test.rb
     #
-    RC_GLOB = '{.testrb,.test.rb,.testrb,.config/test.rb,config/test.rb}'
+    RC_GLOB = '{.testrb,.test.rb,.test,.config/test.rb,config/test.rb}'
 
     # Test runner command line interface.
     #
@@ -28,7 +28,7 @@ module Test
       cli_options(runner, argv)
 
       begin
-        # Add standarad location if it exists.
+        # Add standard location if it exists.
         $LOAD_PATH.unshift(File.expand_path('lib')) if File.directory?('lib')
 
         success = runner.run
@@ -52,7 +52,7 @@ module Test
       common.call(runner) if common
 
       OptionParser.new do |opt|
-        opt.banner = "Usage: ruby-test [options] [files ...]"
+        opt.banner = "Usage: #{$0} [options] [files ...]"
 
         unless config.empty?
           opt.separator "PRESET OPTIONS:"

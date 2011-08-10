@@ -30,9 +30,10 @@ module Test::Reporters
 
     #
     def begin_test(test)
-       if test.respond_to?(:subtext) && test.subtext
-         @start_test_cache[test.subtext] ||= (
-           tabs "#{test.subtext}"
+       if test.respond_to?(:topic) && test.topic
+         topic = test.topic.to_s
+         @start_test_cache[topic] ||= (
+           tabs "#{topic}"
            true
          )
        end

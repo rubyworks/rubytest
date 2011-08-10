@@ -164,9 +164,10 @@ module Test::Reporters
       hash['subtype'] = test.type.to_s if test.respond_to?(:type)
     end
 
-    # TODO: setup or subtext ?
+    # TODO: topic or setup ?
     def merge_setup(hash, test)
-      hash['setup'] = test.setup.to_s if test.respond_to?(:setup)
+      #hash['setup'] = test.setup.to_s if test.respond_to?(:setup)
+      hash['setup'] = test.topic.to_s if test.respond_to?(:topic)
     end
 
     # Add test description to hash.

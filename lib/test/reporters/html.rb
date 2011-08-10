@@ -57,12 +57,12 @@ module Test::Reporters
 
     #
     def begin_test(test)
-      if test.respond_to?(:subtext)
-        subtext = test.subtext
-        if @subtext != subtext
-          @subtext = subtext
+      if test.respond_to?(:topic)
+        topic = test.topic
+        if @topic != topic
+          @topic = topic
           @body << "<h3>"
-          @body << "#{subtext}"
+          @body << "#{topic}"
           @body << "</h3>"
         end
       end

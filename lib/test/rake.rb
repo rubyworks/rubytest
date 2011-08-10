@@ -48,7 +48,7 @@ module Test
 
         @loadpath   = ['lib']
         @requires   = []
-        @tests      = [ENV['TEST']] || DEFAULT_TESTS
+        @tests      = [ENV['TEST'] || DEFAULT_TESTS].flatten
         @format     = nil
         @match      = nil
         @tags       = []
