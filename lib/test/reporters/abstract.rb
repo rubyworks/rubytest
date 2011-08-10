@@ -2,7 +2,7 @@ require 'ansi/core'
 require 'test/core_ext'
 require 'test/code_snippet'
 
-ignore_path   = File.expand_path(File.join(__FILE__, '..', '..', '..'))
+ignore_path   = File.expand_path(File.join(__FILE__, '../../..'))
 ignore_regexp = Regexp.new(Regexp.escape(ignore_path))
 
 RUBY_IGNORE_CALLERS = [] unless defined? RUBY_IGNORE_CALLERS
@@ -11,6 +11,7 @@ RUBY_IGNORE_CALLERS << /bin\/ruby-test/
 
 module Test
 
+  #
   module Reporters
 
     # Test Reporter Base Class
@@ -75,11 +76,11 @@ module Test
       def error(test, exception)
       end
 
-      #
+      # Report a pending test.
       def todo(test, exception)
       end
 
-      # Report an omitted unit test.
+      # Report an omitted test.
       def omit(test, exception)
       end
 
@@ -102,7 +103,9 @@ module Test
       end
 
       # Is coverage information requested?
-      #def cover? ; runner.cover? ; end
+      #def cover?
+      #  runner.cover?
+      #end
 
       # Count up the total number of tests.
       def total_count(suite)
@@ -131,12 +134,16 @@ module Test
 
       #
       def subtotal
-        %w{todo pass fail error omit}.inject(0){ |s,r| s += record[r.to_sym].size; s }
+        [:todo, :pass, :fail, :error, :omit].inject(0) do |s,r|
+          s += record[r.to_sym].size; s
+        end
       end
+
+      # TODO: Add assertion counts (if reasonably possible).
 
       # Common tally stamp any reporter can use.
       #
-      # @todo Add assertion counts (if reasonably possible).
+      # @return [String] tally stamp
       def tally
         sizes = %w{pass fail error todo omit}.map{ |r| record[r.to_sym].size }
         data  = [total] + sizes
@@ -146,15 +153,16 @@ module Test
         s
       end
 
+      #--
+      # TODO: Matching `bin/ruby-test` is not robust.
+      #++
+
       # Remove reference to lemon library from backtrace.
       #
       # @param [Exception] exception
       #   The error that was rasied.
       #
       # @return [Array] filtered backtrace
-      #--
-      # TODO: Matching `bin/ruby-test` is not robust.
-      #++
       def clean_backtrace(exception)
         trace = (Exception === exception ? exception.backtrace : exception)
         return trace if $DEBUG
@@ -172,6 +180,8 @@ module Test
         trace.uniq
       end
 
+      # That an exception, backtrace or source code text and line
+      # number and return a CodeSnippet object.
       #
       # @return [CodeSnippet] code snippet
       def code(source, line=nil)
@@ -183,66 +193,11 @@ module Test
         end
       end
 
-=begin
-      # Have to thank Suraj N. Kurapati for the crux of this code.
-      def code_snippet(exception, bredth=2)
-        file, line, code, range = code_snippet_parts(exception, bredth)
-
-        # ensure proper alignment by zero-padding line numbers
-        format = " %2s %0#{range.last.to_s.length}d %s"
-
-        range.map do |n|
-          format % [('=>' if n == line), n, code[n-1].chomp]
-        end.join("\n") #.unshift "[#{region.inspect}] in #{source_file}"
-      end
-
-      #
-      def code_snippet_array(exception, bredth=3)
-        file, line, code, range = code_snippet_parts(exception, bredth)
-        range.map do |n|
-          code[n-1].chomp
-        end
-      end
-
-      #
-      def code_snippet_omap(exception, bredth=3)
-        file, line, code, range = code_snippet_parts(exception, bredth)
-        a = []
-        range.each do |n|
-          a << {n => code[n-1].chomp}
-        end
-        a
-      end
-
-      # TODO: improve
-      def code_line(exception)
-        code_snippet_array(exception, 0).first.strip
-      end
-
-      #
-      def code_snippet_parts(exception, bredth=3)
-        backtrace = clean_backtrace(exception)
-        backtrace.first =~ /(.+?):(\d+(?=:|\z))/ or return ""
-        source_file, source_line = $1, $2.to_i
-
-        source = source_code(source_file)
-
-        radius = bredth # number of surrounding lines to show
-        region = [source_line - radius, 1].max ..
-                 [source_line + radius, source.length].min
-
-        return source_file, source_line, source, region
-      end
-
-      #
-      def source_code(file)
-        @source[file] ||= (
-          File.readlines(file)
-        )
-      end
-=end
-
+      #--
       # TODO: Show more of the file name than just the basename.
+      #++
+
+      #
       def file_and_line(exception)
         line = clean_backtrace(exception)[0]
         return "" unless line

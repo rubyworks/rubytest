@@ -1,5 +1,6 @@
 module Test
 
+  # Thanks goes to Suraj N. Kurapati for the origins of this code.
   #
   class CodeSnippet
 
