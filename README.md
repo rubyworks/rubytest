@@ -1,8 +1,8 @@
 # Ruby Test
 
-[Homepage](http://rubyworks.github.com/test) |
-[User Guide](http://wiki.github.com/rubyworks/test) |
-[Development](http://github.com/rubyworks/test) |
+[Homepage](http://rubyworks.github.com/test) &middot;
+[User Guide](http://wiki.github.com/rubyworks/test) &middot;
+[Development](http://github.com/rubyworks/test) &middot;
 [Issues](http://github.com/rubyworks/test/issues)
 
 ## Description
