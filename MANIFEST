@@ -6,6 +6,7 @@ lib/test/autorun.rb
 lib/test/cli.rb
 lib/test/code_snippet.rb
 lib/test/config.rb
+lib/test/core_ext/assertion.rb
 lib/test/core_ext/exception.rb
 lib/test/core_ext/string.rb
 lib/test/core_ext.rb
@@ -31,6 +32,7 @@ test/basic_case.rb
 PROFILE
 LICENSE.txt
 HISTORY.md
+HISTORY.md.bak
 README.md
 VERSION
 COPYING.rdoc
