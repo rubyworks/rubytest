@@ -1,4 +1,4 @@
---output-dir site/api
+--output-dir doc
 --protected
 --readme README.md
 lib
