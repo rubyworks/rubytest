@@ -51,7 +51,7 @@ module Test::Reporters
       unless record[:todo].empty?
         puts "PENDING:\n\n"
         record[:todo].each do |test, exception|
-          puts "    #{test}".ansi(:bold)
+          puts "    #{test}".ansi(:bold) unless test.to_s.empty?
           puts "    #{exception}"
           puts "    #{file_and_line(exception)}"
           puts code(exception)
