@@ -200,7 +200,7 @@ module Test
       observers.each{ |o| o.begin_case(tcase) }
 
       if tcase.respond_to?(:call)
-        tc.call do
+        tcase.call do
           run_thru( select(tcase) )
         end
       else
