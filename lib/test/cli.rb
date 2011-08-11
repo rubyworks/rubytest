@@ -102,7 +102,7 @@ module Test
 
       default.call(runner) if default && !config_loaded
 
-      runner.files.concat(argv)
+      runner.files.replace(argv) unless argv.empty?
     end
 
   end
