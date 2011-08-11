@@ -28,6 +28,7 @@ module Test
     #
     GLOB_ROOT = '{.ruby,.git,.hg}'
 
+    #
     def self.load
       super(rc_file) if rc_file
     end
@@ -39,10 +40,13 @@ module Test
         stop    = root
         default = nil
         dir     = Dir.pwd
-        until dir == stop
+        file    = nil
+        loop do
           file = Dir[File.join(dir, glob)].first
           break file if file
+          break if dir == stop
           dir = File.dirname(dir)
+          break if dir == '/'
         end
         file ? file : default
       )
