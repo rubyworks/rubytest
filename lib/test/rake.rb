@@ -41,6 +41,10 @@ module Test
       # Filter tests by matching description.
       attr_accessor :match
 
+      # From Rake's own TestTask.
+      alias_method :libs, :loadpath
+      alias_method :test_files, :tests
+
       #
       def initialize(name='test', desc="run tests", &block)
         @name       = name
