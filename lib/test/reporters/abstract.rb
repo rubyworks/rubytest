@@ -134,10 +134,21 @@ module Test
 
       #
       def subtotal
-        [:todo, :pass, :fail, :error, :omit].inject(0) do |s,r|
+        [:todo, :pass, :fail, :error, :omit, :skip].inject(0) do |s,r|
           s += record[r.to_sym].size; s
         end
       end
+
+      # TODO: lump skipped and omitted into one group ?
+
+      TITLES = {
+        :pass  => 'passing',
+        :fail  => 'failures',
+        :error => 'errors',
+        :todo  => 'pending',
+        :omit  => 'omissions',
+        :skip  => 'skipped'
+      }
 
       # TODO: Add assertion counts (if reasonably possible).
 
@@ -145,12 +156,31 @@ module Test
       #
       # @return [String] tally stamp
       def tally
-        sizes = %w{pass fail error todo omit}.map{ |r| record[r.to_sym].size }
-        data  = [total] + sizes
+        sizes  = {}
+        names  = %w{error fail todo omit skip}.map{ |n| n.to_sym }
+        names.each do |r|
+          sizes[r] = record[r].size
+        end
 
-        s = "%s tests: %s passing, %s failures, %s errors, %s pending, %s omissions" % data
-        #s += "(#{uncovered_units.size} uncovered, #{undefined_units.size} undefined)" if cover?
-        s
+        #names.unshift(:tests)
+        #sizes[:tests] = total
+
+        s = []
+        names.each do |n|
+          next unless sizes[n] > 0
+          s << tally_item(n, sizes)
+        end
+
+        'Executed ' + "#{total}".ansi(:bold) + ' tests with ' + s.join(', ')
+      end
+
+      #
+      def tally_item(name, sizes)
+        x = []
+        x << "%s" % sizes[name].to_s.ansi(:bold)
+        x << " %s" % TITLES[name].downcase
+        x << " (%.1f%%)" % ((sizes[name].to_f/total*100)) if runner.verbose?
+        x.join('')
       end
 
       #--

@@ -37,7 +37,7 @@ module Test::Reporters
 
       if runner.verbose?
         unless record[:omit].empty?
-          puts "OMISSIONS:\n\n"
+          puts "OMISSIONS\n\n"
           record[:omit].each do |test, exception|
             puts "    #{test}".ansi(:bold)
             puts "    #{exception}"
@@ -49,7 +49,7 @@ module Test::Reporters
       end
 
       unless record[:todo].empty?
-        puts "PENDING:\n\n"
+        puts "PENDING\n\n"
         record[:todo].each do |test, exception|
           puts "    #{test}".ansi(:bold) unless test.to_s.empty?
           puts "    #{exception}"
@@ -60,7 +60,7 @@ module Test::Reporters
       end
 
       unless record[:fail].empty?
-        puts "FAILURES:\n\n"
+        puts "FAILURES\n\n"
         record[:fail].each do |test_unit, exception|
           puts "    #{test_unit}".ansi(:bold)
           puts "    #{exception}"
@@ -71,7 +71,7 @@ module Test::Reporters
       end
 
       unless record[:error].empty?
-        puts "ERRORS:\n\n"
+        puts "ERRORS\n\n"
         record[:error].each do |test_unit, exception|
           puts "    #{test_unit}".ansi(:bold)
           puts "    #{exception}"
