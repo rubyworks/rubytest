@@ -67,6 +67,27 @@ module Test
       )
     end
 
+    #
+    def self.dotruby
+      @dotruby ||= (
+        drfile = File.join(root, '.ruby')
+        if File.exist?(drfile)
+          YAML.load_file(drfile)
+        else
+          {}
+        end
+      )
+    end
+
+    #
+    def self.load_path_setup
+      if load_paths = dotruby['load_path']
+        load_paths.each do |path|
+          $LOAD_PATH.unshift(File.join(root, path))
+        end
+      end
+    end
+
   end
 
 end

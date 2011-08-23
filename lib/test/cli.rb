@@ -15,6 +15,8 @@ module Test
 
       cli_options(runner, argv)
 
+      Test::Config.load_path_setup  #unless runner.autopath == false
+
       begin
         # Add standard location if it exists.
         $LOAD_PATH.unshift(File.expand_path('lib')) if File.directory?('lib')
