@@ -43,6 +43,11 @@ module Test::Reporters
     end
 
     #
+    def omit(test, exception)
+      puts super(test, exception).to_yaml
+    end
+
+    #
     def end_suite(suite)
       puts super(suite).to_yaml
       puts "..."

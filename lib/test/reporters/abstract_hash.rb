@@ -32,9 +32,9 @@ module Test::Reporters
       h['type' ] = 'case'
       h['level'] = @case_level
 
-      merge_subtype      h, test_case
-      merge_setup        h, test_case
-      merge_description  h, test_case
+      merge_subtype h, test_case
+      merge_setup   h, test_case
+      merge_label   h, test_case
 
       @case_level += 1
 
@@ -54,7 +54,7 @@ module Test::Reporters
 
       merge_subtype      h, test
       merge_setup        h, test
-      merge_description  h, test
+      merge_label        h, test
       #merge_comparison  h, test, exception
       #merge_coverage    h, test
       merge_source       h, test
@@ -71,7 +71,7 @@ module Test::Reporters
 
       merge_subtype      h, test
       merge_setup        h, test
-      merge_description  h, test
+      merge_label        h, test
       #merge_comparison  h, test, exception
       #merge_coverage    h, test
       merge_source       h, test
@@ -89,7 +89,7 @@ module Test::Reporters
 
       merge_subtype      h, test
       merge_setup        h, test
-      merge_description  h, test
+      merge_label        h, test
       #merge_comparison  h, test, exception
       #merge_coverage    h, test
       merge_source       h, test
@@ -107,7 +107,7 @@ module Test::Reporters
 
       merge_subtype      h, test
       merge_setup        h, test
-      merge_description  h, test
+      merge_label        h, test
       #merge_comparison  h, test, exception
       #merge_coverage    h, test
       merge_source       h, test
@@ -125,7 +125,7 @@ module Test::Reporters
 
       merge_subtype      h, test
       merge_setup        h, test
-      merge_description  h, test
+      merge_label        h, test
       #merge_comparison  h, test, exception
       #merge_coverage    h, test
       merge_source       h, test
@@ -171,8 +171,8 @@ module Test::Reporters
     end
 
     # Add test description to hash.
-    def merge_description(hash, test)
-      hash['description'] = test.to_s.strip
+    def merge_label(hash, test)
+      hash['label'] = test.to_s.strip
     end
 
     # NOTE: Not presently used.

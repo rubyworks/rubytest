@@ -6,12 +6,12 @@ module Test
 
     def self.cache(file)
       @cache ||= {}
-      @cache[file] ||=  File.readlines(file)
+      @cache[file] ||=  File.exist?(file) ? File.readlines(file) : ['(N/A)']
     end
 
     #
     def self.from_backtrace(backtrace)
-      backtrace.first =~ /(.+?):(\d+(?=:|\z))/ or return ""
+      backtrace.first =~ /(.+?):(\d+(?=:|\z))/ or return nil
       file, line = $1, $2.to_i
       new(file, line)
     end

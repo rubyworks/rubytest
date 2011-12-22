@@ -157,7 +157,7 @@ module Test
       # @return [String] tally stamp
       def tally
         sizes  = {}
-        names  = %w{error fail todo omit skip}.map{ |n| n.to_sym }
+        names  = %w{pass error fail todo omit skip}.map{ |n| n.to_sym }
         names.each do |r|
           sizes[r] = record[r].size
         end
@@ -171,7 +171,7 @@ module Test
           s << tally_item(n, sizes)
         end
 
-        'Executed ' + "#{total}".ansi(:bold) + ' tests with ' + s.join(', ')
+        'Executed ' + "#{total}".ansi(:bold) + ' tests with ' + s.join(', ') + '.'
       end
 
       #
@@ -216,7 +216,9 @@ module Test
       # @return [CodeSnippet] code snippet
       def code(source, line=nil)
         case source
-        when Exception, Array
+        when Exception
+          CodeSnippet.from_backtrace(clean_backtrace(source.backtrace))
+        when Array
           CodeSnippet.from_backtrace(clean_backtrace(source))
         else
           CodeSnippet.new(source, line)
