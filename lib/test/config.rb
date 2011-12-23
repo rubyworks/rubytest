@@ -23,6 +23,7 @@ module Test
     #   .test.rb
     #   .config/test.rb
     #
+    # @todo Too many options for ruby-test configuration file.
     GLOB_RC = '{.testrb,.test.rb,.test,.config/test.rb,config/test.rb}'
 
     #
@@ -52,7 +53,9 @@ module Test
       )
     end
 
-    # Find project root.
+    # Find and cache project root directory.
+    #
+    # @return [String] Project's root path.
     def self.root
       @root ||= (
         glob    = GLOB_ROOT
@@ -67,7 +70,9 @@ module Test
       )
     end
 
+    # Load and cache a project's `.ruby` file.
     #
+    # @return [Hash] Project's loaded `.ruby` file, if it has one.
     def self.dotruby
       @dotruby ||= (
         drfile = File.join(root, '.ruby')
@@ -79,11 +84,18 @@ module Test
       )
     end
 
+    # Setup $LOAD_PATH based on .ruby file.
     #
+    # @todo Maybe we should not fallback to typical load path?
     def self.load_path_setup
       if load_paths = dotruby['load_path']
         load_paths.each do |path|
           $LOAD_PATH.unshift(File.join(root, path))
+        end
+      else
+        typical_load_path = File.join(root, 'lib')
+        if File.directory?(typical_load_path)
+          $LOAD_PATH.unshift(typical_load_path) 
         end
       end
     end

@@ -18,9 +18,6 @@ module Test
       Test::Config.load_path_setup  #unless runner.autopath == false
 
       begin
-        # Add standard location if it exists.
-        $LOAD_PATH.unshift(File.expand_path('lib')) if File.directory?('lib')
-
         success = runner.run
         exit -1 unless success
       rescue => error
