@@ -1,7 +1,13 @@
 module Test
 
-  require 'test/config'
-  require 'test/runner'
+  # ClI requires Runner and Config.
+  if RUBY_VERSION < '1.9'
+    require 'test/config'
+    require 'test/runner'
+  else
+    require_relative 'config'
+    require_relative 'runner'
+  end
 
   # Command line interface.
   class Runner

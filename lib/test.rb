@@ -1,3 +1,7 @@
-# TODO: Should we have test.rb file?
+# TODO: Do we really even need this `test.rb` file?
 
-require 'test/autorun'
+if RUBY_VERSION < '1.9'
+  require 'test/autorun'
+else
+  require_relative 'test/autorun'
+end
