@@ -1,9 +1,9 @@
 #$TEST_SUITE = [] unless defined?($TEST_SUITE)
 
 if RUBY_VERSION < '1.9'
-  require 'ruth'
+  require 'rubytest'
 else
-  require_relative '../ruth'
+  require_relative '../rubytest'
 end
 
 at_exit {
