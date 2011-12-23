@@ -1,12 +1,13 @@
-= COPYRIGHT NOTICES
+# COPYRIGHT NOTICES
 
-== Ruby Test
+## Ruby Test
 
-Copyright:: (c) 2011 Thomas Sawyer, RubyWorks
-License:: BSD-2-Clause
-Website:: http://rubyworks.github.com/ruby-test
+|:----------|:--------------------------------------|
+| Copyright | (c) 2011 Rubyworks                    |
+| License   | BSD-2-Clause                          |
+| Website   | http://rubyworks.github.com/ruby-test |
 
-    Copyright 2011 Thomas Sawyer. All rights reserved.
+    Copyright 2011 Rubyworks. All rights reserved.
 
     Redistribution and use in source and binary forms, with or without
     modification, are permitted provided that the following conditions are met:

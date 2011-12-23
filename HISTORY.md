@@ -1,5 +1,18 @@
 # RELEASE HISTORY
 
+## 0.3.0 / 2011-12-22
+
+Except for the fact than the gem has been renamed to `ruby-test` (rather
+than the previous `test`), this is a minor release that improves backtrace
+output and prepares the LOAD_PATH automtically if a .ruby file is present.
+
+Changes:
+
+* Rename gem to `ruby-test`.
+* Improve backtrace results in reporters.
+* Setup LOAD_PATH based on .ruby file if present.
+
+
 ## 0.2.0 / 2011-08-10
 
 With this release Ruby Test is essentially feature complete. Of course there
