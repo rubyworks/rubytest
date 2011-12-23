@@ -2,10 +2,11 @@
 
 ## Ruby Test
 
-_Project_ Ruby Test
-_Website_ http://rubyworks.github.com/ruby-test
-_License_ BSD-2-Clause
-_Copyright_ (c) 2011 Rubyworks
+**Project**   | Ruby Test
+--------------|------------------------------------------
+**Website**   | http://rubyworks.github.com/ruby-test
+**License**   | BSD-2-Clause
+**Copyright** | (c) 2011 Rubyworks
 
     Copyright 2011 Rubyworks. All rights reserved.  
 
