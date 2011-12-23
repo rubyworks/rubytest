@@ -1,4 +1,4 @@
 #!/usr/bin/env ruby
-require 'test/cli'
+require 'rubytest'
 Test::Runner.cli(*ARGV)
 

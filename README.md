@@ -1,22 +1,21 @@
 # Ruby Test
 
-[Homepage](http://rubyworks.github.com/test) /
-[User Guide](http://wiki.github.com/rubyworks/test) /
-[Development](http://github.com/rubyworks/test) /
-[Issues](http://github.com/rubyworks/test/issues)
+[Homepage](http://rubyworks.github.com/rubytest) /
+[User Guide](http://wiki.github.com/rubyworks/rubytest) /
+[Development](http://github.com/rubyworks/rubytest) /
+[Issues](http://github.com/rubyworks/rubytest/issues)
 
 ## Description
 
-Ruby Test is a universal test harness for use by any Ruby test framework.
-It defines a simple specification for compliance, which allows Ruby Test
-to run the framework's tests, and even test across multiple frameworks
-in a single pass.
-
-## Specification
+Ruby Test is a universal test harness for Ruby that can be used by any Ruby
+test framework. Ruby Test defines a simple specification for compliance, which
+allows tests from various frameworks to all run 
 
 Ruby Test defines a straight-forward specification that any test framework can 
 easily support which allows Ruby Test to run the frameworks tests through a
-single uniform user interface.
+single uniform user interface in a single pass.
+
+## Specification
 
 The universal access point for testing is the `$TEST_SUITE` global array. A test
 framework need only add compliant test objects to `$TEST_SUITE`. 
@@ -47,7 +46,7 @@ See the [Wiki](http://github.com/rubyworks/test/wiki) for further details.
 
 There are a few ways to run tests. First, there is a command line tool:
 
-    $ ruby-test
+    $ rubytest
 
 The command line tool takes various options, use `--help` to see them.
 Be sure to load in your test framework or framework's Ruby Test adapter.
@@ -60,14 +59,16 @@ Preconfigurations can be defined in a `.test` file, e.g.
       r.files << 'test/*_case.rb'
     end
 
-There is a 'test/autorun.rb' library script can be loaded which creates an
-`at_exit` procedure.
+There is also a 'rubytest/autorun.rb' library script that can be loaded which
+creates an `at_exit` runner, for which `test.rb` provides a nice shortcut:
 
-    $ ruby -rtest/autorun
+    $ ruby -r test
 
-And there is a Rake task.
+There is also a Rake task.
 
-    require 'test/rake'
+    require 'rubytest/rake'
+
+    Test::Rake::TestTask.new
 
 A Detroit plugin is in the works and should be available soon.
 
@@ -76,12 +77,12 @@ A Detroit plugin is in the works and should be available soon.
 
 Ruby Test is available as Gem package.
 
-    $ gem install test
+    $ gem install rubytest
 
 
 ## Requirements
 
-Ruby test uses the [ANSI](http://rubyworks.github.com/ansi) gem for color output.
+Ruby Test uses the [ANSI](http://rubyworks.github.com/ansi) gem for color output.
 
 Because of the "foundational" nature of this library we will look at removing
 this dependencies for future versions, but for early development the 

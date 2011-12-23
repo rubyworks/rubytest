@@ -1,13 +1,4 @@
-require 'ansi/core'
-require 'test/core_ext'
-require 'test/code_snippet'
-
-ignore_path   = File.expand_path(File.join(__FILE__, '../../..'))
-ignore_regexp = Regexp.new(Regexp.escape(ignore_path))
-
-RUBY_IGNORE_CALLERS = [] unless defined? RUBY_IGNORE_CALLERS
-RUBY_IGNORE_CALLERS << ignore_regexp
-RUBY_IGNORE_CALLERS << /bin\/ruby-test/
+# encoding: UTF-8
 
 module Test
 

@@ -2,11 +2,14 @@
 
 ## 0.3.0 / 2011-12-22
 
-Despite the version bump, this is a fairly minor release that improves backtrace
-output and prepares the `LOAD_PATH` automtically if a `.ruby` file is present.
+Technically this is a fairly minor release that improves backtrace output
+and prepares the `LOAD_PATH` automtically if a `.ruby` file is present.
+However, it is significant in that the name of the gem has been changed
+from `test` to `rubytest`.
 
 Changes:
 
+* Change gem name to `rubytest`.
 * Improve backtrace filtering in reporters.
 * Setup `LOAD_PATH` based on .ruby file if present.
 

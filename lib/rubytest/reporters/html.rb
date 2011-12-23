@@ -1,4 +1,4 @@
-require 'test/reporters/abstract'
+# encoding: UTF-8
 
 module Test::Reporters
 

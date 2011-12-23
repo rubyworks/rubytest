@@ -1,4 +1,4 @@
-require 'test/reporters/abstract_hash'
+# encoding: UTF-8
 
 module Test::Reporters
 

@@ -32,6 +32,7 @@ module Test
     #
     def self.load
       super(rc_file) if rc_file
+      #Ruth.module_eval(File.read(rc_file)) if rc_file
     end
 
     # Find rc file.

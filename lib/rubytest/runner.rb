@@ -1,16 +1,5 @@
 module Test
 
-  # Runner will need the Recorder and Pending classes.
-  if RUBY_VERSION < '1.9'
-    require 'test/recorder'
-    require 'test/core_ext'
-  else
-    require_relative 'recorder'
-    require_relative 'core_ext'
-  end
-
-  $TEST_SUITE = [] unless defined?($TEST_SUITE)
-
   # The Test::Runner class handles the execution of tests.
   #
   class Runner
@@ -158,6 +147,8 @@ module Test
     #   That the tests ran without error or failure.
     #
     def run
+      ignore_callers
+
       files_resolved.each do |file|
         require file
       end
@@ -176,6 +167,17 @@ module Test
     end
 
   private
+
+    # Add to RUBY_IGNORE_CALLERS.
+    #
+    # @todo Improve on this!
+    def ignore_callers
+      ignore_path   = File.expand_path(File.join(__FILE__, '../../..'))
+      ignore_regexp = Regexp.new(Regexp.escape(ignore_path))
+
+      ::RUBY_IGNORE_CALLERS << ignore_regexp
+      ::RUBY_IGNORE_CALLERS << /bin\/rubytest/
+    end
 
     #
     def run_thru(list)
@@ -293,7 +295,7 @@ module Test
 
       raise "unsupported report format" unless format
 
-      require "test/reporters/#{name}"
+      require "ruth/reporters/#{name}"
       reporter = Test::Reporters.const_get(name.capitalize)
       reporter.new(self)
     end
@@ -323,18 +325,18 @@ module Test
     end
 
 =begin
-    # TODO ?
-    def cd_tmp(&block)
-      dir = Test::Config.root + '/tmp'
-      if Directory.exist?(dir)
-        dir = File.join(dir, 'test')
-        FileUtils.mkdir(dir) unless File.exist?(dir)
-      else
-        dir = File.join(Dir.tmpdir)
-      end
-
-      Dir.chdir(dir, &block)
+  # TODO ?
+  def cd_tmp(&block)
+    dir = Test::Config.root + '/tmp'
+    if Directory.exist?(dir)
+      dir = File.join(dir, 'test')
+      FileUtils.mkdir(dir) unless File.exist?(dir)
+    else
+      dir = File.join(Dir.tmpdir)
     end
+
+    Dir.chdir(dir, &block)
+  end
 =end
 
   end

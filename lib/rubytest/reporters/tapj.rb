@@ -1,10 +1,10 @@
-require 'test/reporters/abstract_hash'
+# encoding: UTF-8
 
 module Test::Reporters
 
-  # TAP-Y Reporter
+  # TAP-J Reporter
   #
-  class Tapy < AbstractHash
+  class Tapj < AbstractHash
 
     #
     def initialize(runner)
@@ -14,42 +14,37 @@ module Test::Reporters
 
     #
     def begin_suite(suite)
-      puts super(suite).to_yaml
+      puts super(suite).to_json
     end
 
     #
     def begin_case(test_case)
-      puts super(test_case).to_yaml
+      puts super(test_case).to_json
     end
 
     #
     def pass(test) #, backtrace=nil)
-      puts super(test).to_yaml
+      puts super(test).to_json
     end
 
     #
     def fail(test, exception)
-      puts super(test, exception).to_yaml
+      puts super(test, exception).to_json
     end
 
     #
     def error(test, exception)
-      puts super(test, exception).to_yaml
+      puts super(test, exception).to_json
     end
 
     #
     def todo(test, exception)
-      puts super(test, exception).to_yaml
-    end
-
-    #
-    def omit(test, exception)
-      puts super(test, exception).to_yaml
+      puts super(test, exception).to_json
     end
 
     #
     def end_suite(suite)
-      puts super(suite).to_yaml
+      puts super(suite).to_json
       puts "..."
     end
 

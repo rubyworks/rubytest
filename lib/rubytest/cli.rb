@@ -1,21 +1,12 @@
 module Test
 
-  # ClI requires Runner and Config.
-  if RUBY_VERSION < '1.9'
-    require 'test/config'
-    require 'test/runner'
-  else
-    require_relative 'config'
-    require_relative 'runner'
-  end
-
   # Command line interface.
   class Runner
 
     # Test runner command line interface.
     #
     def self.cli(*argv)
-      runner = new
+      runner = Runner.new
 
       Test::Config.load
 

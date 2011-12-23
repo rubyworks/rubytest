@@ -1,18 +1,18 @@
 require 'rake/tasklib'
 
-module Test
+module Ruth
 
+  #
   module Rake
+
+    # TODO: The test task uses #fork. Maybe it should shell out instead?
+    #  Or provide the option for either?
 
     # Define a test rake task.
     #
     # The `TEST` environment variable can be used to select tests
     # when using the task.
     #
-    #--
-    #   TODO: The test task uses #fork. Maybe it should shell out instead?
-    #         Or provide the option for either?
-    #++
     class TestTask < ::Rake::TaskLib
 
       # Glob patterns are used by default to select test scripts.

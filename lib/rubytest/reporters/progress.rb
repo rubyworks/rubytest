@@ -1,7 +1,5 @@
 # encoding: UTF-8
 
-require 'test/reporters/abstract'
-
 module Test::Reporters
 
   # Progess reporter gives test counter, precentage and times.
