@@ -29,7 +29,6 @@ spec/01_test.md
 spec/02_case.md
 spec/applique/ruby-test.rb
 test/basic_case.rb
-PROFILE
 LICENSE.txt
 HISTORY.md
 README.md

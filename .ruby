@@ -1,46 +1,45 @@
---- 
-authors: 
-- name: Thomas Sawyer
+---
+source:
+- var
+authors:
+- name: trans
   email: transfire@gmail.com
-copyrights: 
-- holder: Thomas Sawyer, RubyWorks
-  year: "2011"
-  license: FreeBSD
+copyrights:
+- holder: RubyWorks
+  year: '2011'
+  license: BSD-2-Clause
 replacements: []
-
-conflicts: []
-
-requirements: 
+alternatives: []
+requirements:
 - name: ansi
 - name: detroit
-  groups: 
+  groups:
   - build
   development: true
 - name: qed
-  groups: 
+  groups:
   - test
   development: true
 dependencies: []
-
-repositories: 
-- uri: git@github.com:rubyworks/test.git
+conflicts: []
+repositories:
+- uri: git@github.com:rubyworks/ruby-test.git
   scm: git
   name: upstream
-resources: 
-  home: http://rubyworks.github.com/test
-  code: http://github.com/rubyworks/test
+resources:
+  home: http://rubyworks.github.com/ruby-test
+  code: http://github.com/rubyworks/ruby-test
   mail: http://groups.google.com/group/rubyworks-mailinglist
-load_path: 
+extra: {}
+load_path:
 - lib
-extra: 
-  manifest: MANIFEST
-alternatives: []
-
 revision: 0
-name: test
-title: Ruby Test
+created: '2011-07-23'
 summary: Ruby Universal Test Harness
-created: "2011-07-23"
-description: Ruby Test is a universal test harness for Ruby. It can handle any compliant  test framework, even running tests from multiple frameworks in a single pass.
-version: 0.2.1
-date: "2011-08-12"
+title: Ruby Test
+name: ruby-test
+description: ! "Ruby Test is a universal test harness for Ruby. It can handle any
+  compliant \ntest framework, even running tests from multiple frameworks in a single
+  pass."
+version: ''
+date: '2011-12-22'

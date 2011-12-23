@@ -1,0 +1,2 @@
+Ruby Test is a universal test harness for Ruby. It can handle any compliant 
+test framework, even running tests from multiple frameworks in a single pass.
