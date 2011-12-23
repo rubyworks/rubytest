@@ -1,7 +1,7 @@
 ---
 github:
-  active: true
-
+  gh_pages: web
+  
 gem:
   active: true
 
