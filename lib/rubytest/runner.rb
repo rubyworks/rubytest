@@ -295,7 +295,12 @@ module Test
 
       raise "unsupported report format" unless format
 
-      require "ruth/reporters/#{name}"
+      if RUBY_VERSION < '1.9'
+        require "rubytest/reporters/#{name}"
+      else
+        require_relative "reporters/#{name}"
+      end
+
       reporter = Test::Reporters.const_get(name.capitalize)
       reporter.new(self)
     end

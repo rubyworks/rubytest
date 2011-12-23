@@ -1,4 +1,4 @@
-# Ruby Universal Test Harness
+# Ruby Test - a Universal Ruby Test Harness
 
 $TEST_SUITE = [] unless defined?($TEST_SUITE)
 
