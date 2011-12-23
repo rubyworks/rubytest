@@ -1,8 +1,8 @@
 # Ruby Test
 
-[Homepage](http://rubyworks.github.com/test) &middot;
-[User Guide](http://wiki.github.com/rubyworks/test) &middot;
-[Development](http://github.com/rubyworks/test) &middot;
+[Homepage](http://rubyworks.github.com/test) /
+[User Guide](http://wiki.github.com/rubyworks/test) /
+[Development](http://github.com/rubyworks/test) /
 [Issues](http://github.com/rubyworks/test/issues)
 
 ## Description
@@ -103,8 +103,9 @@ contribue code, you can still help out by contributing to our development fund.
 
 ## Copyrights
 
-Copyright (c) 2011 Thomas Sawyer, Rubyworks
+Copyright (c) 2011 Rubyworks
 
 Made available according to the terms of the <b>FreeBSD license</b>.
 
-See COPYING.rdoc for details.
+See NOTICE.md for details.
+
