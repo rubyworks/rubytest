@@ -6,14 +6,15 @@ gem:
   active: true
 
 dnote:
+  title: Source Notes
   labels: ~
-  output: log/NOTES.rdoc
+  output: log/notes.html
 
 yard:
   yardopts: true
 
 qed:
-  files    : ~
+  files    : demo/
   #exclude : ~
   #loadpath: ~
   #requires: ~
@@ -21,26 +22,25 @@ qed:
   active   : false
 
 qedoc:
-  files : spec/
+  files : demo/
   output: QED.rdoc
   active: false
 
 vclog:
-  output: log/ChangeLog.rdoc
+  output: 
+    - log/changes.html
+    - log/history.html
   active: false
 
 email:
-  service: Email
-  file   : ~
-  subject: ~
   mailto : 
     - ruby-talk@ruby-lang.org
     - rubyworks-mailinglist@googlegroups.com
-  from   : <%= ENV['EMAIL_ACCOUNT'] %>
-  server : <%= ENV['EMAIL_SERVER'] %>
-  port   : <%= ENV['EMAIL_PORT'] %>
-  account: <%= ENV['EMAIL_ACCOUNT'] %>
-  domain : <%= ENV['EMAIL_DOMAIN'] %>
-  login  : <%= ENV['EMAIL_LOGIN'] %>
-  secure : <%= ENV['EMAIL_SECURE'] %>
+  #from   : <%= ENV['EMAIL_ACCOUNT'] %>
+  #server : <%= ENV['EMAIL_SERVER'] %>
+  #port   : <%= ENV['EMAIL_PORT'] %>
+  #account: <%= ENV['EMAIL_ACCOUNT'] %>
+  #domain : <%= ENV['EMAIL_DOMAIN'] %>
+  #login  : <%= ENV['EMAIL_LOGIN'] %>
+  #secure : <%= ENV['EMAIL_SECURE'] %>
 
