@@ -2,9 +2,12 @@
 
 ## Ruby Test
 
-    Copyright 2011 Rubyworks. All rights reserved.
+_Project_ Ruby Test
+_Website_ http://rubyworks.github.com/ruby-test
+_License_ BSD-2-Clause
+_Copyright_ (c) 2011 Rubyworks
 
-    BSD-2-Clause License
+    Copyright 2011 Rubyworks. All rights reserved.  
 
     Redistribution and use in source and binary forms, with or without
     modification, are permitted provided that the following conditions are met:
@@ -27,4 +30,3 @@
     NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
     EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-    (http://rubyworks.github.com/ruby-test)
