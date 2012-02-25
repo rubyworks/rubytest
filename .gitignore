@@ -6,3 +6,4 @@ pkg
 tmp
 web
 QED.rdoc
+Gemfile.lock
