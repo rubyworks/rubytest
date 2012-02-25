@@ -1,6 +1,7 @@
 ---
 source:
 - var
+- var/
 authors:
 - name: trans
   email: transfire@gmail.com
@@ -26,8 +27,8 @@ repositories:
   scm: git
   name: upstream
 resources:
-  home: http://rubyworks.github.com/ruby-test
-  code: http://github.com/rubyworks/ruby-test
+  home: http://rubyworks.github.com/rubytest
+  code: http://github.com/rubyworks/rubytest
   mail: http://groups.google.com/group/rubyworks-mailinglist
 extra: {}
 load_path:
