@@ -1,5 +1,16 @@
 # RELEASE HISTORY
 
+## 0.4.0 / 2012-02-25
+
+This release primarily consists of implementation tweaks. The most significant
+change is in support of exception priorities, which justify the major verison bump.
+
+Changes:
+
+* Add preliminary support for exception priorities.
+* Capture output for TAP-Y/J reporters.
+
+
 ## 0.3.0 / 2011-12-22
 
 Technically this is a fairly minor release that improves backtrace output
