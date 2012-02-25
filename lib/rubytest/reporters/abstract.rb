@@ -187,7 +187,7 @@ module Test
       def clean_backtrace(exception)
         trace = (Exception === exception ? exception.backtrace : exception)
         return trace if $DEBUG
-        trace = trace.reject{ |t| RUBY_IGNORE_CALLERS.any?{ |r| r =~ t }}
+        trace = trace.reject{ |t| $RUBY_IGNORE_CALLERS.any?{ |r| r =~ t }}
         trace = trace.map do |t|
           i = t.index(':in')
           i ? t[0...i] : t
