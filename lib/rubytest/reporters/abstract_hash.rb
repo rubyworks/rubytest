@@ -8,6 +8,8 @@ module Test::Reporters
   class AbstractHash < Abstract
 
     #
+    # @return [Hash]
+    #
     def begin_suite(suite)
       require 'yaml'
       require 'stringio'
@@ -21,12 +23,15 @@ module Test::Reporters
       h = {
         'type'  => 'suite',
         'start' => now,
-        'count' => total_count(suite)
+        'count' => total_count(suite),
+        'seed'  => suite.seed if suite.respond_to?(:seed)
       }
 
       return h
     end
 
+    #
+    # @return [Hash]
     #
     def begin_case(test_case)
       h = {}
@@ -50,6 +55,32 @@ module Test::Reporters
       $stdout, $stderr = StringIO.new, StringIO.new
     end
 
+    # Ruby Test use the term "skip", where as TAP-Y/J uses "omit".
+    #
+    # @todo Maybe the terms can ultimately be reconciled.
+    #
+    # @return [Hash]
+    #
+    def skip_test(test)
+      h = {}
+      h['type'  ] = 'test'
+      h['status'] = 'omit'
+
+      merge_subtype      h, test
+      merge_setup        h, test
+      merge_label        h, test
+      #merge_comparison  h, test, exception
+      #merge_coverage    h, test
+      merge_source       h, test
+      #merge_exception    h, test, exception
+      merge_output       h
+      merge_time         h
+
+      return h
+    end
+
+    #
+    # @return [Hash]
     #
     def pass(test) #, backtrace=nil)
       h = {}
@@ -69,12 +100,15 @@ module Test::Reporters
     end
 
     #
+    # @return [Hash]
+    #
     def fail(test, exception)
       h = {}
       h['type'  ] = 'test'
       h['status'] = 'fail'
 
       merge_subtype      h, test
+      merge_priority     h, test, exception
       merge_setup        h, test
       merge_label        h, test
       #merge_comparison  h, test, exception
@@ -88,12 +122,15 @@ module Test::Reporters
     end
 
     #
+    # @return [Hash]
+    #
     def error(test, exception)
       h = {}
       h['type'  ] = 'test'
       h['status'] = 'error'
 
       merge_subtype      h, test
+      merge_priority     h, test, exception
       merge_setup        h, test
       merge_label        h, test
       #merge_comparison  h, test, exception
@@ -107,31 +144,15 @@ module Test::Reporters
     end
 
     #
+    # @return [Hash]
+    #
     def todo(test, exception)
       h = {}
-      h['type'  ] = 'test'
-      h['status'] = 'todo'
+      h['type'  ]   = 'test'
+      h['status']   = 'todo'
 
       merge_subtype      h, test
-      merge_setup        h, test
-      merge_label        h, test
-      #merge_comparison  h, test, exception
-      #merge_coverage    h, test
-      merge_source       h, test
-      merge_exception    h, test, exception
-      merge_output       h
-      merge_time         h
-
-      return h
-    end
-
-    #
-    def omit(test, exception)
-      h = {}
-      h['type'  ] = 'test'
-      h['status'] = 'omit'
-
-      merge_subtype      h, test
+      merge_priority     h, test, exception
       merge_setup        h, test
       merge_label        h, test
       #merge_comparison  h, test, exception
@@ -156,6 +177,8 @@ module Test::Reporters
     end
 
     #
+    # @return [Hash]
+    #
     def end_suite(suite)
       h = {
         'type'  => 'final',
@@ -174,6 +197,17 @@ module Test::Reporters
 
   private
 
+    # For todo entries in particulr, i.e. NotImplementedError
+    # exception, the return value represents the "todo" priority
+    # level. The `Exception#priority` method returns an Integer
+    # to set the priority level higher or lower, where higher
+    # the number the more urgent the priority.
+    #
+    def merge_priority(hash, test, exception)
+      level = exception.priority
+      h['priority'] = level.to_i
+    end
+
     #
     def merge_subtype(hash, test)
       hash['subtype'] = test.type.to_s if test.respond_to?(:type)
@@ -190,7 +224,7 @@ module Test::Reporters
       hash['label'] = test.to_s.strip
     end
 
-    # NOTE: This is not presently used.
+    # TODO: This is not presently used.
     def merge_comparison(hash, test, exception)
       hash['returned'] = exception.returned
       hash['expected'] = exception.expected

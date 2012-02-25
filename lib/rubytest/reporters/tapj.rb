@@ -6,6 +6,8 @@ module Test::Reporters
   #
   class Tapj < AbstractHash
 
+    REVISION = 5
+
     #
     def initialize(runner)
       require 'json'
@@ -14,7 +16,9 @@ module Test::Reporters
 
     #
     def begin_suite(suite)
-      puts super(suite).to_json
+      hash = super(suite)
+      hash['rev'] = REVISION
+      puts hash.to_json
     end
 
     #

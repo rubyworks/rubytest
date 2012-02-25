@@ -234,11 +234,11 @@ module Test
       rescue *OPEN_ERRORS => exception
         raise exception
       rescue NotImplementedError => exception
-        if exception.assertion?
-          observers.each{ |o| o.omit(test, exception) }
-        else
+        #if exception.assertion?  # TODO: May require assertion? for todo in future
           observers.each{ |o| o.todo(test, exception) }
-        end
+        #else
+        #  observers.each{ |o| o.error(test, exception) }
+        #end
       rescue Exception => exception
         if exception.assertion?
           observers.each{ |o| o.fail(test, exception) }
