@@ -1,8 +1,7 @@
 # Ruby Test - a Universal Ruby Test Harness
 
 $TEST_SUITE = [] unless defined?($TEST_SUITE)
-
-RUBY_IGNORE_CALLERS = [] unless defined?(RUBY_IGNORE_CALLERS)
+$RUBY_IGNORE_CALLERS = [] unless defined?($RUBY_IGNORE_CALLERS)
 
 require 'ansi/core'
 

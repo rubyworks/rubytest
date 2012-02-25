@@ -168,15 +168,16 @@ module Test
 
   private
 
-    # Add to RUBY_IGNORE_CALLERS.
+    # Add to $RUBY_IGNORE_CALLERS.
     #
     # @todo Improve on this!
     def ignore_callers
       ignore_path   = File.expand_path(File.join(__FILE__, '../../..'))
       ignore_regexp = Regexp.new(Regexp.escape(ignore_path))
 
-      ::RUBY_IGNORE_CALLERS << ignore_regexp
-      ::RUBY_IGNORE_CALLERS << /bin\/rubytest/
+      $RUBY_IGNORE_CALLERS ||= {}
+      $RUBY_IGNORE_CALLERS << ignore_regexp
+      $RUBY_IGNORE_CALLERS << /bin\/rubytest/
     end
 
     #
