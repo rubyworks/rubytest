@@ -10,6 +10,7 @@ module Test::Reporters
     #
     def begin_suite(suite)
       require 'yaml'
+      require 'stringio'
 
       @start_time = Time.now
       @case_level = 0
@@ -44,6 +45,9 @@ module Test::Reporters
     #
     def begin_test(test)
       @test_index += 1
+
+      @stdout, @stderr = $stdout, $stderr
+      $stdout, $stderr = StringIO.new, StringIO.new
     end
 
     #
@@ -58,6 +62,7 @@ module Test::Reporters
       #merge_comparison  h, test, exception
       #merge_coverage    h, test
       merge_source       h, test
+      merge_output       h
       merge_time         h
 
       return h
@@ -76,6 +81,7 @@ module Test::Reporters
       #merge_coverage    h, test
       merge_source       h, test
       merge_exception    h, test, exception
+      merge_output       h
       merge_time         h
  
       return h
@@ -94,6 +100,7 @@ module Test::Reporters
       #merge_coverage    h, test
       merge_source       h, test
       merge_exception    h, test, exception, true
+      merge_output       h
       merge_time         h
 
       return h
@@ -112,6 +119,7 @@ module Test::Reporters
       #merge_coverage    h, test
       merge_source       h, test
       merge_exception    h, test, exception
+      merge_output       h
       merge_time         h
 
       return h
@@ -130,9 +138,16 @@ module Test::Reporters
       #merge_coverage    h, test
       merge_source       h, test
       merge_exception    h, test, exception
+      merge_output       h
       merge_time         h
 
       return h
+    end
+
+    #
+    def end_test(test)
+      super(test)
+      $stdout, $stderr = @stdout, @stderr
     end
 
     #
@@ -143,7 +158,7 @@ module Test::Reporters
     #
     def end_suite(suite)
       h = {
-        'type'  => 'tally',
+        'type'  => 'final',
         'time'  => Time.now - @start_time,
         'counts' => {
           'total' => total,
@@ -164,7 +179,7 @@ module Test::Reporters
       hash['subtype'] = test.type.to_s if test.respond_to?(:type)
     end
 
-    # TODO: topic or setup ?
+    # RubyTest uses the term `topic`, where as TAP-Y/J uses `setup`.
     def merge_setup(hash, test)
       #hash['setup'] = test.setup.to_s if test.respond_to?(:setup)
       hash['setup'] = test.topic.to_s if test.respond_to?(:topic)
@@ -175,7 +190,7 @@ module Test::Reporters
       hash['label'] = test.to_s.strip
     end
 
-    # NOTE: Not presently used.
+    # NOTE: This is not presently used.
     def merge_comparison(hash, test, exception)
       hash['returned'] = exception.returned
       hash['expected'] = exception.expected
@@ -203,15 +218,35 @@ module Test::Reporters
       hash['exception']['backtrace'] = clean_backtrace(exception) if bt
     end
 
-    # TODO: Really?
+    # TODO: This is still an "idea in progress" for both RybyTest and Tap-Y/J.
+    #
+    # There are a number of different types of code coverage.
+    #
+    #   http://en.wikipedia.org/wiki/Code_coverage
+    #
+    # If we were to provide this, we'd have LOC coverage, probably
+    # given as a list of `file:from-to`, and UNIT coverage, a list
+    # of classes/modules and methods addressed.
+    #
     def merge_coverage(hash, test)
-      if test.respond_to?(:file_coverage) or test.respond_to?(:code_coverage)
-        fc = test.file_coverage
-        cc = test.code_coverage
-        hash['coverage'] = {}
-        hash['coverage']['file'] = fc if fc
-        hash['coverage']['code'] = cc if cc
+      loc, unit = nil, nil
+      if test.respond_to?(:loc)
+        loc = test.loc
       end
+      if test.respond_to?(:unit)
+        unit = test.unit
+      end
+      if loc or unit
+        hash['coverage'] = {}
+        hash['coverage']['loc']  = loc  if loc
+        hash['coverage']['unit'] = unit if unit
+      end
+    end
+
+    #
+    def merge_output(hash)
+      hash['stdout'] = $stdout.string
+      hash['stderr'] = $stderr.string
     end
 
     #
