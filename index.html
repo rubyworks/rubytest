@@ -5,13 +5,16 @@
     html { font-family: sans-serif; }
     body { margin: 0; padding: 0; }
     a    { text-decoration: none; color: #ddd; padding: 5px 10px; }
-    a:hover { color: #fff; }
+    a:hover { color: #ffffff; }
 
     #main { background: url(assets/images/test_pattern.jpg) top no-repeat; height: 780px;
             position: relative; margin: 10px 0; padding: 0; }
 
-    #line { width: 100%; color: #cc2222; font-size: 72px; text-align: center; 
-            background: red; font-weight: bold; opacity: 0.9; font-family: times; }
+    #line { width: 100%; color: #cc2222; text-align: center; 
+            background: red; opacity: 0.9; font-family: times; }
+    #line a { color: #fff; font-size: 100px; font-weight: bold; text-shadow: 5px 5px 10px #000; }
+    #line a:hover { color: #f00;}
+    #line p { color: #fff; font-size: 3em; margin: 0; padding: 0 0 20px 0; text-shadow: 5px 5px 10px #000; }
 
     #footer {
       width: 1024px; margin: 10px auto;  text-align: center;
@@ -26,20 +29,22 @@
 <body>
 
 <div id="main">
-  <div style="height: 340px;"></div>
+  <div style="height: 275px;"></div>
 
   <div id="line">
-    <a href="http://github.com/rubyworks/test/wiki">
+    <a href="http://github.com/rubyworks/rubytest/wiki">
       RUBY TEST
     </a>
+    <p>Universal Test Harness</p>
   </div>
+
 </div>
 
 <div id="footer">
   <div class="nav">
     <a href="http://wiki.github.com/rubyworks/test">User Guide</a>
-    <a href="http://rubyinfo.org/gems/test">API Reference</a>
-    <a href="http://github.com/rubyworks/test">Development</a>
+    <a href="http://rubyinfo.org/gems/rubytest">API Reference</a>
+    <a href="http://github.com/rubyworks/rubytest">Development</a>
   <div>
 
   <div style="margin: 40px 0;">
@@ -62,7 +67,7 @@
 </div>
 
 <div style="position: absolute; top: 0; right: 0;">
-  <a href="http://github.com/rubyworks/ae">
+  <a href="http://github.com/rubyworks/rubytest">
     <img src="http://rubyworks.github.com/assets/images/fork-me.png" />
   </a>
 </div>
