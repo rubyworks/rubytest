@@ -25,7 +25,7 @@ module Test
     #
     def initialize(file, line)
       @file = file
-      @line = line || 1
+      @line = (line || 1).to_i
       @code = CodeSnippet.cache(file)
     end
 
