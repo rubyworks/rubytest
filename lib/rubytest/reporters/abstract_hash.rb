@@ -23,9 +23,10 @@ module Test::Reporters
       h = {
         'type'  => 'suite',
         'start' => now,
-        'count' => total_count(suite),
-        'seed'  => suite.seed if suite.respond_to?(:seed)
+        'count' => total_count(suite)
       }
+
+      h['seed'] = suite.seed if suite.respond_to?(:seed)
 
       return h
     end
