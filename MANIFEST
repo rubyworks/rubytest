@@ -1,16 +1,19 @@
 #!mast .ruby .test .yaropts bin demo lib spec test [A-Z]*.*
 .ruby
 .test
+bin/ruby-test
 bin/rubytest
 demo/01_test.md
 demo/02_case.md
-demo/applique/ruby-test.rb
+demo/applique/ae.rb
+demo/applique/rubytest.rb
 lib/rubytest/autorun.rb
 lib/rubytest/cli.rb
 lib/rubytest/code_snippet.rb
 lib/rubytest/config.rb
 lib/rubytest/core_ext/assertion.rb
 lib/rubytest/core_ext/exception.rb
+lib/rubytest/core_ext/file.rb
 lib/rubytest/core_ext/string.rb
 lib/rubytest/core_ext.rb
 lib/rubytest/rake.rb
@@ -30,6 +33,7 @@ lib/rubytest/runner.rb
 lib/rubytest.rb
 lib/test.rb
 test/basic_case.rb
+Gemfile.lock
 HISTORY.md
 README.md
 NOTICE.md
