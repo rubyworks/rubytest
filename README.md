@@ -30,12 +30,12 @@ to be a failed assertion rather than simply an error. Ruby Test extends the
 Exception class to support this method for all exceptions.
 
 A test framework may raise a `NotImplementedError` to have a test recorded
-as "pending" --a _todo_ item to remind the developer of tests that still
+as *todo* --a _pending_ exception to remind the developer of tests that still
 need to be written. The `NotImplementedError` is a standard Ruby exception
-and a subclass of `ScriptError`.
-
-If the `NotImplmentedError` responds in the affirmative to `#assertion?` then
-the test is taken to be a purposeful _omission_, rather than simply pending.
+and a subclass of `ScriptError`. The exception can also set a priority level
+to indicate the urgency of the pending test. Priorities of -1 or lower
+will generally not be brought to the attention of testers unless explicitly 
+configured to do so.
 
 That is the crux of Ruby Test specification. Ruby Test supports some
 additional features that can makes its usage even more convenient.
