@@ -66,6 +66,7 @@ module Test::Reporters
           puts "    #{exception}"
           puts "    #{file_and_line(exception)}"
           puts code(exception)
+          puts "    " + clean_backtrace(exception).join("\n    ")
           puts
         end
       end
@@ -77,6 +78,7 @@ module Test::Reporters
           puts "    #{exception}"
           puts "    #{file_and_line(exception)}"
           puts code(exception)
+          puts "    " + clean_backtrace(exception).join("\n    ")
           puts
         end
       end

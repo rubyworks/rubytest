@@ -198,7 +198,7 @@ module Test
         #  exception.set_backtrace(trace) if Exception === exception
         #  exception
         #end
-        trace.uniq
+        trace.uniq.map{ |bt| File.localname(bt) }
       end
 
       # That an exception, backtrace or source code text and line
@@ -216,17 +216,13 @@ module Test
         end
       end
 
-      #--
-      # TODO: Show more of the file name than just the basename.
-      #++
-
       #
       def file_and_line(exception)
         line = clean_backtrace(exception)[0]
         return "" unless line
         i = line.rindex(':in')
         line = i ? line[0...i] : line
-        File.basename(line)
+        File.localname(line)
       end
 
       #
@@ -240,7 +236,7 @@ module Test
         return ["", 0] unless line
         i = line.rindex(':in')
         line = i ? line[0...i] : line
-        f, l = File.basename(line).split(':')
+        f, l = File.localname(line).split(':')
         return [f, l.to_i]
       end
 
