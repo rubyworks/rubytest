@@ -1,5 +1,15 @@
 # RELEASE HISTORY
 
+## 0.4.1 / 2012-02-27
+
+RubyTest doesn't necessarily need to require 'brass' --albeit in the future
+that might end up being a dependency. For now we'll leave it aside.
+
+Changes:
+
+* Remove requirement on brass.
+
+
 ## 0.4.0 / 2012-02-25
 
 This release primarily consists of implementation tweaks. The most significant

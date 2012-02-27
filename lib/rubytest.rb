@@ -1,9 +1,9 @@
 # Ruby Test - a Universal Ruby Test Harness
 
-$TEST_SUITE = [] unless defined?($TEST_SUITE)
+$TEST_SUITE          = [] unless defined?($TEST_SUITE)
 $RUBY_IGNORE_CALLERS = [] unless defined?($RUBY_IGNORE_CALLERS)
 
-require 'brass'
+#require 'brass'  # TODO: Should we require BRASS ?
 require 'ansi/core'
 
 if RUBY_VERSION < '1.9'
