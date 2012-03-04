@@ -37,7 +37,7 @@ revision: 0
 created: '2011-07-23'
 summary: Ruby Universal Test Harness
 title: Ruby Test
-version: 0.4.1
+version: 0.4.2
 name: rubytest
 description: ! "Ruby Test is a universal test harness for Ruby. It can handle any
   compliant \ntest framework, even running tests from multiple frameworks in a single

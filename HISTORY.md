@@ -1,5 +1,15 @@
 # RELEASE HISTORY
 
+## 0.4.2 / 2012-03-04
+
+Minor release to fix detection of pre-existance of Exception core
+extensions.
+
+Changes:
+
+* Fix detection of Exception extension methods.
+
+
 ## 0.4.1 / 2012-02-27
 
 RubyTest doesn't necessarily need to require 'brass' --albeit in the future
