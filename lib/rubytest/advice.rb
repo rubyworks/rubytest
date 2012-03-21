@@ -13,6 +13,9 @@ module Test
       @joinpoints ||= []
     end
 
+    # TODO: Should hooks be evaluate in the context of test object scope?
+    #       The #scope fields has been added to the RubyTest spec just in case.
+
     #
     def self.joinpoint(name)
       joinpoints << name.to_sym
