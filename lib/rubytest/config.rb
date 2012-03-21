@@ -10,21 +10,21 @@ module Test
     @config ||= {}
   end
 
+  # TODO: Add optional support for Confection.
+
   #
   class Config
 
     # Test configuration file.
     #
-    # The name of the file is an ode to the original Ruby cli test tool.
-    #
     # @example
     #   .test
-    #   .testrb
     #   .test.rb
-    #   .config/test.rb
+    #   task/test.rb
+    #   Testfile
     #
     # @todo Too many options for ruby-test configuration file.
-    GLOB_RC = '{.testrb,.test.rb,.test,.config/test.rb,config/test.rb}'
+    GLOB_RC = '{,.,task/}test{,file}{.rb,}'
 
     #
     GLOB_ROOT = '{.ruby,.git,.hg}'
@@ -44,7 +44,8 @@ module Test
         dir     = Dir.pwd
         file    = nil
         loop do
-          file = Dir[File.join(dir, glob)].first
+          files = Dir.glob(File.join(dir, glob), File::FNM_CASEFOLD)
+          file = files.find{ |f| File.file?(f) }
           break file if file
           break if dir == stop
           dir = File.dirname(dir)

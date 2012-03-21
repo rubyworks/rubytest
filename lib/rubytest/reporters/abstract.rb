@@ -63,16 +63,12 @@ module Test
       def fail(test, exception)
       end
 
-      #
+      # Report a test error.
       def error(test, exception)
       end
 
       # Report a pending test.
       def todo(test, exception)
-      end
-
-      # Report an omitted test.
-      def omit(test, exception)
       end
 
       #

@@ -14,8 +14,8 @@ module Test
     end
 
     #
-    def skip(test)
-      self[:skip] << test
+    def skip_test(test, reason)
+      self[:skip] << [test, reason]
     end
 
     # Add `test` to pass set.
@@ -35,9 +35,9 @@ module Test
       self[:todo] << [test, exception]
     end
 
-    def omit(test, exception)
-      self[:omit] << [test, exception]
-    end
+    #def omit(test, exception)
+    #  self[:omit] << [test, exception]
+    #end
 
     # Returns true if their are no test errors or failures.
     def success?

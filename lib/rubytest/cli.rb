@@ -23,6 +23,8 @@ module Test
       end
     end
 
+    # TODO: replace dynamic preset options with `-p` option
+
     #
     def self.cli_options(runner, argv)
       require 'optparse'

@@ -113,6 +113,29 @@ module Test
       @hard = !!boolean
     end
 
+    # Instance of Advice is a special customizable observer.
+    def advice
+      @advice
+    end
+
+    # Define universal before advice.
+    def before(type, &block)
+      advice.join("begin_#{type}", &block)
+    end
+
+    # Define universal after advice. Can be used by mock libraries,
+    # for example to run mock verification.
+    def after(type, &block)
+      advice.join("end_#{type}", &block)
+    end
+
+    # Define universal upon advice.
+    #
+    # See {Advice} for valid join-points.
+    def upon(type, &block)
+      advice.join(type, &block)
+    end
+
     # New Runner.
     #
     # @param [Array] suite
@@ -128,13 +151,15 @@ module Test
       @verbose   = options[:verbose] || self.class.verbose
       @hard      = options[:hard]    || self.class.hard
 
+      @advice    = Advice.new
+
       block.call(self) if block
     end
 
     # The reporter to use for ouput.
     attr :reporter
 
-    # Record pass, fail, error, pending and omitted tests.
+    # Record pass, fail, error and pending tests.
     attr :recorder
 
     # Array of observers, typically this just contains the recorder and
@@ -155,7 +180,8 @@ module Test
 
       @reporter  = reporter_load(format)
       @recorder  = Recorder.new
-      @observers = [@reporter, @recorder]
+
+      @observers = [advice, @recorder, @reporter]
 
       #cd_tmp do
         observers.each{ |o| o.begin_suite(suite) }
@@ -196,8 +222,8 @@ module Test
     # Run a test case.
     #
     def run_case(tcase)
-      if tcase.respond_to?(:skip?) && tcase.skip?
-        return observers.each{ |o| o.skip_case(tcase) }
+      if tcase.respond_to?(:skip?) && (reason = tcase.skip?)
+        return observers.each{ |o| o.skip_case(tcase, reason) }
       end
 
       observers.each{ |o| o.begin_case(tcase) }
@@ -219,8 +245,8 @@ module Test
     #   The test to run, must repsond to #call.
     #
     def run_test(test)
-      if test.respond_to?(:skip?) && test.skip?
-        return observers.each{ |o| o.skip_test(test) }
+      if test.respond_to?(:skip?) && (reason = test.skip?)
+        return observers.each{ |o| o.skip_test(test, reason) }
       end
 
       observers.each{ |o| o.begin_test(test) }

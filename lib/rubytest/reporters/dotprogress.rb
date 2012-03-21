@@ -5,6 +5,10 @@ module Test::Reporters
   # Simple Dot-Progress Reporter
   class Dotprogress < Abstract
 
+    def skip_test(unit, reason)
+      print "S".ansi(:cyan) if runner.verbose?
+    end
+
     def pass(unit)
       print "."
       $stdout.flush
@@ -25,11 +29,6 @@ module Test::Reporters
       $stdout.flush
     end
 
-    def omit(unit, exception)
-      print "O".ansi(:cyan)
-      $stdout.flush
-    end
-
     def end_suite(suite)
       puts; puts
       puts timestamp
@@ -37,12 +36,10 @@ module Test::Reporters
 
       if runner.verbose?
         unless record[:omit].empty?
-          puts "OMISSIONS\n\n"
-          record[:omit].each do |test, exception|
+          puts "SKIPPED\n\n"
+          record[:skip].each do |test, reason|
             puts "    #{test}".ansi(:bold)
-            puts "    #{exception}"
-            puts "    #{file_and_line(exception)}"
-            #puts code(exception)
+            puts "    #{reason}" if String===reason
             puts
           end
         end
