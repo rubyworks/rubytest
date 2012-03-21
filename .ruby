@@ -1,7 +1,6 @@
 ---
 source:
 - var
-- var/
 authors:
 - name: trans
   email: transfire@gmail.com
@@ -37,7 +36,7 @@ revision: 0
 created: '2011-07-23'
 summary: Ruby Universal Test Harness
 title: Ruby Test
-version: 0.4.2
+version: 0.4.3
 name: rubytest
 description: ! "Ruby Test is a universal test harness for Ruby. It can handle any
   compliant \ntest framework, even running tests from multiple frameworks in a single

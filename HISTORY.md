@@ -1,5 +1,19 @@
 # RELEASE HISTORY
 
+## 0.4.3 / 2012-03-21
+
+This release improves the command line interface, the handling of
+configuration and provides a mechinism for adding custom test 
+observers. The later can be used for things like mock library
+verifcation steps.
+
+Changes:
+
+* Make CLI an actual class.
+* Refactor configuration file lookup and support Confection.
+* Add customizable test observe via new Advice class.
+
+
 ## 0.4.2 / 2012-03-04
 
 Minor release to fix detection of pre-existance of Exception core
