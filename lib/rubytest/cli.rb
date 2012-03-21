@@ -1,16 +1,51 @@
 module Test
 
-  # Command line interface.
-  class Runner
+  # Command line interface to test runner.
+  #
+  class CLI
 
-    # Test runner command line interface.
     #
-    def self.cli(*argv)
-      runner = Runner.new
+    # Convenience method for invoking the CLI.
+    #
+    def self.run(*argv)
+      new.run(*argv)
+    end
+
+    #
+    # Initialize CLI instance.
+    #
+    def initialize
+      require 'optparse'
 
       Test::Config.load
 
-      cli_options(runner, argv)
+      @profile = 'default'
+      @config  = Test.config
+      @runner  = Runner.new
+    end
+
+    #
+    # @return [Runner]
+    #
+    attr :runner
+
+    #
+    # @return [Hash]
+    #
+    attr :config
+
+    #
+    attr_accessor :profile
+
+    #
+    # Run tests.
+    #
+    def run(*argv)
+      options.parse!(argv)
+
+      run_profile
+
+      runner.files.replace(argv) unless argv.empty?
 
       Test::Config.load_path_setup  #unless runner.autopath == false
 
@@ -23,34 +58,44 @@ module Test
       end
     end
 
-    # TODO: replace dynamic preset options with `-p` option
+    #
+    # Run the common profile if defined and then the specific
+    # profile.
+    #
+    def run_profile
+      raise "no such profile -- #{profile}" unless config[profile] or profile == 'default'
+
+      common  = config['common']
+      common.call(runner) if common
+
+      profig = config[profile]
+      profig.call(runner) if profig
+    end
 
     #
-    def self.cli_options(runner, argv)
-      require 'optparse'
-
-      config = Test.config.dup
-      config_loaded = false
-
-      common  = config.delete('common')
-      default = config.delete('default')
-
-      common.call(runner) if common
+    # Setup OptionsParser instance.
+    #
+    def options
+      this = self
 
       OptionParser.new do |opt|
         opt.banner = "Usage: #{$0} [options] [files ...]"
 
-        unless config.empty?
-          opt.separator "PRESET OPTIONS:"
-          config.each do |name, block|
-            opt.on("--#{name}") do
-              block.call(runner)
-            end
+        opt.separator "PRESET OPTIONS:"
+
+        opt.on '-p', '--profile NAME', "use configuration profile" do |name|
+          this.profile = name.to_s
+        end
+
+        config_names = config.keys - ['common', 'default']
+
+        unless config_names.empty?
+          config_names.each do |name|
+            opt.separator((" " * 40) + "* #{name}")
           end
         end
 
         opt.separator "CONFIG OPTIONS:"
-
         opt.on '-f', '--format NAME', 'report format' do |name|
           runner.format = name
         end
@@ -85,22 +130,20 @@ module Test
         #opt.on('--log DIRECTORY', 'log directory'){ |dir|
         #  options[:log] = dir
         #}
-        opt.on_tail("--[no-]ansi" , 'turn on/off ANSI colors'){ |v| $ansi = v }
-        opt.on_tail("--debug" , 'turn on debugging mode'){ $DEBUG = true }
-        #opt.on_tail("--about" , 'display information about lemon'){
+        opt.on("--[no-]ansi" , 'turn on/off ANSI colors'){ |v| $ansi = v }
+        opt.on("--debug" , 'turn on debugging mode'){ $DEBUG = true }
+
+        opt.separator "COMMAND OPTIONS:"
+        #opt.on("--about" , 'display information about rubytest'){
         #  puts "Ruby Test v#{VERSION}"
         #  puts "#{COPYRIGHT}"
         #  exit
         #}
-        opt.on_tail('-h', '--help', 'display this help message'){
+        opt.on('-h', '--help', 'display this help message'){
           puts opt
           exit
         }
-      end.parse!(argv)
-
-      default.call(runner) if default && !config_loaded
-
-      runner.files.replace(argv) unless argv.empty?
+      end
     end
 
   end

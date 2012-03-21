@@ -4,8 +4,10 @@ end
 
 Test.run(:cov) do |run|
   run.files << 'test/*_case.rb'
-  SimpleCov.start do |cov|
-    cov.coverage_dir = 'log/coverage'
+
+  require 'simplecov'
+  SimpleCov.start do
+    coverage_dir 'log/coverage'
   end
 end
 
