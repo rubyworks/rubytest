@@ -1,6 +1,6 @@
 # RELEASE HISTORY
 
-## 0.4.3 / 2012-03-21
+## 0.5.0 / 2012-03-22
 
 This release improves the command line interface, the handling of
 configuration and provides a mechinism for adding custom test 
@@ -11,7 +11,7 @@ Changes:
 
 * Make CLI an actual class.
 * Refactor configuration file lookup and support Confection.
-* Add customizable test observe via new Advice class.
+* Add customizable test observer via new Advice class.
 
 
 ## 0.4.2 / 2012-03-04
