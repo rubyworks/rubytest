@@ -120,13 +120,13 @@ module Test
 
     # Define universal before advice.
     def before(type, &block)
-      advice.join("begin_#{type}", &block)
+      advice.join_before(type, &block)
     end
 
     # Define universal after advice. Can be used by mock libraries,
     # for example to run mock verification.
     def after(type, &block)
-      advice.join("end_#{type}", &block)
+      advice.join_after(type, &block)
     end
 
     # Define universal upon advice.

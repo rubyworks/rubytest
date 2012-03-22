@@ -13,8 +13,9 @@ module Test
       @joinpoints ||= []
     end
 
-    # TODO: Should hooks be evaluate in the context of test object scope?
-    #       The #scope fields has been added to the RubyTest spec just in case.
+    # TODO: Should before and affter hooks be evaluated in the context of test
+    #       object scope? The #scope field has been added to the RubyTest spec
+    #       just in case.
 
     #
     def self.joinpoint(name)
@@ -22,7 +23,8 @@ module Test
 
       class_eval %{
         def #{name}(*args)
-          @table[:#{name}].call(*args) if @table.key?(:#{name})
+          procedure = @table[:#{name}]
+          procedure.call(*args) if procedure
         end
       }
     end
@@ -32,38 +34,38 @@ module Test
       @table = {}
     end
 
-    #
-    joinpoint :before_suite
+    # @method begin_suite(suite)
+    joinpoint :begin_suite
 
-    #
-    joinpoint :before_case
+    # @method begin_case(case)
+    joinpoint :begin_case
 
-    #
+    # @method skip_test(test, reason)
     joinpoint :skip_test
 
-    #
-    joinpoint :before_test
+    # @method begin_test(test)
+    joinpoint :begin_test
 
-    #
+    # @method pass(test)
     joinpoint :pass
 
-    #
+    # @method fail(test, exception)
     joinpoint :fail
 
-    #
+    # @method error(test, exception)
     joinpoint :error
 
-    #
+    # @method todo(test, exception)
     joinpoint :todo
 
-    #
-    joinpoint :after_test
+    # @method end_test(test)
+    joinpoint :end_test
 
-    #
-    joinpoint :after_case
+    # @method end_case(case)
+    joinpoint :end_case
 
-    #
-    joinpoint :after_suite
+    # @method end_suite(suite)
+    joinpoint :end_suite
 
     #
     #def [](key)
@@ -74,6 +76,16 @@ module Test
     def join(type, &block)
       type = valid_type(type) 
       @table[type] = block
+    end
+
+    # Add a procedure to one of the before join-points.
+    def join_before(type, &block)
+      join("begin_#{type}", &block) 
+    end
+
+    # Add a procedure to one of the after join-points.
+    def join_after(type, &block)
+      join("end_#{type}", &block)
     end
 
     # Ignore any other signals (precautionary).
@@ -88,12 +100,33 @@ module Test
     #  end
     #end
 
+    #
     def valid_type(type)
-      type = type.to_sym
+      type = message_type(type)
       unless self.class.joinpoints.include?(type)
         raise ArgumentError, "not a valid advice type -- #{type}"
       end
       type
+    end
+
+    #
+    def message_type(type)
+      type = type.to_sym
+      case type
+      when :each
+        type = :test
+      when :all
+        type = :case
+      when :begin_each
+        type = :begin_test
+      when :begin_all
+        type = :begin_case
+      when :end_each
+        type = :end_test
+      when :end_all
+        type = :end_case
+      end
+      return type
     end
 
   end
