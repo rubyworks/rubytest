@@ -1,5 +1,17 @@
 # RELEASE HISTORY
 
+## 0.5.1 / 2012-04-30
+
+This release adds support for Courtier-based confgiration.
+You can now add `config 'rubytest'` entries into a project's
+Config.rb file, instead of creating a separate stand-alone
+config file just for test configuration.
+
+Changes:
+
+* Adds support for Courtier-based configuration.
+
+
 ## 0.5.0 / 2012-03-22
 
 This release improves the command line interface, the handling of
