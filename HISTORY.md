@@ -1,5 +1,15 @@
 # RELEASE HISTORY
 
+## 0.5.2 / 2012-04-31
+
+The previous release overlooked the requirement on Courtier. So this
+release, make it optional. 
+
+Changes:
+
+* Make Courtier an optional requirement.
+
+
 ## 0.5.1 / 2012-04-30
 
 This release adds support for Courtier-based confgiration.
