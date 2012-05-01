@@ -19,7 +19,7 @@ module Test
 
       Test::Config.load
 
-      @profile = 'default'
+      @profile = ENV['profile'] || ENV['p'] || 'default'
       @config  = Test.config
       @runner  = Runner.new
     end

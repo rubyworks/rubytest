@@ -24,10 +24,6 @@ module Test
     # Either can have an optional `.rb` extension.
     GLOB_RC = '{testfile.rb,testfile,.test.rb,.test}'
 
-    # If a root level test file can't be found, then use this
-    # glob to search the task directory for `*.rubytest` files.
-    GLOB_TASK = 'task/*.rubytest'
-
     # Glob used to find project root directory.
     GLOB_ROOT = '{.ruby,.git,.hg,_darcs,lib/}'
 
@@ -40,65 +36,35 @@ module Test
     #     run.files << 'test/case_*.rb'
     #   end
     #
-    # Use `:default` for name for non-specific profile and `:common` for code that
+    # Use `default` for name for non-specific profile and `common` for code that
     # should apply to all configurations.
     #
     # Failing any traditional configuration files, the Confection system will
-    # be used. An example entry in a projects `Confile` is:
+    # be used. An example entry in a projects `Config.rb` is:
     #
-    #   config :test, :name do |run|
+    #   config 'rubytest', profile: 'name' do |run|
     #     run.files << 'test/case_*.rb'
     #   end
     #
     # You can leave the `:name` parameter out for `:default`.
     #
     def self.load
-      if rc_files.empty?
-        if confection_file
-          require 'confection'
-          confection('test', '*').each do |c|
-            name = c.profile ? c.profile : :default
-            Test.run(name, &c)
-          end
-        end
-      else
-        rc_files.each do |file|
-          super(file)
-        end
+      if rc_file
+        super(rc_file)
+      #else
+      #  if config = Test.rc_config
+      #    config.each do |c|
+      #      Test.run(c.profile, &c)
+      #    end
+      #  end
       end
     end
 
-    #
-    def self.confection_file
-      @confection_file ||= (
-        Dir.glob(File.join(root, '{,.}confile{,.rb}'), File::FNM_CASEFOLD).first
+    # Find traditional rc file.
+    def self.rc_file
+      @rc_file ||= (
+        Dir.glob(File.join(root, GLOB_RC), File::FNM_CASEFOLD).first
       )
-    end
-
-    # Find rc file.
-    def self.rc_files
-      @rc_files ||= (
-        if file = Dir.glob(File.join(root, GLOB_RC), File::FNM_CASEFOLD).first
-          [file]
-        else
-          Dir.glob(File.join(root, GLOB_TASK))
-        end
-      )
-
-      #  glob    = GLOB_RC
-      #  stop    = root
-      #  default = nil
-      #  dir     = Dir.pwd
-      #  file    = nil
-      #  loop do
-      #    files = Dir.glob(File.join(dir, glob), File::FNM_CASEFOLD)
-      #    file = files.find{ |f| File.file?(f) }
-      #    break file if file
-      #    break if dir == stop
-      #    dir = File.dirname(dir)
-      #    break if dir == '/'
-      #  end
-      #  file ? file : default
     end
 
     # Find and cache project root directory.
