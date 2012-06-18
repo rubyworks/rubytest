@@ -1,6 +1,6 @@
 begin
-  require 'rc'
-  configure('rubytest') do |config|
+  require 'rc/api'
+  RC.configure 'rubytest' do |config|
     Test.run(config.profile, &config)
   end
 rescue LoadError

@@ -19,10 +19,10 @@ module Test
   #
   class Config
 
-    # Tradional test configuration file glob. This glob
-    # looks for a `Testfile` or a `.test` file.
-    # Either can have an optional `.rb` extension.
-    GLOB_RC = '{testfile.rb,testfile,.test.rb,.test}'
+    # Tradional test configuration file glob. This glob looks for a `Testfile`
+    # or a `.test` file, either of which can have an optional `.rb` extension.
+    # Also `config/rubytest.rb` is permissable.
+    GLOB_RC = '{testfile.rb,testfile,.test.rb,.test,config/rubytest.rb,.config/rubytest.rb}'
 
     # Glob used to find project root directory.
     GLOB_ROOT = '{.ruby,.git,.hg,_darcs,lib/}'
