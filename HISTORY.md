@@ -1,13 +1,13 @@
 # RELEASE HISTORY
 
-## 0.5.2 / 2012-04-31
+## 0.5.2 / 2012-07-20
 
-The previous release overlooked the requirement on Courtier. So this
-release, make it optional. 
+Courtier was renamed to RC. And the previous release overlooked the requirement
+on RC altogether. This release corrects the issue making it optional. 
 
 Changes:
 
-* Make Courtier an optional requirement.
+* Make RC an optional requirement.
 
 
 ## 0.5.1 / 2012-04-30
