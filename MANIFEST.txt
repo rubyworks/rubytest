@@ -34,7 +34,6 @@ lib/rubytest/runner.rb
 lib/rubytest.rb
 lib/test.rb
 test/basic_case.rb
-Gemfile.lock
 LICENSE.txt
 HISTORY.md
 README.md
