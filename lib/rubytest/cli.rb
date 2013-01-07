@@ -47,7 +47,8 @@ module Test
 
       runner.files.replace(argv) unless argv.empty?
 
-      Test::Config.load_path_setup  #unless runner.autopath == false
+      # TODO: this should probably be invoked via runner.run instead
+      Test::Config.load_path_setup if runner.autopath
 
       begin
         success = runner.run
@@ -65,7 +66,7 @@ module Test
     def run_profile
       raise "no such profile -- #{profile}" unless config[profile] or profile == 'default'
 
-      common  = config['common']
+      common = config['common']
       common.call(runner) if common
 
       profig = config[profile]
@@ -116,7 +117,10 @@ module Test
           runner.match << text 
         end
 
-        opt.on '-I', '--loadpath PATH',  'add to $LOAD_PATH' do |paths|
+        opt.on '-a', '--autopath', 'automatically add to $LOAD_PATH' do |paths|
+          runner.autopath = true
+        end
+        opt.on '-I', '--loadpath PATH', 'add to $LOAD_PATH' do |paths|
           paths.split(/[:;]/).reverse_each do |path|
             $LOAD_PATH.unshift path
           end

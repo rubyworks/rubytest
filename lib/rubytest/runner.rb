@@ -67,6 +67,16 @@ module Test
       @hard = !!boolean
     end
 
+    #
+    def self.autopath
+      @autopath
+    end
+
+    #
+    def self.autopath=(boolean)
+      @autopath = !!boolean
+    end
+
     # / / / A T T R I B U T E S / / /
 
     # Test suite to run. This is a list of compliant test units and test cases.
@@ -113,6 +123,16 @@ module Test
       @hard = !!boolean
     end
 
+    # Automatically assume local loadpaths?
+    def autopath?
+      @autopath
+    end
+
+    #
+    def autopath=(boolean)
+      @autopath = !!boolean
+    end
+
     # Instance of Advice is a special customizable observer.
     def advice
       @advice
@@ -142,14 +162,15 @@ module Test
     #   A list of compliant tests/testcases.
     #
     def initialize(options={}, &block)
-      @suite     = options[:suite]   || self.class.suite
-      @files     = options[:files]   || self.class.files
-      @format    = options[:format]  || self.class.format
-      @tags      = options[:tags]    || self.class.tags
-      @units     = options[:units]   || self.class.units
-      @match     = options[:match]   || self.class.match
-      @verbose   = options[:verbose] || self.class.verbose
-      @hard      = options[:hard]    || self.class.hard
+      @suite     = options[:suite]    || self.class.suite
+      @files     = options[:files]    || self.class.files
+      @format    = options[:format]   || self.class.format
+      @tags      = options[:tags]     || self.class.tags
+      @units     = options[:units]    || self.class.units
+      @match     = options[:match]    || self.class.match
+      @verbose   = options[:verbose]  || self.class.verbose
+      @hard      = options[:hard]     || self.class.hard
+      @autopath  = options[:autopath] || self.class.autopath
 
       @advice    = Advice.new
 

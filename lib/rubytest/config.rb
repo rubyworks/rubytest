@@ -89,9 +89,9 @@ module Test
     # @return [Hash] Project's loaded `.index` file, if it has one.
     def self.dotindex
       @dotindex ||= (
-        difile = File.join(root, '.index')
-        if File.exist?(difile)
-          YAML.load_file(difile)
+        file = File.join(root, '.index')
+        if File.exist?(file)
+          YAML.load_file(file) rescue {}
         else
           {}
         end
@@ -100,9 +100,6 @@ module Test
 
     # Setup $LOAD_PATH based on .index file.
     #
-    # @todo Maybe we should not bother to do this b/c other means might be used?
-    # @todo Maybe we should not fallback to typical load path?
-    # 
     def self.load_path_setup
       if load_paths = (dotindex['paths'] || {})['load']
         load_paths.each do |path|
