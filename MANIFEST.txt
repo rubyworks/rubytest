@@ -1,4 +1,5 @@
-#!mast .ruby .test .yaropts bin demo lib spec test [A-Z]*.*
+#!mast .index .ruby .test .yaropts bin demo lib man spec test *.md *.txt
+.index
 .ruby
 bin/ruby-test
 bin/rubytest
@@ -34,6 +35,6 @@ lib/rubytest/runner.rb
 lib/rubytest.rb
 lib/test.rb
 test/basic_case.rb
-LICENSE.txt
 HISTORY.md
 README.md
+LICENSE.txt
