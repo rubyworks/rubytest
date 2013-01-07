@@ -84,25 +84,27 @@ module Test
       )
     end
 
-    # Load and cache a project's `.ruby` file.
+    # Load and cache a project's `.index` file.
     #
-    # @return [Hash] Project's loaded `.ruby` file, if it has one.
-    def self.dotruby
-      @dotruby ||= (
-        drfile = File.join(root, '.ruby')
-        if File.exist?(drfile)
-          YAML.load_file(drfile)
+    # @return [Hash] Project's loaded `.index` file, if it has one.
+    def self.dotindex
+      @dotindex ||= (
+        difile = File.join(root, '.index')
+        if File.exist?(difile)
+          YAML.load_file(difile)
         else
           {}
         end
       )
     end
 
-    # Setup $LOAD_PATH based on .ruby file.
+    # Setup $LOAD_PATH based on .index file.
     #
+    # @todo Maybe we should not bother to do this b/c other means might be used?
     # @todo Maybe we should not fallback to typical load path?
+    # 
     def self.load_path_setup
-      if load_paths = dotruby['load_path']
+      if load_paths = (dotindex['paths'] || {})['load']
         load_paths.each do |path|
           $LOAD_PATH.unshift(File.join(root, path))
         end
