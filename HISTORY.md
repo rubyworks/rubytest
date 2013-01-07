@@ -1,5 +1,17 @@
 # RELEASE HISTORY
 
+## 0.5.3 / 2013-01-07
+
+Adjust Config to look for a project's `.index` file for load path, instead of
+a `.ruby` file. Also, this will only happen now if configured to do so,
+i.e. via the `-a/--autopath` option on the command line.
+
+Changes:
+
+* Fix config.rb to use .index file, instead of .ruby file.
+* Automtically prepend $LOAD_PATH only if asked to do so.
+
+
 ## 0.5.2 / 2012-07-20
 
 Courtier was renamed to RC. And the previous release overlooked the requirement
