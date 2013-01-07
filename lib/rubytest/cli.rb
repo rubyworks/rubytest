@@ -48,7 +48,7 @@ module Test
       runner.files.replace(argv) unless argv.empty?
 
       # TODO: this should probably be invoked via runner.run instead
-      Test::Config.load_path_setup if runner.autopath
+      Test::Config.load_path_setup if runner.autopath?
 
       begin
         success = runner.run
