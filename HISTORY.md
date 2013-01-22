@@ -1,9 +1,18 @@
 # RELEASE HISTORY
 
+## 0.5.4 / 2013-01-22
+
+This release simply updates configuraiton code to work with RC v0.4.0.
+
+Changes:
+
+* Call RC.configure explicitly.
+
+
 ## 0.5.3 / 2013-01-07
 
-Adjust Config to look for a project's `.index` file for load path, instead of
-a `.ruby` file. Also, this will only happen now if configured to do so,
+Adjust Config to look for a project's `.index` file for load path, instead
+of a `.ruby` file. Also, this will only happen now if configured to do so,
 i.e. via the `-a/--autopath` option on the command line.
 
 Changes:
