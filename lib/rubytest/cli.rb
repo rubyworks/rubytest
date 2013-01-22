@@ -19,7 +19,7 @@ module Test
 
       Test::Config.load
 
-      @profile = ENV['profile'] || ENV['p'] || 'default'
+      #@profile = ENV['profile'] || ENV['p'] || 'default'
       @config  = Test.config
       @runner  = Runner.new
     end
@@ -35,13 +35,24 @@ module Test
     attr :config
 
     #
-    attr_accessor :profile
+    def profile
+      ENV['profile'] || ENV['p'] || 'default'
+    end
+
+    #
+    def profile=(name)
+      ENV['profile'] = name.to_s
+    end
 
     #
     # Run tests.
     #
     def run(*argv)
       options.parse!(argv)
+
+      if Object.const_get(:RC)
+        RC.configure('rubytest')
+      end
 
       run_profile
 
@@ -56,6 +67,7 @@ module Test
       rescue => error
         raise error if $DEBUG
         $stderr.puts('ERROR: ' + error.to_s)
+        exit -1
       end
     end
 
