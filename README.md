@@ -5,6 +5,10 @@
 [Development](http://github.com/rubyworks/rubytest) /
 [Issues](http://github.com/rubyworks/rubytest/issues)
 
+[![Build Status](https://secure.travis-ci.org/rubyworks/rubytest.png)](http://travis-ci.org/rubyworks/rubytest)
+[![Gem Version](https://badge.fury.io/rb/rubytest.png)](http://badge.fury.io/rb/rubytest)
+
+
 ## Description
 
 Ruby Test is a universal test harness for Ruby that can be used by any Ruby
