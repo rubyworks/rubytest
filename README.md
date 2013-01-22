@@ -12,12 +12,12 @@
 ## Description
 
 Ruby Test is a universal test harness for Ruby that can be used by any Ruby
-test framework. Ruby Test defines a simple specification for compliance, which
-allows tests from various frameworks to all run 
+test framework. You think of Ruby Test as a *meta* test framework. 
+Ruby Test defines a straight-forward specification that any test framework
+can utilize as it backend. This makes it almost trival to implement new
+test frameworks. Ruby Test further allows tests from various frameworks
+to all run through a single uniform user interface in a single pass.
 
-Ruby Test defines a straight-forward specification that any test framework can 
-easily support which allows Ruby Test to run the frameworks tests through a
-single uniform user interface in a single pass.
 
 ## Specification
 
