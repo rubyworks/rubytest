@@ -1,8 +1,4 @@
-Test.run(:default) do |run|
-  run.files << 'test/*_case.rb'
-end
-
-Test.run(:cov) do |run|
+Test.configure do |run|
   run.files << 'test/*_case.rb'
 
   require 'simplecov'

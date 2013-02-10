@@ -1,0 +1,8 @@
+rubytest
+  test/*_case.rb
+
+[coverage]
+rubytest
+  -p task/simplecov.rb
+  test/*_case.rb
+
