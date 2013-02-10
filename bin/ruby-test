@@ -1,4 +1,9 @@
 #!/usr/bin/env ruby
-require 'rubytest'
-Test::CLI.run(*ARGV)
+begin
+  require 'rubytest'
+  Test::CLI.run(*ARGV)
+rescue RuntimeError => error
+  raise error if $DEBUG
+  $stderr.puts error
+end
 
