@@ -1,16 +1,18 @@
 module Test
 
+  # Configure test run via a block then will be passed a `Config` instance.
   #
-  def self.run(name=nil, &block)
-    name = name ? name : 'default'
-
-    @config ||= {}
-    @config[name.to_s] = block
+  # @return [Proc]
+  def self.configure(&block)
+    configuration.apply(&block)
   end
 
+  # Passive store for configuration settings. Settings aren't applied until
+  # just before tests are run.
   #
-  def self.config
-    @config ||= {}
+  # @return [Proc]
+  def self.configuration
+    @config ||= Config.new
   end
 
   # Handle test run configruation.
@@ -19,53 +21,36 @@ module Test
   #
   class Config
 
-    # Tradional test configuration file glob. This glob looks for a `Testfile`
-    # or a `.test` file, either of which can have an optional `.rb` extension.
-    # Also `config/rubytest.rb` is permissable.
-    GLOB_RC = '{testfile.rb,testfile,.test.rb,.test,config/rubytest.rb,.config/rubytest.rb}'
+    # Default report is in the old "dot-progress" format.
+    DEFAULT_FORMAT = 'dotprogress'
+
+    ## RubyTest configuration file can be in `etc/test.rb` or `config/test.rb`,
+    ## or the hidden file `.test.rb`.
+    #GLOB_CONFIG = '{.,task/,etc/,config/}test{.rb,}'
 
     # Glob used to find project root directory.
-    GLOB_ROOT = '{.ruby,.git,.hg,_darcs,lib/}'
+    GLOB_ROOT = '{.index,.gemspec,.git,.hg,_darcs,lib/}'
 
-    #
-    # Load configuration. This will first look for a root level `Testfile.rb`
-    # or `.test.rb` file. Failing that it will look for `task/*.rubytest` files.
-    # An example entry into any of these look like:
-    #
-    #   Test.run :name do |run|
-    #     run.files << 'test/case_*.rb'
-    #   end
-    #
-    # Use `default` for name for non-specific profile and `common` for code that
-    # should apply to all configurations.
-    #
-    # Failing any traditional configuration files, the Confection system will
-    # be used. An example entry in a projects `Config.rb` is:
-    #
-    #   config 'rubytest', profile: 'name' do |run|
-    #     run.files << 'test/case_*.rb'
-    #   end
-    #
-    # You can leave the `:name` parameter out for `:default`.
-    #
-    def self.load
-      if rc_file
-        super(rc_file)
-      #else
-      #  if config = Test.rc_config
-      #    config.each do |c|
-      #      Test.run(c.profile, &c)
-      #    end
-      #  end
-      end
-    end
+    ##
+    ## Load configuration file. This will first look for a root level `Testfile.rb`
+    ## or `.test.rb` file. Failing that it will look for `task/*.test.rb` files.
+    ## An example entry into any of these look like:
+    ##
+    ##   Test.run :name do |run|
+    ##     run.files << 'test/case_*.rb'
+    ##   end
+    ##
+    ## Use `default` for name for non-specific profile and `common` for code that
+    ## should apply to all configurations.
+    ##
+    #def self.load_config
+    #  require config_file if config_file
+    #end
 
-    # Find traditional rc file.
-    def self.rc_file
-      @rc_file ||= (
-        Dir.glob(File.join(root, GLOB_RC), File::FNM_CASEFOLD).first
-      )
-    end
+    ## Find traditional configuration file.
+    #def self.config_file
+    #  @config_file ||= Dir.glob(File.join(root, GLOB_CONFIG)).first
+    #end
 
     # Find and cache project root directory.
     #
@@ -98,6 +83,18 @@ module Test
       )
     end
 
+    #
+    def self.require_profile(file)
+      #if File.exist?(file)
+      #  require file
+      #else
+        glob = File.join(root, "#{file}{,.rb}")
+        if file = Dir.glob(glob).first
+          require file
+        end
+      #end
+    end
+
     # Setup $LOAD_PATH based on .index file.
     #
     def self.load_path_setup
@@ -111,6 +108,81 @@ module Test
           $LOAD_PATH.unshift(typical_load_path) 
         end
       end
+    end
+
+    #
+    def initialize(&block)
+      apply(&block)
+    end
+
+    #
+    def apply(&block)
+      block.call(self) if block
+    end
+
+    # Default test suite ($TEST_SUITE).
+    def suite
+      $TEST_SUITE
+    end
+
+    # Default list of test files to load.
+    def files
+      @files ||= []
+    end
+
+    #
+    def format
+      @format || DEFAULT_FORMAT
+    end
+
+    #
+    def format=(format)
+      @format = format
+    end
+
+    #
+    def verbose
+      @verbose
+    end
+
+    #
+    def verbose=(boolean)
+      @verbose = !!boolean
+    end
+
+    # Default description match for filtering tests.
+    def match
+      @match ||= []
+    end
+
+    # Default selection of tags for filtering tests.
+    def tags
+      @tags ||= []
+    end
+
+    # Default selection of units for filtering tests.
+    def units
+      @unit ||= []
+    end
+
+    #
+    def hard
+      @hard
+    end
+
+    #
+    def hard=(boolean)
+      @hard = !!boolean
+    end
+
+    #
+    def autopath
+      @autopath
+    end
+
+    #
+    def autopath=(boolean)
+      @autopath = !!boolean
     end
 
   end

@@ -1,5 +1,18 @@
 module Test
 
+  # TODO: Wrap run in at_exit ?
+  def self.run(config, &config_proc)
+    runner = Runner.new(config, &config_proc)
+    begin
+      success = runner.run
+      exit -1 unless success
+    rescue => error
+      raise error if $DEBUG
+      $stderr.puts('ERROR: ' + error.to_s)
+      exit -1
+    end
+  end
+
   # The Test::Runner class handles the execution of tests.
   #
   class Runner
@@ -10,73 +23,6 @@ module Test
     # Exceptions that are not caught by test runner.
     OPEN_ERRORS = [NoMemoryError, SignalException, Interrupt, SystemExit]
 
-    # / / / D E F A U L T S / / /
-
-    # Default test suite ($TEST_SUITE).
-    def self.suite
-      $TEST_SUITE
-    end
-
-    # Default list of test files to load.
-    def self.files
-      @files ||= []
-    end
-
-    #
-    def self.format
-      @format || DEFAULT_FORMAT
-    end
-
-    #
-    def self.format=(format)
-      @format = format
-    end
-
-    #
-    def self.verbose
-      @verbose
-    end
-
-    #
-    def self.verbose=(boolean)
-      @verbose = !!boolean
-    end
-
-    # Default description match for filtering tests.
-    def self.match
-      @match ||= []
-    end
-
-    # Default selection of tags for filtering tests.
-    def self.tags
-      @tags ||= []
-    end
-
-    # Default selection of units for filtering tests.
-    def self.units
-      @unit ||= []
-    end
-
-    #
-    def self.hard
-      @hard
-    end
-
-    #
-    def self.hard=(boolean)
-      @hard = !!boolean
-    end
-
-    #
-    def self.autopath
-      @autopath
-    end
-
-    #
-    def self.autopath=(boolean)
-      @autopath = !!boolean
-    end
-
     # / / / A T T R I B U T E S / / /
 
     # Test suite to run. This is a list of compliant test units and test cases.
@@ -84,6 +30,9 @@ module Test
 
     # Test files to load.
     attr :files
+
+    # Features to require prior to running tests.
+    #attr :requires
 
     # Reporter format name, or name fragment, used to look up reporter class.
     attr :format
@@ -161,18 +110,20 @@ module Test
     # @param [Array] suite
     #   A list of compliant tests/testcases.
     #
-    def initialize(options={}, &block)
-      @suite     = options[:suite]    || self.class.suite
-      @files     = options[:files]    || self.class.files
-      @format    = options[:format]   || self.class.format
-      @tags      = options[:tags]     || self.class.tags
-      @units     = options[:units]    || self.class.units
-      @match     = options[:match]    || self.class.match
-      @verbose   = options[:verbose]  || self.class.verbose
-      @hard      = options[:hard]     || self.class.hard
-      @autopath  = options[:autopath] || self.class.autopath
+    def initialize(config=nil, &block)
+      @config = config || Test.configuration
 
-      @advice    = Advice.new
+      @suite     = @config.suite
+      @files     = @config.files
+      @format    = @config.format
+      @tags      = @config.tags
+      @units     = @config.units
+      @match     = @config.match
+      @verbose   = @config.verbose
+      @hard      = @config.hard
+      @autopath  = @config.autopath
+
+      @advice = Advice.new
 
       block.call(self) if block
     end
@@ -193,6 +144,8 @@ module Test
     #   That the tests ran without error or failure.
     #
     def run
+      Test::Config.load_path_setup if autopath?
+
       ignore_callers
 
       files_resolved.each do |file|

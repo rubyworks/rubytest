@@ -16,73 +16,37 @@ module Test
     #
     def initialize
       require 'optparse'
-
-      Test::Config.load
-
-      #@profile = ENV['profile'] || ENV['p'] || 'default'
-      @config  = Test.config
-      @runner  = Runner.new
     end
 
     #
-    # @return [Runner]
-    #
-    attr :runner
-
-    #
-    # @return [Hash]
-    #
-    attr :config
-
-    #
-    def profile
-      ENV['profile'] || ENV['p'] || 'default'
-    end
-
-    #
-    def profile=(name)
-      ENV['profile'] = name.to_s
+    def config
+      @config ||= Test.configuration
     end
 
     #
     # Run tests.
     #
     def run(*argv)
-      options.parse!(argv)
-
-      if Object.const_get(:RC)
-        RC.configure('rubytest')
-      end
-
-      run_profile
-
-      runner.files.replace(argv) unless argv.empty?
-
-      # TODO: this should probably be invoked via runner.run instead
-      Test::Config.load_path_setup if runner.autopath?
-
       begin
-        success = runner.run
-        exit -1 unless success
-      rescue => error
-        raise error if $DEBUG
-        $stderr.puts('ERROR: ' + error.to_s)
-        exit -1
+        require 'dotopts'
+      rescue LoadError
       end
-    end
 
-    #
-    # Run the common profile if defined and then the specific
-    # profile.
-    #
-    def run_profile
-      raise "no such profile -- #{profile}" unless config[profile] or profile == 'default'
+      options.parse!(argv)    
 
-      common = config['common']
-      common.call(runner) if common
+      config.files.replace(argv) unless argv.empty?   
 
-      profig = config[profile]
-      profig.call(runner) if profig
+      Test.run(config)
+
+      #runner = Runner.new(config)
+      #begin
+      #  success = runner.run
+      #  exit -1 unless success
+      #rescue => error
+      #  raise error if $DEBUG
+      #  $stderr.puts('ERROR: ' + error.to_s)
+      #  exit -1
+      #end
     end
 
     #
@@ -92,56 +56,56 @@ module Test
       this = self
 
       OptionParser.new do |opt|
-        opt.banner = "Usage: #{$0} [options] [files ...]"
+        opt.banner = "Usage: #{File.basename($0)} [options] [files ...]"
 
-        opt.separator "PRESET OPTIONS:"
+        #opt.separator "PRESET OPTIONS:"
+        #opt.on '-c', '--config FILE', "require local config file" do |file|
+        #  require_config(file)
+        #end
+        #pnames = profile_names
+        #unless pnames.empty?
+        #  pnames.each do |pname|
+        #    opt.separator((" " * 40) + "* #{pname}")
+        #  end
+        #end
+        #opt.separator "CONFIG OPTIONS:"
 
-        opt.on '-p', '--profile NAME', "use configuration profile" do |name|
-          this.profile = name.to_s
-        end
-
-        config_names = config.keys - ['common', 'default']
-
-        unless config_names.empty?
-          config_names.each do |name|
-            opt.separator((" " * 40) + "* #{name}")
-          end
-        end
-
-        opt.separator "CONFIG OPTIONS:"
         opt.on '-f', '--format NAME', 'report format' do |name|
-          runner.format = name
+          config.format = name
         end
         opt.on '-y', '--tapy', 'shortcut for -f tapy' do
-          runner.format = 'tapy'
+          config.format = 'tapy'
         end
         opt.on '-j', '--tapj', 'shortcut for -f tapj' do
-          runner.format = 'tapj'
+          config.format = 'tapj'
         end
 
         opt.on '-t', '--tag TAG', 'select tests by tag' do |tag|
-          runner.tags << tag
+          config.tags << tag
         end
         opt.on '-u', '--unit TAG', 'select tests by software unit' do |unit|
-          runner.units << unit
+          config.units << unit
         end
         opt.on '-m', '--match TEXT', 'select tests by description' do |text|
-          runner.match << text 
+          config.match << text 
         end
 
-        opt.on '-a', '--autopath', 'automatically add to $LOAD_PATH' do |paths|
-          runner.autopath = true
+        opt.on '-a', '--autopath', 'automatically add paths to $LOAD_PATH' do |paths|
+          config.autopath = true
         end
-        opt.on '-I', '--loadpath PATH', 'add to $LOAD_PATH' do |paths|
+        opt.on '-I', '--loadpath PATH', 'add given path to $LOAD_PATH' do |paths|
           paths.split(/[:;]/).reverse_each do |path|
             $LOAD_PATH.unshift path
           end
         end
-        opt.on '-r', '--require FILE', 'require file' do |file|
+        opt.on '-r', '--require FILE', 'require file (immediately)' do |file|
           require file
         end
-        opt.on '-v' , '--verbose', 'provide extra detailed report' do
-          runner.verbose = true
+        opt.on '-p', '--profile FILE', "require local profile" do |file|
+          Config.require_profile(file)
+        end
+        opt.on '-d' , '--details', 'provide extra detail in reports' do
+          config.verbose = true
         end
         #opt.on('--log DIRECTORY', 'log directory'){ |dir|
         #  options[:log] = dir
@@ -149,7 +113,7 @@ module Test
         opt.on("--[no-]ansi" , 'turn on/off ANSI colors'){ |v| $ansi = v }
         opt.on("--debug" , 'turn on debugging mode'){ $DEBUG = true }
 
-        opt.separator "COMMAND OPTIONS:"
+        #opt.separator "COMMAND OPTIONS:"
         #opt.on("--about" , 'display information about rubytest'){
         #  puts "Ruby Test v#{VERSION}"
         #  puts "#{COPYRIGHT}"

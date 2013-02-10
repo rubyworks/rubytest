@@ -74,8 +74,8 @@ module Ruth
       #
       def run
         fork {
-          #require 'test'
-          require 'test/runner'
+          #require 'rubytest'
+          require 'rubytest/runner'
 
           loadpath.each   { |d| $LOAD_PATH.unshift(d) }
           requires.each   { |f| require f }
