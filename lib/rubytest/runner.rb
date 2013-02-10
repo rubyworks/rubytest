@@ -23,6 +23,10 @@ module Test
     # Exceptions that are not caught by test runner.
     OPEN_ERRORS = [NoMemoryError, SignalException, Interrupt, SystemExit]
 
+    class << self
+      attr_accessor :assertionless
+    end
+
     # / / / A T T R I B U T E S / / /
 
     # Test suite to run. This is a list of compliant test units and test cases.
@@ -107,11 +111,13 @@ module Test
 
     # New Runner.
     #
-    # @param [Array] suite
-    #   A list of compliant tests/testcases.
+    # @param [Config] config
+    #   Config instance.
     #
     def initialize(config=nil, &block)
       @config = config || Test.configuration
+
+      block.call(@config) if block
 
       @suite     = @config.suite
       @files     = @config.files
@@ -124,8 +130,6 @@ module Test
       @autopath  = @config.autopath
 
       @advice = Advice.new
-
-      block.call(self) if block
     end
 
     # The reporter to use for ouput.
