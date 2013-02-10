@@ -26,15 +26,17 @@ module Test
     #
     # Run tests.
     #
-    def run(*argv)
+    def run(argv=nil)
       begin
         require 'dotopts'
       rescue LoadError
       end
 
-      options.parse!(argv)    
+      argv = (argv || ARGV.dup)
 
-      config.files.replace(argv) unless argv.empty?   
+      options.parse!(argv)
+
+      config.files.replace(argv) unless argv.empty?
 
       Test.run(config)
 

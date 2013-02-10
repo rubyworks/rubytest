@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 begin
   require 'rubytest'
-  Test::CLI.run(*ARGV)
+  Test::CLI.run
 rescue RuntimeError => error
   raise error if $DEBUG
   $stderr.puts error
