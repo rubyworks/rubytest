@@ -40,17 +40,17 @@ module Test
 
       config.files.replace(argv) unless argv.empty?
 
-      Test.run(config)
+      #Test.run(config)
 
-      #runner = Runner.new(config)
-      #begin
-      #  success = runner.run
-      #  exit -1 unless success
-      #rescue => error
-      #  raise error if $DEBUG
-      #  $stderr.puts('ERROR: ' + error.to_s)
-      #  exit -1
-      #end
+      runner = Runner.new(config)
+      begin
+        success = runner.run
+        exit -1 unless success
+      rescue => error
+        raise error if $DEBUG
+        $stderr.puts('ERROR: ' + error.to_s)
+        exit -1
+      end
     end
 
     # These options are parsed prior to any other options.

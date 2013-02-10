@@ -1,6 +1,6 @@
 require 'rake/tasklib'
 
-module Ruth
+module Test
 
   #
   module Rake
@@ -91,9 +91,8 @@ module Ruth
       end
 
       # Resolve test globs.
-      #--
-      # TODO: simplify?
-      #++
+      #
+      # TODO: Can this code be simplifed?
       def test_files
         files = tests
         files = files.map{ |f| Dir[f] }.flatten

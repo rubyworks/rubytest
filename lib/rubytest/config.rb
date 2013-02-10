@@ -15,42 +15,54 @@ module Test
     @config ||= Config.new
   end
 
-  # Handle test run configruation.
-  #
-  # @todo Why not use the instace level for `Test.config` ?
+  ##
+  # Encapsulates test run configruation.
   #
   class Config
 
     # Default report is in the old "dot-progress" format.
     DEFAULT_FORMAT = 'dotprogress'
 
-    ## RubyTest configuration file can be in `etc/test.rb` or `config/test.rb`,
-    ## or the hidden file `.test.rb`.
-    #GLOB_CONFIG = '{.,task/,etc/,config/}test{.rb,}'
-
     # Glob used to find project root directory.
     GLOB_ROOT = '{.index,.gemspec,.git,.hg,_darcs,lib/}'
 
-    ##
-    ## Load configuration file. This will first look for a root level `Testfile.rb`
-    ## or `.test.rb` file. Failing that it will look for `task/*.test.rb` files.
-    ## An example entry into any of these look like:
-    ##
-    ##   Test.run :name do |run|
-    ##     run.files << 'test/case_*.rb'
-    ##   end
-    ##
-    ## Use `default` for name for non-specific profile and `common` for code that
-    ## should apply to all configurations.
-    ##
-    #def self.load_config
-    #  require config_file if config_file
-    #end
+    # RubyTest configuration file can be in `.test`, '.test.rb`, `etc/test.rb`
+    # or `config/test.rb`.
+    #
+    # @deprecated Use manual -c/--config option instead.
+    GLOB_CONFIG = '{.test,.test.rb,etc/test.rb,config/test.rb}'
 
-    ## Find traditional configuration file.
-    #def self.config_file
-    #  @config_file ||= Dir.glob(File.join(root, GLOB_CONFIG)).first
-    #end
+    #
+    def self.assertionless
+      @assertionless
+    end
+
+    #
+    def self.assertionless=(boolean)
+      @assertionaless = !!boolean
+    end
+
+    # Load configuration file. An example file might look like:
+    #
+    #   Test.configure do |run|
+    #     run.files << 'test/case_*.rb'
+    #   end
+    #
+    # @deprecated Planned for deprecation in April 2013.
+    def self.load_config
+      if config_file
+        file = config_file.sub(Dir.pwd+'/','')
+        $stderr.puts "Automatic #{file} loading has been deprecated. Use -c option for future version."
+        load config_file
+      end
+    end
+
+    # Find traditional configuration file.
+    #
+    # @deprecated
+    def self.config_file
+      @config_file ||= Dir.glob(File.join(root, GLOB_CONFIG)).first
+    end
 
     # Find and cache project root directory.
     #
@@ -83,10 +95,14 @@ module Test
       )
     end
 
+    # Require a configuration file.
     #
     # TODO: Should config files be require relative to project root
     #       or relatvie to current working directory?
     #
+    # TODO: Use load instead of require?
+    #
+    # @return nothing.
     def self.require_config(file)
       #if File.exist?(file)
       #  require file
@@ -114,12 +130,13 @@ module Test
       end
     end
 
-    #
+    # Initialize new Config instance.
     def initialize(&block)
+      self.class.load_config
       apply(&block)
     end
 
-    #
+    # Evaluate configuration block.
     def apply(&block)
       block.call(self) if block
     end
@@ -142,17 +159,17 @@ module Test
       @format || ENV['RUBYTEST_FORMAT'] || DEFAULT_FORMAT
     end
 
-    #
+    # Set test report format.
     def format=(format)
       @format = format
     end
 
-    #
+    # Provide extra details in reports?
     def verbose
       @verbose
     end
 
-    #
+    # Set verbose mode.
     def verbose=(boolean)
       @verbose = !!boolean
     end
@@ -174,7 +191,7 @@ module Test
 
     # Hard is a synonym for assertionless.
     def hard
-      @hard || Runner.assertionless
+      @hard || self.class.assertionless
     end
 
     # Hard is a synonym for assertionless.

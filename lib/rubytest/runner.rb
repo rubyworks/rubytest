@@ -1,31 +1,36 @@
 module Test
 
-  # TODO: Wrap run in at_exit ?
+  # Currently this is an alias for configure, however it is likely
+  # to become an alias for `Runner.run` in the future.
+  #
+  # @deprecated Will probably change behavior in future.
   def self.run(config=nil, &config_proc)
-    runner = Runner.new(config, &config_proc)
-    begin
-      success = runner.run
-      exit -1 unless success
-    rescue => error
-      raise error if $DEBUG
-      $stderr.puts('ERROR: ' + error.to_s)
-      exit -1
-    end
+    $stderr.puts "configuration profiles no longer supported." if config
+    configure(&config_proc)
   end
 
   # The Test::Runner class handles the execution of tests.
   #
   class Runner
 
+    # TODO: Wrap run in at_exit ?
+    def self.run(config=nil, &config_proc)
+      runner = Runner.new(config, &config_proc)
+      begin
+        success = runner.run
+        exit -1 unless success
+      rescue => error
+        raise error if $DEBUG
+        $stderr.puts('ERROR: ' + error.to_s)
+        exit -1
+      end
+    end
+
     # Default report is in the old "dot-progress" format.
     DEFAULT_FORMAT = 'dotprogress'
 
     # Exceptions that are not caught by test runner.
     OPEN_ERRORS = [NoMemoryError, SignalException, Interrupt, SystemExit]
-
-    class << self
-      attr_accessor :assertionless
-    end
 
     # / / / A T T R I B U T E S / / /
 
