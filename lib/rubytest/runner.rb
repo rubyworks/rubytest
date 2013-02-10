@@ -1,7 +1,7 @@
 module Test
 
   # TODO: Wrap run in at_exit ?
-  def self.run(config, &config_proc)
+  def self.run(config=nil, &config_proc)
     runner = Runner.new(config, &config_proc)
     begin
       success = runner.run
