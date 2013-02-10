@@ -1,3 +1,5 @@
+require_relative 'helper'
+
 test = Object.new
 
 def test.call
