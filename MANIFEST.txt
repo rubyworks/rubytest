@@ -1,6 +1,5 @@
 #!mast .index .ruby .test .yaropts bin demo lib man spec test *.md *.txt
 .index
-.ruby
 bin/ruby-test
 bin/rubytest
 demo/01_test.md
@@ -18,7 +17,6 @@ lib/rubytest/core_ext/file.rb
 lib/rubytest/core_ext/string.rb
 lib/rubytest/core_ext.rb
 lib/rubytest/rake.rb
-lib/rubytest/rc.rb
 lib/rubytest/recorder.rb
 lib/rubytest/reporters/abstract.rb
 lib/rubytest/reporters/abstract_hash.rb
@@ -35,6 +33,7 @@ lib/rubytest/runner.rb
 lib/rubytest.rb
 lib/test.rb
 test/basic_case.rb
+test/helper.rb
 HISTORY.md
 README.md
 LICENSE.txt
