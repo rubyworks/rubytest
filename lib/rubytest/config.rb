@@ -134,9 +134,12 @@ module Test
       @files ||= []
     end
 
+    # Format by default is `dotprogress`. The format can also be set
+    # via the `RUBYTEST_FORMAT` environment variable.
     #
+    # @return [String] format
     def format
-      @format || DEFAULT_FORMAT
+      @format || ENV['RUBYTEST_FORMAT'] || DEFAULT_FORMAT
     end
 
     #
@@ -169,22 +172,22 @@ module Test
       @unit ||= []
     end
 
-    #
+    # Hard is a synonym for assertionless.
     def hard
-      @hard
+      @hard || Runner.assertionless
     end
 
-    #
+    # Hard is a synonym for assertionless.
     def hard=(boolean)
       @hard = !!boolean
     end
 
-    #
+    # Automatically modify the `$LOAD_PATH`?
     def autopath
       @autopath
     end
 
-    #
+    # Automatically modify the `$LOAD_PATH`?
     def autopath=(boolean)
       @autopath = !!boolean
     end

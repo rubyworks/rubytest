@@ -48,33 +48,46 @@ See the [Wiki](http://github.com/rubyworks/test/wiki) for further details.
 
 ## Usage
 
-There are a few ways to run tests. First, there is a command line tool:
+There are a few ways to run tests. First, there is the command line tool
+e.g.
 
-    $ rubytest
+    $ rubytest test/test_*.rb
 
-The command line tool takes various options, use `--help` to see them.
-Be sure to load in your test framework or framework's Ruby Test adapter.
+The command line tool takes various options, use `-h/--help` to see them.
 
-Preconfigurations can be defined in a `.test` file, e.g.
+When running tests, you need to be sure to load in your test framework
+or your framework's RubyTest adapter. This is usually done via a helper
+script in the test files, but might also be done via command line options,
+e.g.
 
-    Test.run 'default' do |r|
-      r.format = 'progress'
-      r.requires << 'lemon'
-      r.files << 'test/*_case.rb'
-    end
+    $ rubytest -r lemon -r ae test/test_*.rb
 
-There is also a 'rubytest/autorun.rb' library script that can be loaded which
-creates an `at_exit` runner, for which `test.rb` provides a nice shortcut:
+RubyTest supports [dotopts](http://rubyworks.github.com/dotopts) out of the
+box, so it easy to setup reusable options. For example, a `.option` file
+entry might be:
 
-    $ ruby -r test
+    rubytest
+      -f progress
+      -r spectroscope
+      -r rspecial
+      spec/spec_*.rb
 
-There is also a Rake task.
+There is also a Rake task. In your Rakefile,
 
     require 'rubytest/rake'
 
-    Test::Rake::TestTask.new
+    Test::Rake::TestTask.new do |run|
+      require 'lemon'
+      run.files << 'test/test_*.rb'
+    end
 
 A Detroit plugin is in the works and should be available soon.
+
+See the Wiki for more information on the different ways to run tests.
+
+
+Notice the use of `Test.configure` which is .
+
 
 
 ## Installation
