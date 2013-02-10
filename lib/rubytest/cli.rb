@@ -2,6 +2,8 @@ module Test
 
   # Command line interface to test runner.
   #
+  # TODO: Use `cli` based library instead of option parse.
+  #
   class CLI
 
     #
@@ -51,6 +53,14 @@ module Test
       #end
     end
 
+    # These options are parsed prior to any other options.
+    #
+    # TODO: Certain opitons should be parsed before others.
+    #       Some aren't even useful if not, use as -R.
+    def preoptions
+
+    end
+
     #
     # Setup OptionsParser instance.
     #
@@ -61,9 +71,6 @@ module Test
         opt.banner = "Usage: #{File.basename($0)} [options] [files ...]"
 
         #opt.separator "PRESET OPTIONS:"
-        #opt.on '-c', '--config FILE', "require local config file" do |file|
-        #  require_config(file)
-        #end
         #pnames = profile_names
         #unless pnames.empty?
         #  pnames.each do |pname|
@@ -92,7 +99,7 @@ module Test
           config.match << text 
         end
 
-        opt.on '-a', '--autopath', 'automatically add paths to $LOAD_PATH' do |paths|
+        opt.on '-A', '--autopath', 'automatically add paths to $LOAD_PATH' do |paths|
           config.autopath = true
         end
         opt.on '-I', '--loadpath PATH', 'add given path to $LOAD_PATH' do |paths|
@@ -100,11 +107,17 @@ module Test
             $LOAD_PATH.unshift path
           end
         end
+        #opt.on '-C', '--chdir DIR', 'change directory before running tests' do |dir|
+        #  config.chdir = dir
+        #end
+        #opt.on '-R', '--chroot', 'change to project root directory before running tests' do |bool|
+        #  config.chroot = bool
+        #end
         opt.on '-r', '--require FILE', 'require file (immediately)' do |file|
           require file
         end
-        opt.on '-p', '--profile FILE', "require local profile" do |file|
-          Config.require_profile(file)
+        opt.on '-c', '--config FILE', "require local config file" do |file|
+          Config.require_config(file)
         end
         opt.on '-d' , '--details', 'provide extra detail in reports' do
           config.verbose = true

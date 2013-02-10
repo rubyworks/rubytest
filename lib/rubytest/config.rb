@@ -84,7 +84,10 @@ module Test
     end
 
     #
-    def self.require_profile(file)
+    # TODO: Should config files be require relative to project root
+    #       or relatvie to current working directory?
+    #
+    def self.require_config(file)
       #if File.exist?(file)
       #  require file
       #else
@@ -95,10 +98,11 @@ module Test
       #end
     end
 
-    # Setup $LOAD_PATH based on .index file.
+    # Setup $LOAD_PATH based on project's `.index` file, if an
+    # index file is not found, then default to `lib/` if it exists.
     #
     def self.load_path_setup
-      if load_paths = (dotindex['paths'] || {})['load']
+      if load_paths = (dotindex['paths'] || {})['lib']
         load_paths.each do |path|
           $LOAD_PATH.unshift(File.join(root, path))
         end
@@ -184,6 +188,20 @@ module Test
     def autopath=(boolean)
       @autopath = !!boolean
     end
+
+    #
+    #attr :chroot
+
+    #def chroot=(boolean)
+    #  @chroot = !!boolean
+    #end
+
+    #
+    #attr :chdir
+
+    #def chdir=(dir)
+    #  @chroot = dir.to_s
+    #end
 
   end
 
