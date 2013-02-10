@@ -1,3 +1,6 @@
+irb
+  -Ilib 
+
 rubytest
   test/*_case.rb
 
