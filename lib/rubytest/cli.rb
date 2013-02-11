@@ -44,8 +44,9 @@ module Test
 
       config.files.replace(argv) unless argv.empty?
 
-      #Test.run(config)
+      config.apply_environment_overrides
 
+      #Test.run(config)
       runner = Runner.new(config)
       begin
         success = runner.run
@@ -55,10 +56,6 @@ module Test
         $stderr.puts('ERROR: ' + error.to_s)
         exit -1
       end
-    end
-
-    def preparse_options(argv)
-
     end
 
     # Setup OptionsParser instance.

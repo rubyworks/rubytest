@@ -26,9 +26,6 @@ module Test
       end
     end
 
-    # Default report is in the old "dot-progress" format.
-    #DEFAULT_FORMAT = 'dotprogress'
-
     # Exceptions that are not caught by test runner.
     OPEN_ERRORS = [NoMemoryError, SignalException, Interrupt, SystemExit]
 
@@ -87,16 +84,13 @@ module Test
     #   Config instance.
     #
     def initialize(config=nil, &block)
-      case config
-      when Hash
-        @config = Config.new(config)
+      if config
+        @config = Hash === config ? Config.new(config) : config
       else
-        @config = config || Test.configuration
+        @config = Test.configuration
       end
 
       block.call(@config) if block
-
-      #@verbose   = @config.verbose
 
       @advice = Advice.new
     end

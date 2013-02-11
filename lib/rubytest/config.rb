@@ -364,7 +364,7 @@ module Test
     #
     # @todo Better name for this method?
     # @return nothing
-    def apply_environmemt_overrides
+    def apply_environment_overrides
       @format   = env(:format,   @format)
       @autopath = env(:autopath, @autopath)
       @files    = env(:files,    @files)
@@ -379,7 +379,7 @@ module Test
     # settings.
     #
     # @return nothing
-    def apply_environmemt_defaults
+    def apply_environment_defaults
       @format   = env(:format,   @format)   if @format.nil?
       @autopath = env(:autopath, @autopath) if @autopath.nil?
       @files    = env(:files,    @files)    if @files.empty?
@@ -415,14 +415,14 @@ module Test
 
   private
 
-    # Lookup environment variable with name `RUBYTEST_{NAME}`,
+    # Lookup environment variable with name `rubytest_{name}`,
     # and transform in according to the type of the given
     # default. If the environment variable is not set then
     # returns the default.
     #
     # @return [Object]
     def env(name, default=nil)
-      value = ENV["rubytest-#{name}".downcase]
+      value = ENV["rubytest_#{name}".downcase]
 
       case default
       when Array
