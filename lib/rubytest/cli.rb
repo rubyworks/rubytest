@@ -2,32 +2,34 @@ module Test
 
   # Command line interface to test runner.
   #
-  # TODO: Use `cli` based library instead of option parse.
+  # TODO: Use `cli` based library instead of option parser?
   #
   class CLI
 
-    #
     # Convenience method for invoking the CLI.
     #
+    # @return nothing
     def self.run(*argv)
       new.run(*argv)
     end
 
-    #
     # Initialize CLI instance.
     #
+    # @return nothing
     def initialize
       require 'optparse'
     end
 
+    # Test run configuration.
     #
+    # @return [Config]
     def config
       @config ||= Test.configuration
     end
 
-    #
     # Run tests.
     #
+    # @return nothing
     def run(argv=nil)
       begin
         require 'dotopts'
@@ -53,17 +55,9 @@ module Test
       end
     end
 
-    # These options are parsed prior to any other options.
-    #
-    # TODO: Certain opitons should be parsed before others.
-    #       Some aren't even useful if not, use as -R.
-    def preoptions
-
-    end
-
-    #
     # Setup OptionsParser instance.
     #
+    # @return [OptionParser]
     def options
       this = self
 
@@ -90,22 +84,23 @@ module Test
         end
 
         opt.on '-t', '--tag TAG', 'select tests by tag' do |tag|
-          config.tags << tag
+          config.tags.concat enlist(tag)
         end
         opt.on '-u', '--unit TAG', 'select tests by software unit' do |unit|
-          config.units << unit
+          config.units.concat enlist(unit)
         end
         opt.on '-m', '--match TEXT', 'select tests by description' do |text|
-          config.match << text 
+          config.match.concat enlist(text)
         end
 
         opt.on '-A', '--autopath', 'automatically add paths to $LOAD_PATH' do |paths|
           config.autopath = true
         end
         opt.on '-I', '--loadpath PATH', 'add given path to $LOAD_PATH' do |paths|
-          paths.split(/[:;]/).reverse_each do |path|
-            $LOAD_PATH.unshift path
-          end
+          #enlist(paths).reverse_each do |path|
+          #  $LOAD_PATH.unshift path
+          #end
+          config.loadpath.concat enlist(paths)
         end
         #opt.on '-C', '--chdir DIR', 'change directory before running tests' do |dir|
         #  config.chdir = dir
@@ -113,13 +108,14 @@ module Test
         #opt.on '-R', '--chroot', 'change to project root directory before running tests' do |bool|
         #  config.chroot = bool
         #end
-        opt.on '-r', '--require FILE', 'require file (immediately)' do |file|
-          require file
+        opt.on '-r', '--require FILE', 'require file' do |file|
+          #require file
+          config.requires.concat pathlist(file)
         end
-        opt.on '-c', '--config FILE', "require local config file" do |file|
+        opt.on '-c', '--config FILE', "require local config file (immediately)" do |file|
           Config.require_config(file)
         end
-        opt.on '-d' , '--details', 'provide extra detail in reports' do
+        opt.on '-V' , '--verbose', 'provide extra detail in reports' do
           config.verbose = true
         end
         #opt.on('--log DIRECTORY', 'log directory'){ |dir|
@@ -139,6 +135,21 @@ module Test
           exit
         }
       end
+    end
+
+    # If given a String then split up at `:` and `;` markers.
+    # Otherwise ensure the list is an Array and the entries are
+    # all strings and not empty.
+    #
+    # @return [Array<String>]
+    def enlist(list)
+      case list
+      when String
+        list = list.split(/[:;]/)
+      else
+        list = Array(list).map{ |path| path.to_s }
+      end
+      list.reject{ |path| path.strip.empty? }
     end
 
   end
