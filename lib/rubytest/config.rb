@@ -81,13 +81,14 @@ module Test
       )
     end
 
-    # Load and cache a project's `.index` file.
+    # Load and cache a project's `.index` file, if it has one.
     #
-    # @return [Hash] Project's loaded `.index` file, if it has one.
+    # @return [Hash] YAML loaded `.index` file, or empty hash.
     def self.dotindex
       @dotindex ||= (
         file = File.join(root, '.index')
         if File.exist?(file)
+          require 'yaml'
           YAML.load_file(file) rescue {}
         else
           {}
@@ -95,12 +96,13 @@ module Test
       )
     end
 
-    # Require a configuration file.
-    #
-    # TODO: Should config files be require relative to project root
+    # TODO: Should config files be required relative to project root
     #       or relatvie to current working directory?
-    #
+
     # TODO: Use load instead of require?
+
+    # Require a configuration file. Configuration files are required
+    # relative to the project's root directory.
     #
     # @return nothing.
     def self.require_config(file)
@@ -132,79 +134,181 @@ module Test
 
     # Initialize new Config instance.
     def initialize(&block)
+      @files    = env(:testfiles, [])
+      @match    = env(:match, [])
+      @tags     = env(:tags,  [])
+      @units    = env(:units, [])
+      @format   = env(:format, DEFAULT_FORMAT)
+      @requires = env(:requires, [])
+      @loadpath = env(:loadpath, [])
+
       self.class.load_config
+
       apply(&block)
     end
 
     # Evaluate configuration block.
+    #
+    # @return nothing
     def apply(&block)
       block.call(self) if block
     end
 
     # Default test suite ($TEST_SUITE).
+    #
+    # @return [Array]
     def suite
       $TEST_SUITE
     end
 
     # Default list of test files to load.
+    #
+    # @return [Array<String>]
     def files
-      @files ||= []
+      @files
+    end
+    alias test_files files
+
+    # Set the list of test files to run. Entries can be file glob patterns.
+    # This can also be set via the `RUBYTEST_FILES` environment variable.
+    #
+    # @return [Array<String>]
+    def files=(list)
+      @files = pathlist(list)
+    end
+    alias test_files= files=
+
+    # Paths to add to $LOAD_PATH.
+    #
+    # @return [Array<String>]
+    attr :loadpath
+
+    # Set paths to add to $LOAD_PATH. This can also be set via the
+    # `RUBYTEST_LOADPATH` environment variable.
+    #
+    # @return [Array<String>]
+    def loadpath=(list)
+      @loadpath = pathlist(list)
     end
 
-    # Format by default is `dotprogress`. The format can also be set
-    # via the `RUBYTEST_FORMAT` environment variable.
+    # Scripts to require prior to tests.
+    #
+    # @return [Array<String>]
+    attr :requires
+
+    # Set the features that need to be required before the
+    # test files. This can also be set via the `RUBYTEST_REQUIRES`
+    # environment variable.
+    #
+    # @return [Array<String>]
+    def requires=(list)
+      @requires = pathlist(list)
+    end
+
+    # Name of test report format, by default it is `dotprogress`.
     #
     # @return [String] format
     def format
-      @format || ENV['RUBYTEST_FORMAT'] || DEFAULT_FORMAT
+      @format
     end
 
-    # Set test report format.
+    # Set test report format. The format can also be set via the
+    #  `RUBYTEST_FORMAT` environment variable.
+    #
+    # @return [String] format
     def format=(format)
       @format = format
     end
 
     # Provide extra details in reports?
-    def verbose
+    #
+    # @return [Boolean]
+    def verbose?
       @verbose
     end
 
-    # Set verbose mode.
+    # Set verbose mode. The verbosity can also be set via the
+    #  `RUBYTEST_VERBOSE` environment variable.
+    #
+    # @return [Boolean]
     def verbose=(boolean)
       @verbose = !!boolean
     end
 
-    # Default description match for filtering tests.
+    # Description match for filtering tests.
+    #
+    # @return [Array<String>]
     def match
-      @match ||= []
+      @match
     end
 
-    # Default selection of tags for filtering tests.
+    # Set the description matches for filtering tests. The list of matches
+    # can also be set via the `RUBYTEST_MATCH` environment variable.
+    # Separate them like paths, with `:` or `;` marks.
+    #
+    # @return [Array<String>]
+    def match=(list)
+      @match = pathlist(list)
+    end
+
+    # Selection of tags for filtering tests. The list of tags can also
+    # be set via the `RUBYTEST_TAGS` environment variable. Separate
+    # each tag with `:` or `;` marks.
+    #
+    # @return [Array<String>]
     def tags
-      @tags ||= []
+      @tags
     end
 
-    # Default selection of units for filtering tests.
+    # Set the list of tags for filtering tests. The list of tags can also
+    # be set via the `RUBYTEST_TAGS` environment variable. Separate
+    # each tag with `:` or `;` marks.
+    #
+    # @return [Array<String>]
+    def tags=(list)
+      @tags = pathlist(list)
+    end
+
+    # List of units with which to filter tests. It is an array of strings
+    # which are matched against module, class and method names.
+    #
+    # @return [Array<String>]
     def units
-      @unit ||= []
+      @units
+    end
+
+    # Set the list of units with which to filter tests. It is an array of 
+    # strings which are matched against module, class and method names.
+    #
+    # @return [Array<String>]
+    def units=(list)
+      @units = pathlist(list)
     end
 
     # Hard is a synonym for assertionless.
-    def hard
+    #
+    # @return [Boolean]
+    def hard?
       @hard || self.class.assertionless
     end
 
     # Hard is a synonym for assertionless.
+    #
+    # @return [Boolean]
     def hard=(boolean)
       @hard = !!boolean
     end
 
     # Automatically modify the `$LOAD_PATH`?
-    def autopath
+    #
+    # @return [Boolean]
+    def autopath?
       @autopath
     end
 
     # Automatically modify the `$LOAD_PATH`?
+    #
+    # @return [Boolean]
     def autopath=(boolean)
       @autopath = !!boolean
     end
@@ -222,6 +326,77 @@ module Test
     #def chdir=(dir)
     #  @chroot = dir.to_s
     #end
+
+    # The mode is only useful for specialied purposes, such how
+    # to run tests via the Rake task. It has no general purpose
+    # use and can be ignored in most cases.
+    #
+    # @return [Symbol]
+    def mode
+      @mode
+    end
+
+    # The mode is only useful for specialied purposes, such how
+    # to run tests via the Rake task. It has no general purpose
+    # use and can be ignored in most cases.
+    #
+    # @return [String]
+    def mode=(type)
+      @mode = type.to_s
+    end
+
+    # Convert configuration to shell options, compatible with the
+    # rubytest command line.
+    #
+    # @return [Array<String>]
+    def to_shellwords
+      argv = []
+      argv << %[--autoload] if autoload?
+      argv << %[--verbose]  if verbose?
+      argv << %[--format="#{format}"] if format
+      argv << %[--match="#{match.join(';')}"] unless match.empty?
+      argv << %[--units="#{units.join(';')}"] unless units.empty?
+      argv << %[--tags="#{tags.join(';')}"]   unless tags.empty?
+      argv << %[--loadpath="#{loadpath.join(';')}"] unless loadpath.empty?
+      argv << %[--requires="#{requires.join(';')}"] unless requires.empty?
+      argv << files.join(' ') unless files.empty?
+      argv
+    end
+
+  private
+
+    # Lookup environment variable with name `RUBYTEST_{NAME}`,
+    # and transform in according to the type of the given
+    # default. If the environment variable is not set then
+    # returns the default.
+    #
+    # @return [Object]
+    def env(name, default=nil)
+      value = ENV["RUBYTEST_#{name.capitalize}"]
+
+      case default
+      when Array
+        return value.split(/[:;]/) if value 
+      else
+        return value if value
+      end
+      default
+    end
+
+    # If given a String then split up at `:` and `;` markers.
+    # Otherwise ensure the list is an Array and the entries are
+    # all strings and not empty.
+    #
+    # @return [Array<String>]
+    def pathlist(list)
+      case list
+      when String
+        list = list.split(/[:;]/)
+      else
+        list = Array(list).map{ |path| path.to_s }
+      end
+      list.reject{ |path| path.strip.empty? }
+    end
 
   end
 
