@@ -87,7 +87,12 @@ module Test
     #   Config instance.
     #
     def initialize(config=nil, &block)
-      @config = config || Test.configuration
+      case config
+      when Hash
+        @config = Config.new(config)
+      else
+        @config = config || Test.configuration
+      end
 
       block.call(@config) if block
 
@@ -112,27 +117,27 @@ module Test
     #   That the tests ran without error or failure.
     #
     def run
-      Test::Config.load_path_setup if config.autopath?
+      cd_chdir do
+        Test::Config.load_path_setup if config.autopath?
 
-      ignore_callers
+        ignore_callers
 
-      config.loadpath.each{ |path| $LOAD_PATH.unshift(path) }
-      config.requires.each{ |file| require file }
+        config.loadpath.each{ |path| $LOAD_PATH.unshift(path) }
+        config.requires.each{ |file| require file }
 
-      test_files.each do |test_file|
-        require test_file
-      end
+        test_files.each do |test_file|
+          require test_file
+        end
 
-      @reporter  = reporter_load(format)
-      @recorder  = Recorder.new
+        @reporter  = reporter_load(format)
+        @recorder  = Recorder.new
 
-      @observers = [advice, @recorder, @reporter]
+        @observers = [advice, @recorder, @reporter]
 
-      #cd_tmp do
         observers.each{ |o| o.begin_suite(suite) }
         run_thru(suite)
         observers.each{ |o| o.end_suite(suite) }
-      #end
+      end
 
       recorder.success?
     end
@@ -259,7 +264,6 @@ module Test
     #
     # @return [Reporter::Abstract]
     #   The test reporter instance.
-    #
     def reporter_load(format)
       format = DEFAULT_REPORT_FORMAT unless format
       format = format.to_s.downcase
@@ -281,7 +285,6 @@ module Test
     #
     # @return [Array<String>]
     #   The names of available reporters.
-    #
     def reporter_list
       list = Dir[File.dirname(__FILE__) + '/reporters/*.rb']
       list = list.map{ |r| File.basename(r).chomp('.rb') }
@@ -292,6 +295,7 @@ module Test
     # Files can be globs and directories which need to be
     # resolved to a list of files.
     #
+    # @return [Array<String>]
     def resolve_test_files
       list = config.files.flatten
       list = list.map{ |f| Dir[f] }.flatten
@@ -301,20 +305,19 @@ module Test
       list
     end
 
-=begin
-  # TODO ?
-  def cd_tmp(&block)
-    dir = Test::Config.root + '/tmp'
-    if Directory.exist?(dir)
-      dir = File.join(dir, 'test')
-      FileUtils.mkdir(dir) unless File.exist?(dir)
-    else
-      dir = File.join(Dir.tmpdir)
+    # Change to directory and run block.
+    #
+    # @raise [Errno::ENOENT] If directory does not exist.
+    def cd_chdir(&block)
+      if dir = config.chdir
+        unless File.directory?(dir)
+          raise Errno::ENOENT, "change directory doesn't exist -- `#{dir}'"
+        end
+        Dir.chdir(dir, &block)
+      else
+        block.call
+      end
     end
-
-    Dir.chdir(dir, &block)
-  end
-=end
 
   end
 

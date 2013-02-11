@@ -9,11 +9,11 @@ work. But the whole thing simply got more complicated than it needed to
 be and it was decided that conventional simplicity, with the option 
 unconventional complexity, was the best approach.
 
-So, to make a long story short. There is no default config file anymore.
+To make a long story short... There is no default config file anymore.
 The `-p/--profile` command line option has been removed; replaced by
-a `-c/--config` option which simply requires a file relative to the current
-project. In addition the configuration API had been changed from `Test.run`
-or `Test.configure`, to adopt the common convention. And it no longer takes
+a `-c/--config` option which requires a file relative to the working
+directory. In addition the configuration API had been changed from `Test.run`
+or `Test.configure`, to adopt the common convention, and it no longer takes
 a profile name for an argument. `Test.run` still has the same interface as
 `Test.configure` but it will now run tests immediately! So be sure to change
 that if you used it the past. Lastly, Ruby Test now supports DotOpts out of
@@ -24,6 +24,7 @@ Changes:
 * Rename `Test.run` to `Test.configure` and remove profile argument.
 * Add new `Test.run` to immediately run tests.
 * Add `-c/--config` option for requiring project file.
+* Add `-C` and `-R` options for changing directory.
 * Add built-in support for DotOpts.
 * Deprecate profiles, removing `-p/--profile` cli option.
 * Deprecate Test::Runner configuration class methods.

@@ -32,7 +32,6 @@ reports.
 Ruby Test handles assertions with [BRASS](http://rubyworks.github.com/brass)
 compliance. Any raised exception that responds to `#assertion?` in the
 affirmative is taken to be a failed assertion rather than simply an error. 
-
 A test framework may raise a `NotImplementedError` to have a test recorded
 as *todo* --a _pending_ exception to remind the developer of tests that still
 need to be written. The `NotImplementedError` is a standard Ruby exception
@@ -82,13 +81,23 @@ entry might be:
       -r rspecial
       spec/spec_*.rb
 
-There is also a Rake task. In your Rakefile,
+If you are using a build tool to run your tests, such as Rake or Fire, it is
+best to shell out to `rubytest`. This keeps your test environent as prestine
+as possible.
+
+    desc "run tests"
+    task :test
+      sh "rubytest"
+    end
+
+RubyTest comes with a Rake task plugin, but its use is all but deprecated
+because it's basically just a glorified rendition of the above.
 
     require 'rubytest/rake'
 
-    Test::Rake::TestTask.new do |run|
-      require 'lemon'
-      run.files << 'test/test_*.rb'
+    Test::Rake::TestTask.new :test do |run|
+      run.requires << 'lemon'
+      run.files = 'test/test_*.rb'
     end
 
 See the Wiki for more information on the different ways to run tests.

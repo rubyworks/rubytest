@@ -2,16 +2,29 @@ module Test
 
   # Configure test run via a block then will be passed a `Config` instance.
   #
-  # @return [Proc]
+  # @return [Config]
   def self.configure(&block)
-    configuration.apply(&block)
+    if reconfigure?
+      configuration.apply(&block)
+    else
+      @config = Config.new(&block)
+    end
   end
 
-  # Passive store for configuration settings. Settings aren't applied until
-  # just before tests are run.
+  # Reconfigure test run via a block then will be passed the {Config} instance.
+  # Unlike `configure` this does not create a new Config instance, but instead
+  # augments the current configuration.
   #
-  # @return [Proc]
-  def self.configuration
+  # @return [Config]
+  def self.reconfigure?
+    @reconfigure
+  end
+
+  # Get the current configuration.
+  #
+  # @return [Config]
+  def self.configuration(reconfigurable=false)
+    @reconfigure = true if reconfigurable
     @config ||= Config.new
   end
 
@@ -26,11 +39,11 @@ module Test
     # Glob used to find project root directory.
     GLOB_ROOT = '{.index,.gemspec,.git,.hg,_darcs,lib/}'
 
-    # RubyTest configuration file can be in `.test`, '.test.rb`, `etc/test.rb`
-    # or `config/test.rb`.
+    # RubyTest configuration file can be in '.test.rb`, `etc/test.rb`
+    # or `config/test.rb`, `.test`, in that order of precedence.
     #
     # @deprecated Use manual -c/--config option instead.
-    GLOB_CONFIG = '{.test,.test.rb,etc/test.rb,config/test.rb}'
+    GLOB_CONFIG = '{.test.rb,etc/test.rb,config/test.rb,.test}'
 
     #
     def self.assertionless
@@ -52,7 +65,7 @@ module Test
     def self.load_config
       if config_file
         file = config_file.sub(Dir.pwd+'/','')
-        $stderr.puts "Automatic #{file} loading has been deprecated. Use -c option for future version."
+        $stderr.puts "Automatic #{file} loading has been deprecated.\nUse -c option for future version."
         load config_file
       end
     end
@@ -96,26 +109,6 @@ module Test
       )
     end
 
-    # TODO: Should config files be required relative to project root
-    #       or relatvie to current working directory?
-
-    # TODO: Use load instead of require?
-
-    # Require a configuration file. Configuration files are required
-    # relative to the project's root directory.
-    #
-    # @return nothing.
-    def self.require_config(file)
-      #if File.exist?(file)
-      #  require file
-      #else
-        glob = File.join(root, "#{file}{,.rb}")
-        if file = Dir.glob(glob).first
-          require file
-        end
-      #end
-    end
-
     # Setup $LOAD_PATH based on project's `.index` file, if an
     # index file is not found, then default to `lib/` if it exists.
     #
@@ -133,16 +126,24 @@ module Test
     end
 
     # Initialize new Config instance.
-    def initialize(&block)
-      @files    = env(:testfiles, [])
-      @match    = env(:match, [])
-      @tags     = env(:tags,  [])
-      @units    = env(:units, [])
-      @format   = env(:format, DEFAULT_FORMAT)
-      @requires = env(:requires, [])
-      @loadpath = env(:loadpath, [])
+    def initialize(settings={}, &block)
+      @format   = nil
+      @autopath = nil
+      @chdir    = nil
+      @files    = []
+      @tags     = []
+      @match    = []
+      @units    = []
+      @requires = []
+      @loadpath = []
 
-      self.class.load_config
+      #apply_environment
+
+      settings.each do |k,v|
+        send("#{k}=", v)
+      end
+
+      self.class.load_config # deprecated!!!
 
       apply(&block)
     end
@@ -158,10 +159,16 @@ module Test
     #
     # @return [Array]
     def suite
-      $TEST_SUITE
+      @suite ||= $TEST_SUITE
     end
 
-    # Default list of test files to load.
+    # This is not really for general, but it is useful for Ruby Test's
+    # own tests, to isolate tests.
+    def suite=(test_objects)
+      @suite = Array(test_objects)
+    end
+
+    # List of test files to run.
     #
     # @return [Array<String>]
     def files
@@ -170,25 +177,37 @@ module Test
     alias test_files files
 
     # Set the list of test files to run. Entries can be file glob patterns.
-    # This can also be set via the `RUBYTEST_FILES` environment variable.
     #
     # @return [Array<String>]
     def files=(list)
-      @files = pathlist(list)
+      @files = makelist(list)
     end
     alias test_files= files=
+
+    # Automatically modify the `$LOAD_PATH`?
+    #
+    # @return [Boolean]
+    def autopath?
+      @autopath
+    end
+
+    # Automatically modify the `$LOAD_PATH`?
+    #
+    # @return [Boolean]
+    def autopath=(boolean)
+      @autopath = !! boolean
+    end
 
     # Paths to add to $LOAD_PATH.
     #
     # @return [Array<String>]
     attr :loadpath
 
-    # Set paths to add to $LOAD_PATH. This can also be set via the
-    # `RUBYTEST_LOADPATH` environment variable.
+    # Set paths to add to $LOAD_PATH.
     #
     # @return [Array<String>]
     def loadpath=(list)
-      @loadpath = pathlist(list)
+      @loadpath = makelist(list)
     end
 
     # Scripts to require prior to tests.
@@ -197,27 +216,25 @@ module Test
     attr :requires
 
     # Set the features that need to be required before the
-    # test files. This can also be set via the `RUBYTEST_REQUIRES`
-    # environment variable.
+    # test files.
     #
     # @return [Array<String>]
     def requires=(list)
-      @requires = pathlist(list)
+      @requires = makelist(list)
     end
 
     # Name of test report format, by default it is `dotprogress`.
     #
     # @return [String] format
     def format
-      @format
+      @format || DEFAULT_FORMAT
     end
 
-    # Set test report format. The format can also be set via the
-    #  `RUBYTEST_FORMAT` environment variable.
+    # Set test report format.
     #
     # @return [String] format
     def format=(format)
-      @format = format
+      @format = format.to_s
     end
 
     # Provide extra details in reports?
@@ -227,12 +244,25 @@ module Test
       @verbose
     end
 
-    # Set verbose mode. The verbosity can also be set via the
-    #  `RUBYTEST_VERBOSE` environment variable.
+    # Set verbose mode.
     #
     # @return [Boolean]
     def verbose=(boolean)
-      @verbose = !!boolean
+      @verbose = !! boolean
+    end
+
+    # Selection of tags for filtering tests.
+    #
+    # @return [Array<String>]
+    def tags
+      @tags
+    end
+
+    # Set the list of tags for filtering tests.
+    #
+    # @return [Array<String>]
+    def tags=(list)
+      @tags = makelist(list)
     end
 
     # Description match for filtering tests.
@@ -242,31 +272,11 @@ module Test
       @match
     end
 
-    # Set the description matches for filtering tests. The list of matches
-    # can also be set via the `RUBYTEST_MATCH` environment variable.
-    # Separate them like paths, with `:` or `;` marks.
+    # Set the description matches for filtering tests.
     #
     # @return [Array<String>]
     def match=(list)
-      @match = pathlist(list)
-    end
-
-    # Selection of tags for filtering tests. The list of tags can also
-    # be set via the `RUBYTEST_TAGS` environment variable. Separate
-    # each tag with `:` or `;` marks.
-    #
-    # @return [Array<String>]
-    def tags
-      @tags
-    end
-
-    # Set the list of tags for filtering tests. The list of tags can also
-    # be set via the `RUBYTEST_TAGS` environment variable. Separate
-    # each tag with `:` or `;` marks.
-    #
-    # @return [Array<String>]
-    def tags=(list)
-      @tags = pathlist(list)
+      @match = makelist(list)
     end
 
     # List of units with which to filter tests. It is an array of strings
@@ -282,7 +292,7 @@ module Test
     #
     # @return [Array<String>]
     def units=(list)
-      @units = pathlist(list)
+      @units = makelist(list)
     end
 
     # Hard is a synonym for assertionless.
@@ -296,49 +306,35 @@ module Test
     #
     # @return [Boolean]
     def hard=(boolean)
-      @hard = !!boolean
+      @hard = !! boolean
     end
 
-    # Automatically modify the `$LOAD_PATH`?
+    # Change to this directory before running tests.
     #
-    # @return [Boolean]
-    def autopath?
-      @autopath
+    # @return [String]
+    def chdir
+      @chdir
     end
 
-    # Automatically modify the `$LOAD_PATH`?
+    # Set directory to change to before running tests.
     #
-    # @return [Boolean]
-    def autopath=(boolean)
-      @autopath = !!boolean
+    # @return [String]
+    def chdir=(dir)
+      @chdir = dir.to_s
     end
 
-    #
-    #attr :chroot
-
-    #def chroot=(boolean)
-    #  @chroot = !!boolean
-    #end
-
-    #
-    #attr :chdir
-
-    #def chdir=(dir)
-    #  @chroot = dir.to_s
-    #end
-
-    # The mode is only useful for specialied purposes, such how
+    # The mode is only useful for specialied purposes, such as how
     # to run tests via the Rake task. It has no general purpose
-    # use and can be ignored in most cases.
+    # and can be ignored in most cases.
     #
-    # @return [Symbol]
+    # @return [String]
     def mode
       @mode
     end
 
-    # The mode is only useful for specialied purposes, such how
+    # The mode is only useful for specialied purposes, such as how
     # to run tests via the Rake task. It has no general purpose
-    # use and can be ignored in most cases.
+    # and can be ignored in most cases.
     #
     # @return [String]
     def mode=(type)
@@ -351,16 +347,70 @@ module Test
     # @return [Array<String>]
     def to_shellwords
       argv = []
-      argv << %[--autoload] if autoload?
+      argv << %[--autopath] if autopath?
       argv << %[--verbose]  if verbose?
       argv << %[--format="#{format}"] if format
+      argv << %[--chdir="#{chdir}"] if chdir
+      argv << %[--tags="#{tags.join(';')}"]   unless tags.empty?
       argv << %[--match="#{match.join(';')}"] unless match.empty?
       argv << %[--units="#{units.join(';')}"] unless units.empty?
-      argv << %[--tags="#{tags.join(';')}"]   unless tags.empty?
       argv << %[--loadpath="#{loadpath.join(';')}"] unless loadpath.empty?
       argv << %[--requires="#{requires.join(';')}"] unless requires.empty?
       argv << files.join(' ') unless files.empty?
       argv
+    end
+
+    # Apply environment, overriding any previous configuration settings.
+    #
+    # @todo Better name for this method?
+    # @return nothing
+    def apply_environmemt_overrides
+      @format   = env(:format,   @format)
+      @autopath = env(:autopath, @autopath)
+      @files    = env(:files,    @files)
+      @match    = env(:match,    @match)
+      @tags     = env(:tags,     @tags)
+      @units    = env(:units,    @units)
+      @requires = env(:requires, @requires)
+      @loadpath = env(:loadpath, @loadpath)
+    end
+
+    # Apply environment as underlying defaults for unset configuration
+    # settings.
+    #
+    # @return nothing
+    def apply_environmemt_defaults
+      @format   = env(:format,   @format)   if @format.nil?
+      @autopath = env(:autopath, @autopath) if @autopath.nil?
+      @files    = env(:files,    @files)    if @files.empty?
+      @match    = env(:match,    @match)    if @match.empty?
+      @tags     = env(:tags,     @tags)     if @tags.empty?
+      @units    = env(:units,    @units)    if @units.empty?
+      @requires = env(:requires, @requires) if @requires.empty?
+      @loadpath = env(:loadpath, @loadpath) if @loadpath.empty?
+    end
+
+    # Load configuration file.
+    #
+    # @return [Boolean] true if file was required
+    def load_config(file)
+      try_paths = ['etc', 'config']
+      try_paths.concat loadpath
+      try_paths << '.'
+      try_paths = try_paths.uniq
+
+      if chdir
+        try_paths = try_paths.map{ |path| File.join(chdir, path) }
+      end
+
+      hold_path = $LOAD_PATH.dup
+      $LOAD_PATH.replace(try_paths)
+      begin
+        success = require file
+      ensure
+        $LOAD_PATH.replace(hold_path)
+      end
+      success
     end
 
   private
@@ -372,11 +422,11 @@ module Test
     #
     # @return [Object]
     def env(name, default=nil)
-      value = ENV["RUBYTEST_#{name.capitalize}"]
+      value = ENV["rubytest-#{name}".downcase]
 
       case default
       when Array
-        return value.split(/[:;]/) if value 
+        return makelist(value) if value 
       else
         return value if value
       end
@@ -388,7 +438,7 @@ module Test
     # all strings and not empty.
     #
     # @return [Array<String>]
-    def pathlist(list)
+    def makelist(list)
       case list
       when String
         list = list.split(/[:;]/)

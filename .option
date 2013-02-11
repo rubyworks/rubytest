@@ -6,6 +6,6 @@ rubytest
 
 [coverage]
 rubytest
-  -p task/simplecov.rb
+  -c task/simplecov.rb
   test/*_case.rb
 

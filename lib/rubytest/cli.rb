@@ -18,13 +18,15 @@ module Test
     # @return nothing
     def initialize
       require 'optparse'
+
+      @config = Test.configuration(true)
     end
 
     # Test run configuration.
     #
     # @return [Config]
     def config
-      @config ||= Test.configuration
+      @config
     end
 
     # Run tests.
@@ -53,6 +55,10 @@ module Test
         $stderr.puts('ERROR: ' + error.to_s)
         exit -1
       end
+    end
+
+    def preparse_options(argv)
+
     end
 
     # Setup OptionsParser instance.
@@ -84,52 +90,58 @@ module Test
         end
 
         opt.on '-t', '--tag TAG', 'select tests by tag' do |tag|
-          config.tags.concat enlist(tag)
+          config.tags.concat makelist(tag)
         end
         opt.on '-u', '--unit TAG', 'select tests by software unit' do |unit|
-          config.units.concat enlist(unit)
+          config.units.concat makelist(unit)
         end
         opt.on '-m', '--match TEXT', 'select tests by description' do |text|
-          config.match.concat enlist(text)
+          config.match.concat makelist(text)
         end
 
         opt.on '-A', '--autopath', 'automatically add paths to $LOAD_PATH' do |paths|
           config.autopath = true
         end
         opt.on '-I', '--loadpath PATH', 'add given path to $LOAD_PATH' do |paths|
-          #enlist(paths).reverse_each do |path|
+          #makelist(paths).reverse_each do |path|
           #  $LOAD_PATH.unshift path
           #end
-          config.loadpath.concat enlist(paths)
+          config.loadpath.concat makelist(paths)
         end
-        #opt.on '-C', '--chdir DIR', 'change directory before running tests' do |dir|
-        #  config.chdir = dir
-        #end
-        #opt.on '-R', '--chroot', 'change to project root directory before running tests' do |bool|
-        #  config.chroot = bool
-        #end
+        opt.on '-C', '--chdir DIR', 'change directory before running tests' do |dir|
+          config.chdir = dir
+        end
+        opt.on '-R', '--chroot', 'change to project root directory before running tests' do
+          config.chdir = Config.root
+        end
         opt.on '-r', '--require FILE', 'require file' do |file|
           #require file
-          config.requires.concat pathlist(file)
+          config.requires.concat makelist(file)
         end
         opt.on '-c', '--config FILE', "require local config file (immediately)" do |file|
-          Config.require_config(file)
+          config.load_config(file)
         end
         opt.on '-V' , '--verbose', 'provide extra detail in reports' do
           config.verbose = true
         end
-        #opt.on('--log DIRECTORY', 'log directory'){ |dir|
-        #  options[:log] = dir
+        #opt.on('--log PATH', 'log test output to path'){ |path|
+        #  config.log = path
         #}
         opt.on("--[no-]ansi" , 'turn on/off ANSI colors'){ |v| $ansi = v }
         opt.on("--debug" , 'turn on debugging mode'){ $DEBUG = true }
 
         #opt.separator "COMMAND OPTIONS:"
-        #opt.on("--about" , 'display information about rubytest'){
-        #  puts "Ruby Test v#{VERSION}"
-        #  puts "#{COPYRIGHT}"
-        #  exit
-        #}
+        opt.on('--about' , 'display information about rubytest') do
+          puts "Ruby Test v%s" % [Test.index['version']]
+          Test.index['copyrights'].each do |c|
+            puts "(c) %s %s (%s)" % c.values_at('year', 'holder', 'license')
+          end
+          exit
+        end
+        opt.on('--version' , 'display rubytest version') do
+          puts Test::VERSION
+          exit
+        end
         opt.on('-h', '--help', 'display this help message'){
           puts opt
           exit
@@ -142,7 +154,7 @@ module Test
     # all strings and not empty.
     #
     # @return [Array<String>]
-    def enlist(list)
+    def makelist(list)
       case list
       when String
         list = list.split(/[:;]/)

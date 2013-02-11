@@ -6,6 +6,23 @@ $RUBY_IGNORE_CALLERS = [] unless defined?($RUBY_IGNORE_CALLERS)
 #require 'brass'  # TODO: Should we require BRASS ?
 require 'ansi/core'
 
+module Test
+  # Load project index on demand.
+  def self.index
+    @index ||= (
+      require 'yaml'
+      __dir__  = File.dirname(__FILE__)
+      file = File.expand_path('rubytest.yml', __dir__)
+      YAML.load_file(file)
+    )
+  end
+
+  # Lookup missing constant in project index.
+  def self.const_missing(name)
+    index[name.to_s.downcase] || super(name)
+  end
+end
+
 if RUBY_VERSION < '1.9'
   require 'rubytest/core_ext'
   require 'rubytest/code_snippet'
