@@ -11,10 +11,10 @@
 
 ## Description
 
-Ruby Test is a universal test harness for Ruby that can be used by any Ruby
-test framework. You think of Ruby Test as a *meta* test framework. 
+Ruby Test is a universal test harness for Ruby developers. It can be used
+by any Ruby test framework. You can think of Ruby Test as a *meta test framework*. 
 Ruby Test defines a straight-forward specification that any test framework
-can utilize as it backend. This makes it almost trival to implement new
+can utilize as it back-end. This makes it almost trivial to implement new
 test frameworks. Ruby Test further allows tests from various frameworks
 to all run through a single uniform user interface in a single pass.
 
@@ -29,7 +29,7 @@ over as a test case with each entry handled in the same manner. All test
 objects must respond to `#to_s` so their description can be used in test
 reports.
 
-Ruby Test handles assertions via [BRASS](http://rubyworks.github.com/brass)
+Ruby Test handles assertions with [BRASS](http://rubyworks.github.com/brass)
 compliance. Any raised exception that responds to `#assertion?` in the
 affirmative is taken to be a failed assertion rather than simply an error. 
 
@@ -66,13 +66,13 @@ e.g.
 The command line tool takes various options, use `-h/--help` to see them.
 
 When running tests, you need to be sure to load in your test framework
-or your framework's RubyTest adapter. This is usually done via a helper
+or your framework's Ruby Test adapter. This is usually done via a helper
 script in the test files, but might also be done via command line options,
 e.g.
 
     $ rubytest -r lemon -r ae test/test_*.rb
 
-RubyTest supports [dotopts](http://rubyworks.github.com/dotopts) out of the
+Ruby Test supports [dotopts](http://rubyworks.github.com/dotopts) out of the
 box, so it easy to setup reusable options. For example, a `.option` file
 entry might be:
 
@@ -105,10 +105,10 @@ requirements does the job and does it well.
 
 ## Development
 
-Ruby Test is still a "nuby" gem. Please feel OBLIGATED to help improve it ;-)
+Ruby Test is still a bit of a "nuby" gem. Please feel OBLIGATED to help improve it ;-)
 
 Ruby Test is a [Rubyworks](http://rubyworks.github.com) project. If you can't
-contribue code, you can still help out by contributing to our development fund.
+contribute code, you can still help out by contributing to our development fund.
 
 
 ## Reference Material
@@ -121,7 +121,7 @@ contribue code, you can still help out by contributing to our development fund.
 
 Copyright (c) 2011 Rubyworks
 
-Made available according to the terms of the <b>FreeBSD license</b>.
+Made available according to the terms of the <b>BSD-2-Clause</b> license.
 
 See LICENSE.txt for details.
 
