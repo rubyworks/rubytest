@@ -1,17 +1,19 @@
+require 'rubytest'
 require 'rake/tasklib'
 
 module Test
 
+  ##
+  # Rake subspace.
   #
   module Rake
 
-    # TODO: The test task uses #fork. Maybe it should shell out instead?
-    #  Or provide the option for either?
-
+    ##
     # Define a test rake task.
     #
     # The `TEST` environment variable can be used to select tests
-    # when using the task.
+    # when using this task. Note, this is just a more convenient
+    # way than using `RUBYTEST_FILES`.
     #
     class TestTask < ::Rake::TaskLib
 
@@ -23,76 +25,67 @@ module Test
         'test/**/*_test.rb'
       ]
 
-      # Test scripts to load. Can be a file glob.
-      attr_accessor :tests
-
-      # Paths to add to $LOAD_PATH.
-      attr_accessor :loadpath
-
-      # Scripts to load prior to loading tests.
-      attr_accessor :requires
-
-      # Report format to use.
-      attr_accessor :format
-
-      # Filter tests based by tags.
-      attr_accessor :tags
-
-      # Filter tests by matching description.
-      attr_accessor :match
-
-      # From Rake's own TestTask.
-      alias_method :libs, :loadpath
-      alias_method :test_files, :tests
-
+      # Test run configuration.
       #
-      def initialize(name='test', desc="run tests", &block)
-        @name       = name
-        @desc       = desc
+      # @return [Config]
+      attr :config
 
-        @loadpath   = ['lib']
-        @requires   = []
-        @tests      = [ENV['TEST'] || DEFAULT_TESTS].flatten
-        @format     = nil
-        @match      = nil
-        @tags       = []
+      # Initialize new Rake::TestTask instance.
+      #
+      def initialize(name='test', desc='run tests', &block)
+        @name = name || 'test'
+        @desc = desc
 
-        block.call(self)
+        @config = Test::Config.new
+
+        @config.files << default_tests if @config.files.empty?
+        @config.loadpath << 'lib' if @config.loadpath.empty?
+
+        block.call(@config)
 
         define_task
       end
 
+      # Define rake task for testing.
       #
+      # @return nothing
       def define_task
         desc @desc
         task @name do
-          @tests ||= default_tests
-          run
+          config.mode == 'shell' ? run_shell : run
         end
       end
 
+      # Run tests, via fork is possible, otherwise straight out.
       #
+      # @return nothing
       def run
-        fork {
-          #require 'rubytest'
-          require 'rubytest/runner'
-
-          loadpath.each   { |d| $LOAD_PATH.unshift(d) }
-          requires.each   { |f| require f }
-          test_files.each { |f| require f }
-
-          suite   = $TEST_SUITE || []
-          runner  = new(suite, :format=>format, :tags=>tags, :match=>match)
+        if Process.respond_to?(:fork)
+          fork {
+            runner  = Test::Runner.new(config)
+            success = runner.run
+            exit -1 unless success
+          }
+          Process.wait
+        else
+          runner  = Test::Runner.new(config)
           success = runner.run
-
           exit -1 unless success
-        }
-        Process.wait
+        end
+      end
+
+      # Run test via command line shell.
+      #
+      # @return nothing
+      def shell_run
+        success = ruby(*config.to_shellwords)
+        exit -1 unless success
       end
 
       # Resolve test globs.
       #
-      # TODO: Can this code be simplifed?
+      # @todo Implementation probably cna be simplified.
+      # @return [Array<String>] List of test files.
       def test_files
         files = tests
         files = files.map{ |f| Dir[f] }.flatten
@@ -102,19 +95,40 @@ module Test
         files
       end
 
+      # Default test globs. For extra convenience will look for list in
+      # `ENV['TEST']` first.
       #
+      # @return [Array<String>]
       def default_tests
-        if ENV['tests']
-          ENV['tests'].split(/[:;]/)
+        if ENV['TEST']
+          ENV['TEST'].split(/[:;]/)
         else
           DEFAULT_TESTS
         end
       end
 
+=begin
+      # Shell out to current ruby command.
       #
-      #def ruby_command
-      #  File.join(RbConfig::CONFIG['bindir'], Config::CONFIG['ruby_install_name'])
-      #end
+      # @return [Boolean] Success of shell call.
+      def ruby(*argv)
+        system(ruby_command, *argv)
+      end
+
+      # Get current ruby shell command.
+      #
+      # @return [String] Ruby shell command.
+      def ruby_command
+        @ruby_command ||= (
+          require 'rbconfig'
+          ENV['RUBY'] ||
+            File.join(
+              RbConfig::CONFIG['bindir'],
+              RbConfig::CONFIG['ruby_install_name'] + RbConfig::CONFIG['EXEEXT']
+            ).sub(/.*\s.*/m, '"\&"')
+        )
+      end
+=end
 
     end
 

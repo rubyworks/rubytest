@@ -29,9 +29,9 @@ over as a test case with each entry handled in the same manner. All test
 objects must respond to `#to_s` so their description can be used in test
 reports.
 
-Any raised exception that responds to `#assertion?` in the affirmative is taken
-to be a failed assertion rather than simply an error. Ruby Test extends the
-Exception class to support this method for all exceptions.
+Ruby Test handles assertions via [BRASS](http://rubyworks.github.com/brass)
+compliance. Any raised exception that responds to `#assertion?` in the
+affirmative is taken to be a failed assertion rather than simply an error. 
 
 A test framework may raise a `NotImplementedError` to have a test recorded
 as *todo* --a _pending_ exception to remind the developer of tests that still
@@ -46,7 +46,17 @@ additional features that can makes its usage even more convenient.
 See the [Wiki](http://github.com/rubyworks/test/wiki) for further details.
 
 
-## Usage
+## Installation
+
+Ruby Test is available as a Gem package.
+
+    $ gem install rubytest
+
+Ruby Test is compliant with Setup.rb layout standard, so it can
+also be installed in an FHS compliant fashion if necessary.
+
+
+## Running Tests
 
 There are a few ways to run tests. First, there is the command line tool
 e.g.
@@ -81,20 +91,7 @@ There is also a Rake task. In your Rakefile,
       run.files << 'test/test_*.rb'
     end
 
-A Detroit plugin is in the works and should be available soon.
-
 See the Wiki for more information on the different ways to run tests.
-
-
-Notice the use of `Test.configure` which is .
-
-
-
-## Installation
-
-Ruby Test is available as Gem package.
-
-    $ gem install rubytest
 
 
 ## Requirements
@@ -102,7 +99,7 @@ Ruby Test is available as Gem package.
 Ruby Test uses the [ANSI](http://rubyworks.github.com/ansi) gem for color output.
 
 Because of the "foundational" nature of this library we will look at removing
-this dependencies for future versions, but for early development the 
+this dependency for future versions, but for early development the 
 requirements does the job and does it well.
 
 
@@ -110,13 +107,14 @@ requirements does the job and does it well.
 
 Ruby Test is still a "nuby" gem. Please feel OBLIGATED to help improve it ;-)
 
-Ruby Test is a [RubyWorks](http://rubyworks.github.com) project. If you can't
+Ruby Test is a [Rubyworks](http://rubyworks.github.com) project. If you can't
 contribue code, you can still help out by contributing to our development fund.
 
 
 ## Reference Material
 
-[1] [Standard Definition Of Unit Test](http://c2.com/cgi/wiki?StandardDefinitionOfUnitTest)
+* [Standard Definition Of Unit Test](http://c2.com/cgi/wiki?StandardDefinitionOfUnitTest)
+* [BRASS Assertions Standard](http:rubyworks.github.com/brass)
 
 
 ## Copyrights
@@ -125,5 +123,5 @@ Copyright (c) 2011 Rubyworks
 
 Made available according to the terms of the <b>FreeBSD license</b>.
 
-See NOTICE.md for details.
+See LICENSE.txt for details.
 
