@@ -27,68 +27,35 @@ module Test
     end
 
     # Default report is in the old "dot-progress" format.
-    DEFAULT_FORMAT = 'dotprogress'
+    #DEFAULT_FORMAT = 'dotprogress'
 
     # Exceptions that are not caught by test runner.
     OPEN_ERRORS = [NoMemoryError, SignalException, Interrupt, SystemExit]
 
-    # / / / A T T R I B U T E S / / /
+    # Handle all configuration via the config instance.
+    attr :config
 
     # Test suite to run. This is a list of compliant test units and test cases.
-    attr :suite
-
-    # Test files to load.
-    attr :files
-
-    # Features to require prior to running tests.
-    #attr :requires
-
-    # Reporter format name, or name fragment, used to look up reporter class.
-    attr :format
-
-    #
-    def format=(name)
-      @format = name.to_s
+    def suite
+      config.suite
     end
 
-    # Matching text used to filter which tests are run.
-    attr :match
+    #
+    # TODO: Cache or not?
+    #
+    def test_files
+      #@test_files ||= resolve_test_files
+      resolve_test_files
+    end
 
-    # Selected tags used to filter which tests are run.
-    attr :tags
-
-    # List of units with which to filter tests. It is an array of strings
-    # which are matched against module, class and method names.
-    attr :units
+    # Reporter format name, or name fragment, used to look up reporter class.
+    def format
+      config.format
+    end
 
     # Show extra details in reports.
     def verbose?
-      @verbose
-    end
-
-    #
-    def verbose=(boolean)
-      @verbose = !!boolean
-    end
-
-    # Use "hard" test mode?
-    def hard?
-      @hard
-    end
-
-    #
-    def hard=(boolean)
-      @hard = !!boolean
-    end
-
-    # Automatically assume local loadpaths?
-    def autopath?
-      @autopath
-    end
-
-    #
-    def autopath=(boolean)
-      @autopath = !!boolean
+      config.verbose?
     end
 
     # Instance of Advice is a special customizable observer.
@@ -124,15 +91,7 @@ module Test
 
       block.call(@config) if block
 
-      @suite     = @config.suite
-      @files     = @config.files
-      @format    = @config.format
-      @tags      = @config.tags
-      @units     = @config.units
-      @match     = @config.match
-      @verbose   = @config.verbose
-      @hard      = @config.hard
-      @autopath  = @config.autopath
+      #@verbose   = @config.verbose
 
       @advice = Advice.new
     end
@@ -153,12 +112,15 @@ module Test
     #   That the tests ran without error or failure.
     #
     def run
-      Test::Config.load_path_setup if autopath?
+      Test::Config.load_path_setup if config.autopath?
 
       ignore_callers
 
-      files_resolved.each do |file|
-        require file
+      config.loadpath.each{ |path| $LOAD_PATH.unshift(path) }
+      config.requires.each{ |file| require file }
+
+      test_files.each do |test_file|
+        require test_file
       end
 
       @reporter  = reporter_load(format)
@@ -235,7 +197,7 @@ module Test
       observers.each{ |o| o.begin_test(test) }
       begin
         success = test.call
-        if hard? && !success  # TODO: separate run_test method to speed things up?
+        if config.hard? && !success  # TODO: separate run_test method to speed things up?
           raise Assertion, "failure of #{test}"
         else
           observers.each{ |o| o.pass(test) }
@@ -274,17 +236,17 @@ module Test
       else
         cases.each do |tc|
           next if tc.respond_to?(:skip?) && tc.skip?
-          next if !match.empty? && !match.any?{ |m| m =~ tc.to_s }
+          next if !config.match.empty? && !config.match.any?{ |m| m =~ tc.to_s }
 
-          if !units.empty?
+          if !config.units.empty?
             next unless tc.respond_to?(:unit)
-            next unless units.find{ |u| tc.unit.start_with?(u) }
+            next unless config.units.find{ |u| tc.unit.start_with?(u) }
           end
 
-          if !tags.empty?
+          if !config.tags.empty?
             next unless tc.respond_to?(:tags)
             tc_tags = [tc.tags].flatten.map{ |t| t.to_s }
-            next if (tags & tc_tags).empty?
+            next if (config.tags & tc_tags).empty?
           end
 
           selected << tc
@@ -330,8 +292,8 @@ module Test
     # Files can be globs and directories which need to be
     # resolved to a list of files.
     #
-    def files_resolved
-      list = files.flatten
+    def resolve_test_files
+      list = config.files.flatten
       list = list.map{ |f| Dir[f] }.flatten
       list = list.map{ |f| File.directory?(f) ? Dir[File.join(f, '**/*.rb')] : f }
       list = list.flatten.uniq
