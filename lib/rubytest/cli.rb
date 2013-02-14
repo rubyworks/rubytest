@@ -86,6 +86,7 @@ module Test
           config.format = 'tapj'
         end
 
+        # tempted to change -T
         opt.on '-t', '--tag TAG', 'select tests by tag' do |tag|
           config.tags.concat makelist(tag)
         end
@@ -118,6 +119,9 @@ module Test
         opt.on '-c', '--config FILE', "require local config file (immediately)" do |file|
           config.load_config(file)
         end
+        #opt.on '-T', '--tests GLOB', "tests to run (if none given as arguments)" do |glob|
+        #  config.files << glob
+        #end
         opt.on '-V' , '--verbose', 'provide extra detail in reports' do
           config.verbose = true
         end

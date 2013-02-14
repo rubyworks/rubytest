@@ -323,6 +323,22 @@ module Test
       @chdir = dir.to_s
     end
 
+    # Procedure to call, just before running tests.
+    #
+    # @return [Proc,nil]
+    def before(&proc)
+      @before = proc if proc
+      @before
+    end
+
+    # Procedure to call, just after running tests.
+    #
+    # @return [Proc,nil]
+    def after(&proc)
+      @after = proc if proc
+      @after
+    end
+
     # The mode is only useful for specialied purposes, such as how
     # to run tests via the Rake task. It has no general purpose
     # and can be ignored in most cases.
@@ -390,27 +406,26 @@ module Test
       @loadpath = env(:loadpath, @loadpath) if @loadpath.empty?
     end
 
-    # Load configuration file.
+    # Load configuration file for project.
+    #
+    # File names are prefixed with `./` to ensure they are from a local
+    # source. An extension of `.rb` is assumed if the file lacks an one.
     #
     # @return [Boolean] true if file was required
     def load_config(file)
-      try_paths = ['etc', 'config']
-      try_paths.concat loadpath
-      try_paths << '.'
-      try_paths = try_paths.uniq
+      file = file + '.rb' if File.extname(file) == ''
 
       if chdir
-        try_paths = try_paths.map{ |path| File.join(chdir, path) }
+        file = File.join(chdir, file)
+      else
+        file = File.join('.', file)
       end
 
-      hold_path = $LOAD_PATH.dup
-      $LOAD_PATH.replace(try_paths)
-      begin
-        success = require file
-      ensure
-        $LOAD_PATH.replace(hold_path)
+      if File.exist?(file)
+        return require(file)
+      else
+        raise "config file not found -- `#{file}'"
       end
-      success
     end
 
   private

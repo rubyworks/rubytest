@@ -1,12 +1,19 @@
 module Test
 
-  # Currently this is an alias for configure, however it is likely
-  # to become an alias for `Runner.run` in the future.
+  # TODO: Support config profile's again?
+
+  # Alias for `Test.configure`.
+  # Use #run! to run tests immediately.
   #
-  # @deprecated Will probably change behavior in future.
   def self.run(config=nil, &config_proc)
     $stderr.puts "configuration profiles no longer supported." if config
     configure(&config_proc)
+  end
+
+  # Configure and run immediately.
+  #
+  def run!(config=nil, &config_proc)
+    Runner.run(config, &config_proc)
   end
 
   # The Test::Runner class handles the execution of tests.
@@ -123,6 +130,8 @@ module Test
           require test_file
         end
 
+        config.before.call if config.before
+
         @reporter  = reporter_load(format)
         @recorder  = Recorder.new
 
@@ -131,6 +140,8 @@ module Test
         observers.each{ |o| o.begin_suite(suite) }
         run_thru(suite)
         observers.each{ |o| o.end_suite(suite) }
+
+        config.after.call if config.after
       end
 
       recorder.success?
