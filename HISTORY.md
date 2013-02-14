@@ -1,6 +1,23 @@
 # RELEASE HISTORY
 
-## 0.6.0 / 2013-02-10
+## 0.6.1 / 2013-02-15
+
+Configurations can now supply a before and after procedure to by
+run right before or right after tests are run. This can be useful
+for setting up something like Simplecov coverage tool, which has
+to be setup before the applicable code is required but after all
+supporting test infrustructure is required. This release also fixes
+the `-c/--config` option, to prevent name clashes between gems and
+local config files, and it is simplifed to alwasy load locally, i.e.
+as if `./` is prepended to the path.
+
+Changes:
+
+* Add before and after config procs.
+* Fix -c/--config loading.
+
+
+## 0.6.0 / 2013-02-11
 
 This release of Ruby Test takes a hard step back and reconsiders how
 to handle configuration from the ground up. Current users of Ruby Test
