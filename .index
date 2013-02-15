@@ -18,10 +18,6 @@ requirements:
   development: true
   name: detroit
 - groups:
-  - build
-  development: true
-  name: dotopts
-- groups:
   - test
   development: true
   name: qed
@@ -62,4 +58,4 @@ name: rubytest
 description: ! "Ruby Test is a universal test harness for Ruby. It can handle any
   compliant \ntest framework, even running tests from multiple frameworks in a single
   pass."
-date: '2013-02-11'
+date: '2013-02-14'

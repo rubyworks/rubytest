@@ -33,11 +33,6 @@ module Test
     #
     # @return nothing
     def run(argv=nil)
-      begin
-        require 'dotopts'
-      rescue LoadError
-      end
-
       argv = (argv || ARGV.dup)
 
       options.parse!(argv)
