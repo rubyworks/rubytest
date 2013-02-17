@@ -1,36 +1,53 @@
 module Test
 
-  # TODO: Support config profile's again?
-
   # Alias for `Test.configure`.
   # Use #run! to run tests immediately.
   #
-  def self.run(config=nil, &config_proc)
-    $stderr.puts "configuration profiles no longer supported." if config
-    configure(&config_proc)
+  def self.run(profile=nil, &config_proc)
+    configure(profile, &config_proc)
   end
 
   # Configure and run immediately.
   #
+  # @todo Should this method return the success instead of exiting?
+  # @todo Wrap run in at_exit ?
+  #
+  # @return [void]
   def run!(config=nil, &config_proc)
-    Runner.run(config, &config_proc)
+    begin
+      success = Runner.run(config, &config_proc)
+      exit -1 unless success
+    rescue => error
+      raise error if $DEBUG
+      $stderr.puts('ERROR: ' + error.to_s)
+      exit -1
+    end
   end
 
   # The Test::Runner class handles the execution of tests.
   #
   class Runner
 
-    # TODO: Wrap run in at_exit ?
-    def self.run(config=nil, &config_proc)
-      runner = Runner.new(config, &config_proc)
-      begin
-        success = runner.run
-        exit -1 unless success
-      rescue => error
-        raise error if $DEBUG
-        $stderr.puts('ERROR: ' + error.to_s)
-        exit -1
+    # Run tests.
+    #
+    # @param [Config,Hash,String,Symbol] config
+    #   Either a Config instance, a hash to construct a Config
+    #   instance with, or a name of a configuration profile.
+    #
+    # @return [Boolean] Success of test run.
+    def self.run(config=nil) #:yield:
+      case config
+      when Config
+      when Hash
+        config = Config.new(config)
+      else
+        config = Test.configuration(config)
       end
+
+      yeild config if block_given?
+
+      runner = Runner.new(config)
+      runner.run
     end
 
     # Exceptions that are not caught by test runner.
@@ -90,15 +107,7 @@ module Test
     # @param [Config] config
     #   Config instance.
     #
-    def initialize(config=nil, &block)
-      if config
-        @config = Hash === config ? Config.new(config) : config
-      else
-        @config = Test.configuration
-      end
-
-      block.call(@config) if block
-
+    def initialize(config)
       @advice = Advice.new
     end
 
@@ -123,14 +132,16 @@ module Test
 
         ignore_callers
 
-        config.loadpath.each{ |path| $LOAD_PATH.unshift(path) }
-        config.requires.each{ |file| require file }
+        config.loadpath.flatten.each{ |path| $LOAD_PATH.unshift(path) }
+        config.requires.flatten.each{ |file| require file }
+
+        # Config before advice occurs after loadpath and require are
+        # applied and before test files are required.
+        config.before.call if config.before
 
         test_files.each do |test_file|
           require test_file
         end
-
-        config.before.call if config.before
 
         @reporter  = reporter_load(format)
         @recorder  = Recorder.new

@@ -1,6 +1,21 @@
 # RELEASE HISTORY
 
-## 0.6.1 / 2013-02-15
+## 0.7.0 / 2013-02-18
+
+Version 0.7 is a significant release. The library has been simplified
+by spinning-off the both the command-line tool and the Rake task as
+`rubytest-cli` and `rubytest-rake` respectively. This was done for a
+couple of good reasons: a) It focuses the the library on it's core
+functionality and b) and it makes the library suitable for becoming
+a Ruby standard library, should that ever become a possibility.
+
+Changes:
+
+* Spun off command-line tool as `rubytest-cli`.
+* Spun off Rake task as `rubytest-rake`.
+
+
+## 0.6.1 / 2013-02-16
 
 Configurations can now supply a before and after procedure to be
 run right before or right after tests are run. This can be useful
@@ -8,13 +23,14 @@ for setting up coverage tools Simplecov, which has to be setup
 before the applicable code is required but after all supporting
 test infrustructure is required. This release also fixes
 the `-c/--config` option, to prevent name clashes between gems and
-local config files, and it is simplifed to always load locally.
+local config files.
 
 Changes:
 
 * Add before and after config procs.
 * Fix -c/--config loading.
 * Remove use of DotOpts, it is not good enough yet.
+* Move Rake plugin to separate plugin project.
 
 
 ## 0.6.0 / 2013-02-11

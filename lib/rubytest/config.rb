@@ -1,13 +1,18 @@
 module Test
 
+  # Stores test configurations.
+  def self.config
+    @config ||= {}
+  end
+
   # Configure test run via a block then will be passed a `Config` instance.
   #
   # @return [Config]
-  def self.configure(&block)
+  def self.configure(profile=nil, &block)
     if reconfigure?
-      configuration.apply(&block)
+      configuration(profile).apply(profile, &block)
     else
-      @config = Config.new(&block)
+      @config[profile.to_s] = Config.new(&block)
     end
   end
 
@@ -23,9 +28,9 @@ module Test
   # Get the current configuration.
   #
   # @return [Config]
-  def self.configuration(reconfigurable=false)
+  def self.configuration(profile=nil, reconfigurable=false)
     @reconfigure = true if reconfigurable
-    @config ||= Config.new
+    @config[profile.to_s] ||= Config.new
   end
 
   ##
@@ -39,12 +44,6 @@ module Test
     # Glob used to find project root directory.
     GLOB_ROOT = '{.index,.gemspec,.git,.hg,_darcs,lib/}'
 
-    # RubyTest configuration file can be in '.test.rb`, `etc/test.rb`
-    # or `config/test.rb`, `.test`, in that order of precedence.
-    #
-    # @deprecated Use manual -c/--config option instead.
-    GLOB_CONFIG = '{.test.rb,etc/test.rb,config/test.rb,.test}'
-
     #
     def self.assertionless
       @assertionless
@@ -53,28 +52,6 @@ module Test
     #
     def self.assertionless=(boolean)
       @assertionaless = !!boolean
-    end
-
-    # Load configuration file. An example file might look like:
-    #
-    #   Test.configure do |run|
-    #     run.files << 'test/case_*.rb'
-    #   end
-    #
-    # @deprecated Planned for deprecation in April 2013.
-    def self.load_config
-      if config_file
-        file = config_file.sub(Dir.pwd+'/','')
-        $stderr.puts "Automatic #{file} loading has been deprecated.\nUse -c option for future version."
-        load config_file
-      end
-    end
-
-    # Find traditional configuration file.
-    #
-    # @deprecated
-    def self.config_file
-      @config_file ||= Dir.glob(File.join(root, GLOB_CONFIG)).first
     end
 
     # Find and cache project root directory.
