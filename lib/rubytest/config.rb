@@ -12,7 +12,7 @@ module Test
     if reconfigure?
       configuration(profile).apply(profile, &block)
     else
-      @config[profile.to_s] = Config.new(&block)
+      config[profile.to_s] = Config.new(&block)
     end
   end
 
@@ -30,7 +30,7 @@ module Test
   # @return [Config]
   def self.configuration(profile=nil, reconfigurable=false)
     @reconfigure = true if reconfigurable
-    @config[profile.to_s] ||= Config.new
+    config[profile.to_s] ||= Config.new
   end
 
   ##
@@ -116,19 +116,16 @@ module Test
 
       #apply_environment
 
-      settings.each do |k,v|
-        send("#{k}=", v)
-      end
-
-      self.class.load_config # deprecated!!!
-
-      apply(&block)
+      apply(settings, &block)
     end
 
     # Evaluate configuration block.
     #
     # @return nothing
-    def apply(&block)
+    def apply(hash={}, &block)
+      hash.each do |k,v|
+        send("#{k}=", v)
+      end
       block.call(self) if block
     end
 

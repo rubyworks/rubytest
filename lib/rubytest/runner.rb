@@ -13,7 +13,7 @@ module Test
   # @todo Wrap run in at_exit ?
   #
   # @return [void]
-  def run!(config=nil, &config_proc)
+  def self.run!(config=nil, &config_proc)
     begin
       success = Runner.run(config, &config_proc)
       exit -1 unless success
@@ -44,7 +44,7 @@ module Test
         config = Test.configuration(config)
       end
 
-      yeild config if block_given?
+      yeild(config) if block_given?
 
       runner = Runner.new(config)
       runner.run
@@ -108,6 +108,7 @@ module Test
     #   Config instance.
     #
     def initialize(config)
+      @config = config
       @advice = Advice.new
     end
 
