@@ -15,7 +15,8 @@ a test. For instance, given an abtriray object defined as follows.
 
 If we pass this to a test runner as part of a test suite,
 
-    runner = Test::Runner.new(:suite=>[test], :format=>'test')
+    config = Test::Config.new(:suite=>[test], :format=>'test')
+    runner = Test::Runner.new(config)
 
     success = runner.run
 

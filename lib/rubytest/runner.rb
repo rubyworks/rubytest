@@ -35,23 +35,30 @@ module Test
     #   instance with, or a name of a configuration profile.
     #
     # @return [Boolean] Success of test run.
-    def self.run(config=nil) #:yield:
-      case config
-      when Config
-      when Hash
-        config = Config.new(config)
-      else
-        config = Test.configuration(config)
-      end
-
-      yeild(config) if block_given?
-
-      runner = Runner.new(config)
+    def self.run(config=nil, &config_proc) #:yield:
+      runner = Runner.new(config, &config_proc)
       runner.run
     end
 
     # Exceptions that are not caught by test runner.
     OPEN_ERRORS = [NoMemoryError, SignalException, Interrupt, SystemExit]
+
+    # New Runner.
+    #
+    # @param [Config] config
+    #   Config instance.
+    #
+    def initialize(config) #:yield:
+      @config = case config
+        when Config then config
+        when Hash   then Config.new(config)
+        else Test.configuration(config)
+      end
+
+      yeild(@config) if block_given?
+
+      @advice = Advice.new
+    end
 
     # Handle all configuration via the config instance.
     attr :config
@@ -100,16 +107,6 @@ module Test
     # See {Advice} for valid join-points.
     def upon(type, &block)
       advice.join(type, &block)
-    end
-
-    # New Runner.
-    #
-    # @param [Config] config
-    #   Config instance.
-    #
-    def initialize(config)
-      @config = config
-      @advice = Advice.new
     end
 
     # The reporter to use for ouput.
