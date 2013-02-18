@@ -3,7 +3,7 @@
 ## 0.7.0 / 2013-02-18
 
 Version 0.7 is a significant release. The library has been simplified
-by spinning-off the both the command-line tool and the Rake task as
+by spinning-off both the command-line tool and the Rake task as
 `rubytest-cli` and `rubytest-rake` respectively. This was done for a
 couple of good reasons: a) It focuses the the library on it's core
 functionality and b) and it makes the library suitable for becoming

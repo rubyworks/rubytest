@@ -145,7 +145,8 @@ module Test
     # List of test files to run.
     #
     # @return [Array<String>]
-    def files
+    def files(*list)
+      @files.concat(makelist(list)) unless list.empty?
       @files
     end
     alias test_files files
@@ -175,7 +176,11 @@ module Test
     # Paths to add to $LOAD_PATH.
     #
     # @return [Array<String>]
-    attr :loadpath
+    def loadpath(*list)
+      @loadpath.concat(makelist(list)) unless list.empty?
+      @loadpath
+    end
+    alias :load_path :loadpath
 
     # Set paths to add to $LOAD_PATH.
     #
@@ -183,11 +188,15 @@ module Test
     def loadpath=(list)
       @loadpath = makelist(list)
     end
+    alias :load_path= :loadpath=
 
     # Scripts to require prior to tests.
     #
     # @return [Array<String>]
-    attr :requires
+    def requires(*list)
+      @requires.concat(makelist(list)) unless list.empty?
+      @requires
+    end
 
     # Set the features that need to be required before the
     # test files.
@@ -200,15 +209,19 @@ module Test
     # Name of test report format, by default it is `dotprogress`.
     #
     # @return [String] format
-    def format
+    def format(name=nil)
+      @format = name.to_s if name
       @format || DEFAULT_FORMAT
     end
 
     # Set test report format.
     #
+    # @param [String] name
+    #   Name of the report format.
+    #
     # @return [String] format
-    def format=(format)
-      @format = format.to_s
+    def format=(name)
+      @format = name.to_s
     end
 
     # Provide extra details in reports?
@@ -228,7 +241,8 @@ module Test
     # Selection of tags for filtering tests.
     #
     # @return [Array<String>]
-    def tags
+    def tags(*list)
+      @tags.concat(makelist(list)) unless list.empty?
       @tags
     end
 
@@ -242,7 +256,8 @@ module Test
     # Description match for filtering tests.
     #
     # @return [Array<String>]
-    def match
+    def match(*list)
+      @match.concat(makelist(list)) unless list.empty?
       @match
     end
 
@@ -257,7 +272,8 @@ module Test
     # which are matched against module, class and method names.
     #
     # @return [Array<String>]
-    def units
+    def units(*list)
+      @units.concat(makelist(list)) unless list.empty?
       @units
     end
 
@@ -286,7 +302,8 @@ module Test
     # Change to this directory before running tests.
     #
     # @return [String]
-    def chdir
+    def chdir(dir=nil)
+      @chdir = dir.to_s if dir
       @chdir
     end
 

@@ -94,7 +94,7 @@ to the configuration options of the `Test.run/Test.configure` API. Use
 
 If you are using a build tool to run your tests, such as Rake or Ergo, shelling
 out to `rubytest` is a good way to go as it keeps your test environment as 
-prestine as possible, e.g.
+pristine as possible, e.g.
 
     desc "run tests"
     task :test
@@ -105,7 +105,7 @@ prestine as possible, e.g.
 
 There is also a Rake plug-in that can be installed called `rubytest-rake`.
 Surf over to its [webpage](http://rubyworks.github.com/rubytest-rake) for details.
-A basic example in its case, add to one's Rakefile:
+A basic example in its case, add to ones Rakefile:
 
     require 'rubytest/rake'
 
