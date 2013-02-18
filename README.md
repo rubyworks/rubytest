@@ -2,8 +2,8 @@
 
 [Homepage](http://rubyworks.github.com/rubytest) /
 [User Guide](http://wiki.github.com/rubyworks/rubytest) /
-[Development](http://github.com/rubyworks/rubytest) /
-[Issues](http://github.com/rubyworks/rubytest/issues)
+[Support](http://github.com/rubyworks/rubytest/issues) /
+[Development](http://github.com/rubyworks/rubytest)
 
 [![Build Status](https://secure.travis-ci.org/rubyworks/rubytest.png)](http://travis-ci.org/rubyworks/rubytest)
 [![Gem Version](https://badge.fury.io/rb/rubytest.png)](http://badge.fury.io/rb/rubytest)
@@ -57,50 +57,64 @@ also be installed in an FHS compliant fashion if necessary.
 
 ## Running Tests
 
-There are a few ways to run tests. First, there is the command line tool
-e.g.
+There are a few ways to run tests. 
 
-    $ rubytest test/test_*.rb
+### Via Runner Scripts
 
-The command line tool takes various options, use `-h/--help` to see them.
+Out of the box Ruby Test doesn't provide any special means for doing so,
+you simply write you own runner script using the Ruby Test API.
+Here is the basic example:
 
-When running tests, you need to be sure to load in your test framework
-or your framework's Ruby Test adapter. This is usually done via a helper
-script in the test files, but might also be done via command line options,
-e.g.
+    require 'rubytest'
 
-    $ rubytest -r lemon -r ae test/test_*.rb
+    Test.run! do |r|
+      r.loadpath 'lib'
+      r.test_files 'test/test_*.rb'
+    end
 
-Ruby Test supports [dotopts](http://rubyworks.github.com/dotopts) out of the
-box, so it easy to setup reusable options. For example, a `.option` file
-entry might be:
+Put that in a `test/runner.rb` script and run it with `ruby` or
+add `#!/usr/bin/env ruby` at the top and put it in `bin/test`
+setting `chmod u+x bin/test`. Either way, you now have your test
+runner.
 
-    rubytest
-      -f progress
-      -r spectroscope
-      -r rspecial
-      spec/spec_*.rb
+### Via Command-line Tool
 
-If you are using a build tool to run your tests, such as Rake or Fire, it is
-best to shell out to `rubytest`. This keeps your test environent as prestine
-as possible.
+Probably the easiest way to run tests is via the command line tool available
+via the `rubytest-cli` plug-in. You can read more about it on its
+[webpage](http://rubyworks.github.com/rubytest-cli), but we will quickly go
+over it here. 
+
+The basic usage example is:
+
+    $ rubytest -Ilib test/test_*.rb
+
+The command line tool takes various options, most of which correspond directly
+to the configuration options of the `Test.run/Test.configure` API. Use
+`-h/--help` to see them all.
+
+If you are using a build tool to run your tests, such as Rake or Ergo, shelling
+out to `rubytest` is a good way to go as it keeps your test environment as 
+prestine as possible, e.g.
 
     desc "run tests"
     task :test
       sh "rubytest"
     end
 
-RubyTest comes with a Rake task plugin, but its use is all but deprecated
-because it's basically just a glorified rendition of the above.
+### Via Rake Task
+
+There is also a Rake plug-in that can be installed called `rubytest-rake`.
+Surf over to its [webpage](http://rubyworks.github.com/rubytest-rake) for details.
+A basic example in its case, add to one's Rakefile:
 
     require 'rubytest/rake'
 
     Test::Rake::TestTask.new :test do |run|
       run.requires << 'lemon'
-      run.files = 'test/test_*.rb'
+      run.test_files = 'test/test_*.rb'
     end
 
-See the Wiki for more information on the different ways to run tests.
+See the Wiki for more detailed information on the different ways to run tests.
 
 
 ## Requirements
