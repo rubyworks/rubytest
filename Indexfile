@@ -1,0 +1,33 @@
+---
+name:
+  rubytest
+
+version: 
+  0.7.0
+
+title:
+  Ruby Test
+
+summary:
+  Ruby Universal Test Harness
+
+description:
+  Ruby Test is a universal test harness for Ruby. It can handle any compliant 
+  test framework, even running tests from multiple frameworks in a single pass.
+
+resources:
+  home: http://rubyworks.github.com/rubytest
+  code: http://github.com/rubyworks/rubytest
+  mail: http://groups.google.com/group/rubyworks-mailinglist
+
+repositories:
+  upstream: git@github.com:rubyworks/rubytest.git
+
+authors:
+  - trans <transfire@gmail.com>
+
+created: 2011-07-23
+
+copyrights:
+  - 2011 RubyWorks (BSD-2-Clause)
+

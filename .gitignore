@@ -1,9 +1,12 @@
+*.gem
 .reap/digest
 .yardoc
-doc
-log
-pkg
-tmp
-web
+doc/
+log/
+pkg/
+tmp/
+web/
 QED.rdoc
+QED.md
 Gemfile.lock
+
