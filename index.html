@@ -40,6 +40,42 @@
 
 </div>
 
+<article>
+<p>Rubytest is a universal test harness for Ruby development. Think
+of Rubytest as a *testing meta-framework*. It defines a straight-forward
+specification that anyone can use to create their own testing DSLs 
+quickily and easily. This can be used for testing end applcations or it
+can be used by test framework as a backend.
+In addition, since all Ruby Test controls the backend, multiple frameworks
+can be used in a single test suite all of which can run through a single
+uniform interface in a process.</p>
+
+<p>Rubytest's clean specification makes it almost trivial to implement new
+test suites and frameworks. The universal access point for testing is the
+`$TEST_SUITE` global array. A test suite or framework need only add compliant
+test objects to this array. Rubytest will iterate through these objects.
+If a test object responds to `#call`, it is run as a test procedure. If it
+responds to `#each` it is iterated over as a <i>testcase</i> with each entry
+handled in the same manner. All test objects must respond to `#to_s` so
+their description can be used in test reports.</p>
+
+</p>Ruby Test handles assertions via <a href="http://rubyworks.github.com/brass">BRASS</a>
+compliance. Any raised exception that responds to `#assertion?` in the
+affirmative is taken to be a failed assertion rather than simply an error. 
+A test framework may raise a `NotImplementedError` to have a test recorded
+as <i>todo</i>, i.e. a pending exception to remind the developer of tests 
+that still need to be written. The `NotImplementedError` is a standard Ruby
+exception and a subclass of `ScriptError`. The exception can also set a
+priority level to indicate the urgency of the pending test. Priorities of
+-1 or lower will generally not be brought to the attention of testers unless
+explicitly configured to do so.</p>
+
+<p>That is the crux of Ruby Test specification. Ruby Test supports some
+additional features that can makes its usage even more convenient.
+See the <a href="http://github.com/rubyworks/test/wiki">Wiki</a> for 
+further details.</p>
+</article>
+
 <div id="footer">
   <div class="nav">
     <a href="http://wiki.github.com/rubyworks/rubytest">User Guide</a>
