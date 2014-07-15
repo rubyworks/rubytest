@@ -4,17 +4,17 @@
   <style>
     html { font-family: sans-serif; }
     body { margin: 0; padding: 0; }
-    a    { text-decoration: none; color: #ddd; padding: 5px 10px; }
-    a:hover { color: #ffffff; }
 
-    #main { background: url(assets/images/test_pattern.jpg) top no-repeat; height: 780px;
+    header a    { text-decoration: none; color: #ddd; padding: 5px 10px; }
+    header a:hover { color: #ffffff; }
+
+    header { background: url(assets/images/test_pattern.jpg) top no-repeat;
             position: relative; margin: 10px 0; padding: 0; }
 
-    #line { width: 100%; color: #cc2222; text-align: center; 
-            background: red; opacity: 0.9; font-family: times; }
-    #line a { color: #fef; font-size: 5em; font-weight: bold; text-shadow: 8px 8px 15px #000; }
-    #line a:hover { color: #fff; text-shadow: 8px 8px 20px #000; text-decoration: underline; }
-    #line p { color: #fef; font-size: 2em; margin: 0; padding: 0 0 20px 0; text-shadow: 5px 5px 10px #000; }
+    #line { width: 100%; color: red; text-align: center; background: transparent; font-family: times; }
+    #line a { color: #e03; font-size: 7em; font-weight: bold; text-shadow: 1px 1px 5px #333; }
+    #line a:hover { color: #e03; text-shadow: 1px 1px 5px #333; }
+    #line p { color: #333; font-size: 3em; margin: 0; padding: 0 0 20px 0; text-shadow: 1px 1px 5px #000; }
 
     #footer {
       width: 1024px; margin: 10px auto;  text-align: center;
@@ -23,13 +23,20 @@
     #footer a { color: red; font-size: 1.5em; }
     #footer a:hover { color: black; }
 
+    nav { text-align: center; margin-top: 2em; }
+    nav a { color: red; font-size: 1.4em; text-decoration: none; }
+    nav a:hover { color: black; }
+
+    article { padding: 1em 3em; font-family: helvetica, sans-serif; font-size: 1.1em; line-height: 1.5em; }
+    article p { color: #444; }
+
     .copyright { color: #555; }
   </style>
 </head>
 <body>
 
-<div id="main">
-  <div style="height: 300px;"></div>
+<header>
+  <div style="height: 786px;"></div>
 
   <div id="line">
     <a href="http://github.com/rubyworks/rubytest/wiki">
@@ -37,38 +44,40 @@
     </a>
     <p>Universal Test Harness</p>
   </div>
+</header>
 
-</div>
+<nav>
+  <a href="http://wiki.github.com/rubyworks/rubytest">USER GUIDE</a> &nbsp;//&nbsp;
+  <a href="http://rubydoc.info/gems/rubytest">API REFERENCE</a> &nbsp;//&nbsp;
+  <a href="http://github.com/rubyworks/rubytest">DEVELOPMENT</a>
+</nav>
 
 <article>
-<p>Rubytest is a universal test harness for Ruby development. Think
-of Rubytest as a *testing meta-framework*. It defines a straight-forward
-specification that anyone can use to create their own testing DSLs 
-quickily and easily. This can be used for testing end applcations or it
-can be used by test framework as a backend.
-In addition, since all Ruby Test controls the backend, multiple frameworks
-can be used in a single test suite all of which can run through a single
-uniform interface in a process.</p>
+<p>Rubytest is a universal test harness for Ruby developers. You can think
+of Rubytest as a testing <i>meta-framework</i>. It defines a straight-forward
+specification that anyone can use to easily create their own testing DSLs.
+This can be used for testing end applcations directly or it can be used as
+a backend to build other test frameworks. In addition, since Rubytest controls
+the backend, multiple frameworks can be used in a single test suite all of
+which can run through a uniform interface in a single pass.</p>
 
 <p>Rubytest's clean specification makes it almost trivial to implement new
 test suites and frameworks. The universal access point for testing is the
-`$TEST_SUITE` global array. A test suite or framework need only add compliant
+<tt>$TEST_SUITE</tt> global array. A test suite or framework need only add compliant
 test objects to this array. Rubytest will iterate through these objects.
-If a test object responds to `#call`, it is run as a test procedure. If it
-responds to `#each` it is iterated over as a <i>testcase</i> with each entry
-handled in the same manner. All test objects must respond to `#to_s` so
+If a test object responds to <tt>#call</tt>, it is run as a test procedure. If it
+responds to <tt>#each</tt> it is iterated over as a <i>testcase</i> with each entry
+handled in the same manner. All test objects must respond to <tt>#to_s</tt> so
 their description can be used in test reports.</p>
 
-</p>Ruby Test handles assertions via <a href="http://rubyworks.github.com/brass">BRASS</a>
-compliance. Any raised exception that responds to `#assertion?` in the
+<p>Ruby Test handles assertions via <a href="http://rubyworks.github.com/brass">BRASS</a>
+compliance. Any raised exception that responds to <tt>#assertion?</tt> in the
 affirmative is taken to be a failed assertion rather than simply an error. 
-A test framework may raise a `NotImplementedError` to have a test recorded
+A test framework may raise a <tt>NotImplementedError</tt> to have a test recorded
 as <i>todo</i>, i.e. a pending exception to remind the developer of tests 
-that still need to be written. The `NotImplementedError` is a standard Ruby
-exception and a subclass of `ScriptError`. The exception can also set a
-priority level to indicate the urgency of the pending test. Priorities of
--1 or lower will generally not be brought to the attention of testers unless
-explicitly configured to do so.</p>
+that still need to be written. The exception can also set a priority level to
+indicate the urgency of the test. Priorities of -1 or lower are generally not
+brought to the attention of testers unless explicitly configured to do so.</p>
 
 <p>That is the crux of Ruby Test specification. Ruby Test supports some
 additional features that can makes its usage even more convenient.
@@ -77,12 +86,6 @@ further details.</p>
 </article>
 
 <div id="footer">
-  <div class="nav">
-    <a href="http://wiki.github.com/rubyworks/rubytest">User Guide</a>
-    <a href="http://rubydoc.info/gems/rubytest">API Reference</a>
-    <a href="http://github.com/rubyworks/rubytest">Development</a>
-  <div>
-
   <div style="margin: 40px 0;">
     <script type="text/javascript"><!--
     google_ad_client = "ca-pub-1126154564663472";
