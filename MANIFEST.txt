@@ -1,4 +1,4 @@
-#!mast .index .ruby .test .yaropts bin demo lib man spec test *.md *.txt
+#!mast .index .yaropts bin demo lib test *.md *.txt
 .index
 demo/01_test.md
 demo/02_case.md
@@ -6,7 +6,6 @@ demo/applique/ae.rb
 demo/applique/rubytest.rb
 lib/rubytest/advice.rb
 lib/rubytest/autorun.rb
-lib/rubytest/cli.rb
 lib/rubytest/code_snippet.rb
 lib/rubytest/config.rb
 lib/rubytest/core_ext/assertion.rb
@@ -32,6 +31,6 @@ lib/rubytest.yml
 lib/test.rb
 test/basic_case.rb
 test/helper.rb
-HISTORY.md
 README.md
+HISTORY.md
 LICENSE.txt
