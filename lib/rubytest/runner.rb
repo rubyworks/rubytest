@@ -55,7 +55,9 @@ module Test
         else Test.configuration(config)
       end
 
-      yeild(@config) if block_given?
+      @config.apply!  # apply lazy config block
+
+      yield(@config) if block_given?
 
       @advice = Advice.new
     end

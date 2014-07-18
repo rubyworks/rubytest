@@ -30,7 +30,6 @@ if RUBY_VERSION < '1.9'
   require 'rubytest/recorder'
   require 'rubytest/advice'
   require 'rubytest/runner'
-  require 'rubytest/cli'
   require 'rubytest/reporters/abstract'
   require 'rubytest/reporters/abstract_hash'
 else
@@ -40,7 +39,6 @@ else
   require_relative 'rubytest/recorder'
   require_relative 'rubytest/advice'
   require_relative 'rubytest/runner'
-  require_relative 'rubytest/cli'
   require_relative 'rubytest/reporters/abstract'
   require_relative 'rubytest/reporters/abstract_hash'
 end

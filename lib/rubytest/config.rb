@@ -116,7 +116,15 @@ module Test
 
       #apply_environment
 
-      apply(settings, &block)
+      apply(settings)
+
+      # save for lazy execution
+      @block = block
+    end
+
+    # Apply lazy block.
+    def apply!
+      @block.call(self) if @block
     end
 
     # Evaluate configuration block.
@@ -127,6 +135,16 @@ module Test
         send("#{k}=", v)
       end
       block.call(self) if block
+    end
+
+    #
+    def name
+      @name
+    end
+
+    #
+    def name=(name)
+      @name = name.to_s if name
     end
 
     # Default test suite ($TEST_SUITE).
@@ -350,6 +368,8 @@ module Test
 
     # Convert configuration to shell options, compatible with the
     # rubytest command line.
+    #
+    # DEPRECATE: Shell command is considered bad approach.
     #
     # @return [Array<String>]
     def to_shellwords
