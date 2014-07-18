@@ -1,27 +1,29 @@
 ---
 name:
-  rubytest
+  rubytest-core
 
 version: 
-  0.7.0
+  0.8.0
 
 title:
-  Ruby Test
+  Rubytest Core
 
 summary:
   Ruby Universal Test Harness
 
 description:
-  Ruby Test is a universal test harness for Ruby. It can handle any compliant 
+  Rubytest is a universal test harness for Ruby. It can handle any compliant 
   test framework, even running tests from multiple frameworks in a single pass.
+  This is the core component of the system, and is the only part strictly
+  necessary to run tests.
 
 resources:
-  home: http://rubyworks.github.com/rubytest
-  code: http://github.com/rubyworks/rubytest
+  home: http://rubyworks.github.com/rubytest-core
+  code: http://github.com/rubyworks/rubytest-core
   mail: http://groups.google.com/group/rubyworks-mailinglist
 
 repositories:
-  upstream: git@github.com:rubyworks/rubytest.git
+  upstream: git@github.com:rubyworks/rubytest-core.git
 
 authors:
   - trans <transfire@gmail.com>

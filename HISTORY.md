@@ -1,5 +1,16 @@
 # RELEASE HISTORY
 
+## 0.8.0 / 2014-07-18
+
+Renamed gem to rubytest-core. The rubytest gem iteself will become a 
+meta-gem requiring core and a set of common standard plugins.
+
+Changes:
+
+* Rename project to `rubytest-core`.
+* Spin-off report formats as separate gems.
+
+
 ## 0.7.0 / 2013-02-18
 
 Version 0.7 is a significant release. The library has been simplified

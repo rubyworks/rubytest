@@ -61,30 +61,11 @@ also be installed in an FHS compliant fashion if necessary.
 
 There are a few ways to run tests. 
 
-### Via Runner Scripts
-
-Out of the box Rubytest doesn't provide any special means for doing so,
-you simply write you own runner script using the Rubytest API.
-Here is the basic example:
-
-    require 'rubytest'
-
-    Test.run! do |r|
-      r.loadpath 'lib'
-      r.test_files 'test/test_*.rb'
-    end
-
-Put that in a `test/runner.rb` script and run it with `ruby` or
-add `#!/usr/bin/env ruby` at the top and put it in `bin/test`
-setting `chmod u+x bin/test`. Either way, you now have your test
-runner.
-
 ### Via Command-line Tool
 
-Probably the easiest way to run tests is via the command line tool available
-via the `rubytest-cli` plug-in. You can read more about it on its
-[webpage](http://rubyworks.github.com/rubytest-cli), but we will quickly go
-over it here. 
+The easiest way to run tests is via the command line tool. You can read more about
+it on its [manpage](http://rubyworks.github.com/rubytest/man/rubytest.1.html),
+but we will quickly go over it here. 
 
 The basic usage example is:
 
@@ -117,6 +98,24 @@ A basic example in its case, add to ones Rakefile:
     end
 
 See the Wiki for more detailed information on the different ways to run tests.
+
+### Via Runner Scripts
+
+Out of the box Rubytest doesn't provide any special means for doing so,
+you simply write you own runner script using the Rubytest API.
+Here is the basic example:
+
+    require 'rubytest'
+
+    Test.run! do |r|
+      r.loadpath 'lib'
+      r.test_files 'test/test_*.rb'
+    end
+
+Put that in a `test/runner.rb` script and run it with `ruby` or
+add `#!/usr/bin/env ruby` at the top and put it in `bin/test`
+setting `chmod u+x bin/test`. Either way, you now have your test
+runner.
 
 
 ## Requirements

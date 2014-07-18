@@ -8,25 +8,15 @@ authors:
 - name: trans
   email: transfire@gmail.com
 organizations: []
-requirements:
-- version: '>= 0'
-  name: ansi
-- groups:
-  - test
-  version: '>= 0'
-  name: qed
-- groups:
-  - test
-  version: '>= 0'
-  name: ae
+requirements: []
 conflicts: []
 alternatives: []
 resources:
 - type: home
-  uri: http://rubyworks.github.com/rubytest
+  uri: http://rubyworks.github.com/rubytest-core
   label: Homepage
 - type: code
-  uri: http://github.com/rubyworks/rubytest
+  uri: http://github.com/rubyworks/rubytest-core
   label: Source Code
 - type: mail
   uri: http://groups.google.com/group/rubyworks-mailinglist
@@ -34,7 +24,7 @@ resources:
 repositories:
 - name: upstream
   scm: git
-  uri: git@github.com:rubyworks/rubytest.git
+  uri: git@github.com:rubyworks/rubytest-core.git
 categories: []
 copyrights:
 - holder: RubyWorks
@@ -44,11 +34,13 @@ customs: []
 paths:
   lib:
   - lib
-name: rubytest
-title: Ruby Test
-version: 0.7.0
+name: rubytest-core
+title: Rubytest Core
+version: 0.8.0
 summary: Ruby Universal Test Harness
-description: Ruby Test is a universal test harness for Ruby. It can handle any compliant
-  test framework, even running tests from multiple frameworks in a single pass.
+description: Rubytest is a universal test harness for Ruby. It can handle any compliant
+  test framework, even running tests from multiple frameworks in a single pass. This
+  is the core component of the system, and is the only part strictly necessary to
+  run tests.
 created: '2011-07-23'
-date: '2014-04-10'
+date: '2014-07-18'
