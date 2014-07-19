@@ -2,13 +2,14 @@
 
 ## 0.8.0 / 2014-07-18
 
-Renamed gem to rubytest-core. The rubytest gem iteself will become a 
-meta-gem requiring core and a set of common standard plugins.
+We have whittled Rubytest down to it core functionaltiy and spun the rest
+off as separate plugin gems. The rubytest-suite gem is a metapackage
+loading this gem and a set of common plugins for convenience.
 
 Changes:
 
-* Rename project to `rubytest-core`.
 * Spin-off report formats as separate gems.
+* Create rubytest-suite gem for convenience.
 
 
 ## 0.7.0 / 2013-02-18

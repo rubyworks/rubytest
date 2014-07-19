@@ -1,12 +1,12 @@
 ---
 name:
-  rubytest-core
+  rubytest
 
 version: 
   0.8.0
 
 title:
-  Rubytest Core
+  Rubytest
 
 summary:
   Ruby Universal Test Harness
@@ -18,12 +18,12 @@ description:
   necessary to run tests.
 
 resources:
-  home: http://rubyworks.github.com/rubytest-core
-  code: http://github.com/rubyworks/rubytest-core
+  home: http://rubyworks.github.com/rubytest
+  code: http://github.com/rubyworks/rubytest
   mail: http://groups.google.com/group/rubyworks-mailinglist
 
 repositories:
-  upstream: git@github.com:rubyworks/rubytest-core.git
+  upstream: git@github.com:rubyworks/rubytest.git
 
 authors:
   - trans <transfire@gmail.com>

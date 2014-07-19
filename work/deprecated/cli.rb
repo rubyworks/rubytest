@@ -1,10 +1,15 @@
+
+
 module Test
 
   # Command line interface to test runner.
   #
-  # TODO: Use `cli` based library instead of option parser?
-  #
   class CLI
+
+    # Test configuration file can be in `etc/test.rb` or `config/test.rb`, or
+    # `Testfile` or '.test` with optional `.rb` extension, in that order of 
+    # precedence. To use a different file there is the -c/--config option.
+    GLOB_CONFIG = '{etc/test.rb,config/test.rb,testfile.rb,testfile,.test.rb,.test}'
 
     # Convenience method for invoking the CLI.
     #
@@ -19,7 +24,9 @@ module Test
     def initialize
       require 'optparse'
 
-      @config = Test.configuration(true)
+      @config = {}
+      @config_file = nil
+      #@config = Test.configuration(true)
     end
 
     # Test run configuration.

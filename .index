@@ -13,10 +13,10 @@ conflicts: []
 alternatives: []
 resources:
 - type: home
-  uri: http://rubyworks.github.com/rubytest-core
+  uri: http://rubyworks.github.com/rubytest
   label: Homepage
 - type: code
-  uri: http://github.com/rubyworks/rubytest-core
+  uri: http://github.com/rubyworks/rubytest
   label: Source Code
 - type: mail
   uri: http://groups.google.com/group/rubyworks-mailinglist
@@ -24,7 +24,7 @@ resources:
 repositories:
 - name: upstream
   scm: git
-  uri: git@github.com:rubyworks/rubytest-core.git
+  uri: git@github.com:rubyworks/rubytest.git
 categories: []
 copyrights:
 - holder: RubyWorks
@@ -34,8 +34,8 @@ customs: []
 paths:
   lib:
   - lib
-name: rubytest-core
-title: Rubytest Core
+name: rubytest
+title: Rubytest
 version: 0.8.0
 summary: Ruby Universal Test Harness
 description: Rubytest is a universal test harness for Ruby. It can handle any compliant
