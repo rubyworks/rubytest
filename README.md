@@ -7,7 +7,7 @@
 
 [![Build Status](https://secure.travis-ci.org/rubyworks/rubytest.png)](http://travis-ci.org/rubyworks/rubytest)
 [![Gem Version](https://badge.fury.io/rb/rubytest.png)](http://badge.fury.io/rb/rubytest)
-
+[![Gittip](http://img.shields.io/gittip/on/github/rubyworks.svg)](https://www.gittip.com/on/github/rubyworks/)
 
 ## Description
 
