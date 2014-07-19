@@ -44,11 +44,11 @@ paths:
   - lib
 name: rubytest
 title: Rubytest
-version: 0.8.0
+version: 0.8.1
 summary: Ruby Universal Test Harness
 description: Rubytest is a universal test harness for Ruby. It can handle any compliant
   test framework, even running tests from multiple frameworks in a single pass. This
   is the core component of the system, and is the only part strictly necessary to
   run tests.
 created: '2011-07-23'
-date: '2014-07-18'
+date: '2014-07-19'
