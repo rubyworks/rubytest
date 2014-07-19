@@ -8,7 +8,15 @@ authors:
 - name: trans
   email: transfire@gmail.com
 organizations: []
-requirements: []
+requirements:
+- groups:
+  - test
+  version: '>= 0'
+  name: qed
+- groups:
+  - test
+  version: '>= 0'
+  name: ae
 conflicts: []
 alternatives: []
 resources:
