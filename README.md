@@ -11,16 +11,12 @@
 [![Gittip](http://img.shields.io/badge/gittip-$1/wk-green.svg?style=flat)](https://www.gittip.com/on/github/rubyworks/)
 
 
-## Description
-
-Rubytest is a universal test harness for Ruby development. Think
-of Rubytest as a *testing meta-framework*. It defines a straight-forward
-specification that anyone can use to create their own testing DSLs 
-quickily and easily. This can be used for testing end applcations or it
-can be used by test framework as a backend.
-In addition, since all Rubytest controls the backend, multiple frameworks
-can be used in a single test suite all of which can run through a single
-uniform interface in a process.
+Rubytest is Ruby's Universal Test Harness. Think of it as a *testing meta-framework*.
+It defines a straight-forward specification that any application can use to create
+their own testing DSLs. Rubytest can be used for testing end-user applcations directly
+or as the backend of a test framework. Since Rubytest controls the backend, multiple test
+frameworks can be used in a single test suite, all of which can be run through one uniform
+interface in a single process!
 
 
 ## Specification
