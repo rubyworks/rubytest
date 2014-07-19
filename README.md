@@ -1,12 +1,12 @@
 # Rubytest
 
-[![Home Page](http://img.shields.io/badge/Home-Page-blue.svg)](http://rubyworks.github.io/rubytest)
-[![Report Issues](http://img.shields.io/badge/Report-Issues-red.svg)](http://github.com/rubyworks/rubytest/issues)
-[![User Guide](http://img.shields.io/badge/User-Guide-blue.svg)](http://wiki.github.com/rubyworks/rubytest)
-[![Fork Me](http://img.shields.io/badge/Fork-Me-orange.svg)](http://http://github.com/rubyworks/rubytest)
-[![Build Status](http://img.shields.io/travis/rubyworks/rubytest.svg)](http://travis-ci.org/rubyworks/rubytest)
-[![Gem Version](https://badge.fury.io/rb/rubytest.png)](http://badge.fury.io/rb/rubytest)
-[![Gittip](http://img.shields.io/badge/gittip-$1/wk-red.svg)](https://www.gittip.com/on/github/rubyworks/)
+[![Home Page](http://img.shields.io/badge/home-page-blue.svg?style=flat)](http://rubyworks.github.io/rubytest)
+[![Report Issue](http://img.shields.io/badge/report-issue-red.svg?style=flat)](http://github.com/rubyworks/rubytest/issues)
+[![User Guide](http://img.shields.io/badge/user-guide-blue.svg?style=flat)](http://wiki.github.com/rubyworks/rubytest)
+[![Github Fork](http://img.shields.io/badge/github-fork-blue.svg?style=flat)](http://http://github.com/rubyworks/rubytest)
+[![Build Status](http://img.shields.io/travis/rubyworks/rubytest.svg?style=flat)](http://travis-ci.org/rubyworks/rubytest)
+[![Gem Version](http://img.shields.io/gem/v/rubytest.svg?style=flat)](http://rubygems.org/gem/rubytest)
+[![Gittip](http://img.shields.io/badge/gittip-$1/wk-green.svg?style=flat)](https://www.gittip.com/on/github/rubyworks/)
 
 ## Description
 
