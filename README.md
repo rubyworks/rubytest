@@ -130,7 +130,7 @@ requirements does the job and does it well.
 Rubytest is still a bit of a "nuby" gem. Please feel OBLIGATED to help improve it ;-)
 
 Rubytest is a [Rubyworks](http://rubyworks.github.com) project. If you can't
-contribute code, you can still help out by contributing to our development fund.
+contribute code, you can still help out by contributing to our [development fund](https://www.gittip.com/on/github/rubyworks/).
 
 
 ## Reference Material
