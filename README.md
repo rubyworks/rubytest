@@ -1,7 +1,8 @@
 # Rubytest
 
 [![Home Page](http://img.shields.io/badge/home-page-blue.svg?style=flat)](http://rubyworks.github.io/rubytest)
-[![Report Issue](http://img.shields.io/badge/report-issue-red.svg?style=flat)](http://github.com/rubyworks/rubytest/issues)
+[![Report Issue](http://img.shields.io/github/issues/rubyworks/rubytest.svg
+?style=flat)](http://github.com/rubyworks/rubytest/issues)
 [![User Guide](http://img.shields.io/badge/user-guide-blue.svg?style=flat)](http://wiki.github.com/rubyworks/rubytest)
 [![Github Fork](http://img.shields.io/badge/github-fork-blue.svg?style=flat)](http://http://github.com/rubyworks/rubytest)
 [![Build Status](http://img.shields.io/travis/rubyworks/rubytest.svg?style=flat)](http://travis-ci.org/rubyworks/rubytest)
