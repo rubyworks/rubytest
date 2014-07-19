@@ -283,29 +283,36 @@ module Test
     def reporter_load(format)
       format = DEFAULT_REPORT_FORMAT unless format
       format = format.to_s.downcase
-      name   = reporter_list.find{ |r| /^#{format}/ =~ r }
+      name   = reporter_list.find{ |r| /^#{format}/ =~ r } || format
 
-      raise "unsupported report format" unless format
-
-      if RUBY_VERSION < '1.9'
-        require "rubytest/reporters/#{name}"
-      else
-        require_relative "reporters/#{name}"
+      begin
+        require "rubytest/format/#{name}"
+      rescue LoadError
+        raise "mistyped or uninstalled report format" unless format
       end
 
       reporter = Test::Reporters.const_get(name.capitalize)
       reporter.new(self)
     end
 
+    # List of known report formats.
+    #
+    # TODO: Could use finder gem to look these up, but that's yet another dependency.
+    #
+    KNOWN_FORMATS = %w{
+      dotprogress html progress outline summary tap tapy tapj test
+    }
+
     # Returns a list of available report types.
     #
     # @return [Array<String>]
     #   The names of available reporters.
     def reporter_list
-      list = Dir[File.dirname(__FILE__) + '/reporters/*.rb']
-      list = list.map{ |r| File.basename(r).chomp('.rb') }
-      list = list.reject{ |r| /^abstract/ =~ r }
-      list.sort
+      return KNOWN_FORMATS.sort
+      #list = Dir[File.dirname(__FILE__) + '/reporters/*.rb']
+      #list = list.map{ |r| File.basename(r).chomp('.rb') }
+      #list = list.reject{ |r| /^abstract/ =~ r }
+      #list.sort
     end
 
     # Files can be globs and directories which need to be
