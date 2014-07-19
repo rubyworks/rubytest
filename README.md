@@ -5,9 +5,11 @@
 [Support](http://github.com/rubyworks/rubytest/issues) /
 [Development](http://github.com/rubyworks/rubytest)
 
+[![User Guide](http://img.shields.io/badge/User-Guide-blue.svg)](http://wiki.github.com/rubyworks/rubytest)
+
 [![Build Status](https://secure.travis-ci.org/rubyworks/rubytest.png)](http://travis-ci.org/rubyworks/rubytest)
 [![Gem Version](https://badge.fury.io/rb/rubytest.png)](http://badge.fury.io/rb/rubytest)
-[![Gittip](http://img.shields.io/gittip/on/github/rubyworks.svg)](https://www.gittip.com/on/github/rubyworks/)
+[![Gittip](http://img.shields.io/badge/gittip-$1/wk-red.svg)](https://www.gittip.com/on/github/rubyworks/)
 
 ## Description
 
