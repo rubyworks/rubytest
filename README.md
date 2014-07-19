@@ -1,12 +1,15 @@
+[![Rubytest](http://rubyworks.github.io/rubytest/assets/images/test_pattern.jpg)](http://rubyworks.github.io/rubytest)
+
 # Rubytest
 
 [![Home Page](http://img.shields.io/badge/home-page-blue.svg?style=flat)](http://rubyworks.github.io/rubytest)
-[![Report Issue](http://img.shields.io/github/issues/rubyworks/rubytest.svg?style=flat)](http://github.com/rubyworks/rubytest/issues)
 [![User Guide](http://img.shields.io/badge/user-guide-blue.svg?style=flat)](http://wiki.github.com/rubyworks/rubytest)
 [![Github Fork](http://img.shields.io/badge/github-fork-blue.svg?style=flat)](http://http://github.com/rubyworks/rubytest)
 [![Build Status](http://img.shields.io/travis/rubyworks/rubytest.svg?style=flat)](http://travis-ci.org/rubyworks/rubytest)
 [![Gem Version](http://img.shields.io/gem/v/rubytest.svg?style=flat)](http://rubygems.org/gem/rubytest)
+[![Report Issue](http://img.shields.io/github/issues/rubyworks/rubytest.svg?style=flat)](http://github.com/rubyworks/rubytest/issues)
 [![Gittip](http://img.shields.io/badge/gittip-$1/wk-green.svg?style=flat)](https://www.gittip.com/on/github/rubyworks/)
+
 
 ## Description
 
