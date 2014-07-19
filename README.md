@@ -1,13 +1,10 @@
 # Rubytest
 
-[Homepage](http://rubyworks.github.com/rubytest) /
-[User Guide](http://wiki.github.com/rubyworks/rubytest) /
-[Support](http://github.com/rubyworks/rubytest/issues) /
-[Development](http://github.com/rubyworks/rubytest)
-
+[![Home Page](http://img.shields.io/badge/Home-Page-blue.svg)](http://rubyworks.github.io/rubytest)
+[![Report Issues](http://img.shields.io/badge/Report-Issues-red.svg)](http://github.com/rubyworks/rubytest/issues)
 [![User Guide](http://img.shields.io/badge/User-Guide-blue.svg)](http://wiki.github.com/rubyworks/rubytest)
-
-[![Build Status](https://secure.travis-ci.org/rubyworks/rubytest.png)](http://travis-ci.org/rubyworks/rubytest)
+[![Fork Me](http://img.shields.io/badge/Fork-Me-orange.svg)](http://http://github.com/rubyworks/rubytest)
+[![Build Status](http://img.shields.io/travis/rubyworks/rubytest.svg)](http://travis-ci.org/rubyworks/rubytest)
 [![Gem Version](https://badge.fury.io/rb/rubytest.png)](http://badge.fury.io/rb/rubytest)
 [![Gittip](http://img.shields.io/badge/gittip-$1/wk-red.svg)](https://www.gittip.com/on/github/rubyworks/)
 
