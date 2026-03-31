@@ -1,5 +1,24 @@
 # RELEASE HISTORY
 
+## 0.9.0 / 2026-03-31
+
+Maintenance release. Modernized project tooling and merged CLI back in.
+
+Changes:
+
+* Merge rubytest-cli back into rubytest (bin/rubytest executable).
+* Replace custom Indexer system with standard gemspec.
+* Replace Travis CI with GitHub Actions.
+* Replace Assembly with Rakefile.
+* Add VERSION constant to Test module.
+* Remove Ruby 1.9 compatibility code.
+* Simplify version handling (remove metadata YAML).
+* Fix typos and update URLs to HTTPS.
+* Move site from gh-pages to docs/.
+* Remove obsolete files.
+* Clean up .gitignore.
+
+
 ## 0.8.0 / 2014-07-18
 
 We have whittled Rubytest down to it core functionaltiy and spun the rest

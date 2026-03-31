@@ -1,0 +1,94 @@
+<html>
+<head>
+  <title>Ruby Test</title>
+  <style>
+    html { font-family: sans-serif; }
+    body { margin: 0; padding: 0; }
+
+    header a    { text-decoration: none; color: #ddd; padding: 5px 10px; }
+    header a:hover { color: #ffffff; }
+
+    header { background: url(assets/images/test_pattern.jpg) top no-repeat;
+            position: relative; margin: 10px 0; padding: 0; }
+
+    #line { width: 100%; color: red; text-align: center; background: transparent; font-family: times; }
+    #line a { color: #e03; font-size: 7em; font-weight: bold; text-shadow: 1px 1px 5px #333; }
+    #line a:hover { color: #e03; text-shadow: 1px 1px 5px #333; }
+    #line p { color: #333; font-size: 3em; margin: 0; padding: 0 0 20px 0; text-shadow: 1px 1px 5px #000; }
+
+    #footer { width: 1024px; margin: 10px auto;  text-align: center; }
+
+    nav { text-align: center; margin-top: 2em; }
+    nav a { color: red; font-size: 1.4em; text-decoration: none; }
+    nav a:hover { color: black; }
+
+    article { padding: 1em 3em; font-family: helvetica, sans-serif; font-size: 1.1em; line-height: 1.5em; }
+    article p { color: #444; }
+
+    .copyright { color: #555; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div style="height: 786px;"></div>
+
+  <div id="line">
+    <a href="https://github.com/rubyworks/rubytest">
+      RUBY TEST
+    </a>
+    <p>Universal Test Harness</p>
+  </div>
+</header>
+
+<nav>
+  <a href="https://rubydoc.info/gems/rubytest">API REFERENCE</a> &nbsp;//&nbsp;
+  <a href="https://github.com/rubyworks/rubytest">DEVELOPMENT</a>
+</nav>
+
+<article>
+<p>Rubytest is a universal test harness for Ruby developers. You can think
+of Rubytest as a testing <i>meta-framework</i>. It defines a straight-forward
+specification that anyone can use to easily create their own testing DSLs.
+This can be used for testing end applications directly or it can be used as
+a backend to build other test frameworks. In addition, since Rubytest controls
+the backend, multiple frameworks can be used in a single test suite all of
+which can run through a uniform interface in a single pass.</p>
+
+<p>Rubytest's clean specification makes it almost trivial to implement new
+test suites and frameworks. The universal access point for testing is the
+<tt>$TEST_SUITE</tt> global array. A test suite or framework need only add compliant
+test objects to this array. Rubytest will iterate through these objects.
+If a test object responds to <tt>#call</tt>, it is run as a test procedure. If it
+responds to <tt>#each</tt> it is iterated over as a <i>testcase</i> with each entry
+handled in the same manner. All test objects must respond to <tt>#to_s</tt> so
+their description can be used in test reports.</p>
+
+<p>Ruby Test handles assertions via <a href="https://github.com/rubyworks/brass">BRASS</a>
+compliance. Any raised exception that responds to <tt>#assertion?</tt> in the
+affirmative is taken to be a failed assertion rather than simply an error.
+A test framework may raise a <tt>NotImplementedError</tt> to have a test recorded
+as <i>todo</i>, i.e. a pending exception to remind the developer of tests
+that still need to be written.</p>
+</article>
+
+<div id="footer">
+  <div class="copyright">
+    Copyright (c) 2011 Trans, RubyWorks &middot; BSD-2-Clause License
+  </div>
+</div>
+
+<div style="position: absolute; top: 0; right: 0;">
+  <a href="https://github.com/rubyworks/rubytest">
+    <img src="https://rubyworks.github.io/assets/images/fork-me.png" />
+  </a>
+</div>
+
+<div id="rubyworks" style="position: fixed; bottom: 5px; right: 10px; padding: 0; opacity: 0.3;">
+  <a href="https://rubyworks.github.io">
+    <img src="https://rubyworks.github.io/assets/images/seal.png" height="150px" />
+  </a>
+</div>
+
+</body>
+</html>
