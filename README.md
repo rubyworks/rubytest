@@ -57,13 +57,48 @@ The easiest way to run tests is via the command line tool:
 
     $ rubytest -Ilib test/test_*.rb
 
-The command line tool takes various options, most of which correspond directly
-to the configuration options of the `Test.run/Test.configure` API. Use
-`-h/--help` to see them all.
+This would add `lib` to Ruby's `$LOAD_PATH` and then load all the
+test files matching the glob. When running tests, be sure to load your
+test framework or its adapter, e.g.
 
-If you are using a build tool to run your tests, such as Rake, shelling
-out to `rubytest` is a good way to go as it keeps your test environment as
-pristine as possible, e.g.
+    $ rubytest -r lemon -r ae test/test_*.rb
+
+Use `-h/--help` to see all available options.
+
+#### Configuration File
+
+To avoid repeating options, add an `etc/test.rb` file to your project
+with `Test.run` (or `Test.configure`) entries:
+
+```ruby
+Test.run do |r|
+  r.loadpath 'lib'
+  r.test_files << 'test/*_test.rb'
+end
+
+Test.run 'coverage' do |r|
+  r.loadpath 'lib'
+  r.test_files << 'test/*_test.rb'
+  r.before do
+    require 'simplecov'
+    SimpleCov.start do |s|
+      s.filter 'test/'
+      s.coverage_dir 'log/coverage'
+    end
+  end
+end
+```
+
+Now `rubytest` will use the first configuration by default. To use a
+named profile, use the `-p/--profile` option:
+
+    $ rubytest -p coverage
+
+The configuration file can also be at `config/test.rb`, `Testfile`,
+or `.test` (with optional `.rb` extension).
+
+If you are using Rake, shelling out to `rubytest` keeps your test
+environment pristine:
 
     desc "run tests"
     task :test
