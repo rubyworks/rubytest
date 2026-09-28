@@ -18,6 +18,10 @@ module Test
       self[:skip] << [test, reason]
     end
 
+    def skip_case(test_case, reason)
+      self[:skip] << [test_case, reason]
+    end
+
     # Add `test` to pass set.
     def pass(test)
       self[:pass] << test
@@ -39,9 +43,11 @@ module Test
     #  self[:omit] << [test, exception]
     #end
 
-    # Returns true if their are no test errors or failures.
+    # Returns true if tests were recorded without errors or failures.
     def success?
-      self[:error].size + self[:fail].size > 0 ? false : true
+      return false unless self[:error].empty? && self[:fail].empty?
+
+      [:pass, :todo, :skip].any?{ |status| !self[status].empty? }
     end
 
     # Ignore any other signals.

@@ -44,11 +44,11 @@ module Test
       end
 
       #
-      def skip_case(test_case)
+      def skip_case(test_case, reason=nil)
       end
 
       #
-      def skip_test(test)
+      def skip_test(test, reason=nil)
       end
 
       #

@@ -9,7 +9,7 @@ module Test
     # Test configuration file can be in `etc/test.rb` or `config/test.rb`, or
     # `Testfile` or '.test` with optional `.rb` extension, in that order of
     # precedence. To use a different file there is the -c/--config option.
-    GLOB_CONFIG = '{etc/test.rb,config/test.rb,testfile.rb,testfile,.test.rb,.test}'
+    GLOB_CONFIG = '{etc/test.rb,config/test.rb,Testfile.rb,Testfile,testfile.rb,testfile,.test.rb,.test}'
 
     # Convenience method for invoking the CLI.
     #
@@ -95,7 +95,7 @@ module Test
           conf.requires.concat makelist(file)
         end
         opt.on '-c', '--config FILE', "use alternate config file" do |file|
-          conf.config_files << file
+          conf.config_file = file
         end
         opt.on '-V' , '--verbose', 'provide extra detail in reports' do
           conf.verbose = true
@@ -139,6 +139,10 @@ module Test
     # @return [String] Config file path.
     def config_file
       @config_file
+    end
+
+    def config_file=(file)
+      @config_file = file
     end
 
     def profile

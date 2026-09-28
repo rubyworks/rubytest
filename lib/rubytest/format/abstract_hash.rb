@@ -62,10 +62,11 @@ module Test::Reporters
     #
     # @return [Hash]
     #
-    def skip_test(test)
+    def skip_test(test, reason=nil)
       h = {}
       h['type'  ] = 'test'
       h['status'] = 'omit'
+      h['reason'] = reason if reason
 
       merge_subtype      h, test
       merge_setup        h, test
@@ -169,7 +170,8 @@ module Test::Reporters
     #
     def end_test(test)
       super(test)
-      $stdout, $stderr = @stdout, @stderr
+    ensure
+      $stdout, $stderr = @stdout, @stderr if @stdout && @stderr
     end
 
     #
@@ -206,7 +208,7 @@ module Test::Reporters
     #
     def merge_priority(hash, test, exception)
       level = exception.priority
-      h['priority'] = level.to_i
+      hash['priority'] = level.to_i
     end
 
     #
@@ -233,8 +235,8 @@ module Test::Reporters
 
     # Add source location information to hash.
     def merge_source(hash, test)
-      if test.respond_to?('source_location')
-        file, line = source_location
+      if test.respond_to?(:source_location)
+        file, line = test.source_location
         hash['file'   ] = file
         hash['line'   ] = line
         hash['source' ] = code(file, line).to_str
@@ -280,8 +282,8 @@ module Test::Reporters
 
     #
     def merge_output(hash)
-      hash['stdout'] = $stdout.string
-      hash['stderr'] = $stderr.string
+      hash['stdout'] = $stdout.respond_to?(:string) ? $stdout.string : ''
+      hash['stderr'] = $stderr.respond_to?(:string) ? $stderr.string : ''
     end
 
     #

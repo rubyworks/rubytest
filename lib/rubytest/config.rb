@@ -51,7 +51,7 @@ module Test
 
     #
     def self.assertionless=(boolean)
-      @assertionaless = !!boolean
+      @assertionless = !!boolean
     end
 
     # Find and cache project root directory.

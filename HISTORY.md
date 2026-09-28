@@ -1,5 +1,13 @@
 # RELEASE HISTORY
 
+## Unreleased
+
+* Fail empty runs and unmatched test file requests instead of reporting success.
+* Apply test filters at every suite level and record skipped tests and cases.
+* Record case errors, finish suite callbacks, and restore reporter output after
+  failures.
+* Fix the CLI's alternate configuration option and `Testfile` discovery.
+
 ## 0.9.0 / 2026-03-31
 
 Maintenance release. Modernized project tooling and merged CLI back in.
@@ -222,4 +230,3 @@ First release of Ruby Test.
 Changes:
 
 * It's Your Birthday!
-
