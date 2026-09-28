@@ -7,6 +7,33 @@ module Test::Reporters
   #
   class AbstractHash < Abstract
 
+    def capture_output?
+      true
+    end
+
+    # New reporter entry point. The status callbacks remain available to
+    # subclasses that format TAP-Y, TAP-J, or other hash-based output.
+    def record(result = nil)
+      return super() unless result # historical access to runner.recorder
+
+      @current_result = result
+      if result.status == :skip
+        method = result.kind == :case ? :skip_case : :skip_test
+        public_send(method, result.test, result.reason)
+      elsif result.status == :pass
+        pass(result.test)
+      else
+        public_send(result.status, result.test, result.exception)
+      end
+    ensure
+      @current_result = nil if result
+    end
+
+    def finish(summary)
+      @summary = summary
+      end_suite(summary.suite)
+    end
+
     #
     # @return [Hash]
     #
@@ -51,9 +78,6 @@ module Test::Reporters
     #
     def begin_test(test)
       @test_index += 1
-
-      @stdout, @stderr = $stdout, $stderr
-      $stdout, $stderr = StringIO.new, StringIO.new
     end
 
     # Ruby Test use the term "skip", where as TAP-Y/J uses "omit".
@@ -170,8 +194,6 @@ module Test::Reporters
     #
     def end_test(test)
       super(test)
-    ensure
-      $stdout, $stderr = @stdout, @stderr if @stdout && @stderr
     end
 
     #
@@ -185,14 +207,14 @@ module Test::Reporters
     def end_suite(suite)
       h = {
         'type'  => 'final',
-        'time'  => Time.now - @start_time,
+        'time'  => @summary ? @summary.elapsed : Time.now - @start_time,
         'counts' => {
-          'total' => total,
-          'pass'  => record[:pass].size,
-          'fail'  => record[:fail].size,
-          'error' => record[:error].size,
-          'omit'  => record[:omit].size,
-          'todo'  => record[:todo].size
+          'total' => @summary ? @summary.total : total,
+          'pass'  => @summary ? @summary.counts[:pass] : record[:pass].size,
+          'fail'  => @summary ? @summary.counts[:fail] : record[:fail].size,
+          'error' => @summary ? @summary.counts[:error] : record[:error].size,
+          'omit'  => @summary ? @summary.counts[:skip] : record[:omit].size,
+          'todo'  => @summary ? @summary.counts[:todo] : record[:todo].size
         }
       }
       return h
@@ -282,13 +304,13 @@ module Test::Reporters
 
     #
     def merge_output(hash)
-      hash['stdout'] = $stdout.respond_to?(:string) ? $stdout.string : ''
-      hash['stderr'] = $stderr.respond_to?(:string) ? $stderr.string : ''
+      hash['stdout'] = @current_result ? @current_result.stdout : ''
+      hash['stderr'] = @current_result ? @current_result.stderr : ''
     end
 
     #
     def merge_time(hash)
-      hash['time'] = Time.now - @start_time
+      hash['time'] = @current_result ? @current_result.elapsed : Time.now - @start_time
     end
 
   end

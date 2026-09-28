@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+* Route structured test results through the recorder to reporters, while
+  retaining Advice hooks and older reporter callbacks.
 * Fail empty runs and unmatched test file requests instead of reporting success.
 * Apply test filters at every suite level and record skipped tests and cases.
 * Record case errors, finish suite callbacks, and restore reporter output after

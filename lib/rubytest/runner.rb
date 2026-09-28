@@ -1,3 +1,5 @@
+require 'stringio'
+
 module Test
 
   # Alias for `Test.configure`.
@@ -117,8 +119,7 @@ module Test
     # Record pass, fail, error and pending tests.
     attr :recorder
 
-    # Array of observers, typically this just contains the recorder and
-    # reporter instances.
+    # Execution hooks and the reporting pipeline entry point.
     attr :observers
 
     # Run test suite.
@@ -145,17 +146,24 @@ module Test
           end
 
           @reporter  = reporter_load(format)
-          @recorder  = Recorder.new
+          @recorder  = Recorder.new(@reporter)
 
-          @observers = [advice, @recorder, @reporter]
+          @observers = [advice, @recorder]
 
           started = false
           begin
-            observers.each{ |o| o.begin_suite(suite) }
+            advice.begin_suite(suite)
+            recorder.begin_suite(suite)
             started = true
             run_thru(suite)
           ensure
-            observers.each{ |o| o.end_suite(suite) } if started
+            if started
+              begin
+                advice.end_suite(suite)
+              ensure
+                recorder.end_suite(suite)
+              end
+            end
           end
         ensure
           config.after.call if config.after
@@ -196,13 +204,26 @@ module Test
     #
     def run_case(tcase)
       if tcase.respond_to?(:skip?) && (reason = tcase.skip?)
-        return observers.each{ |o| o.skip_case(tcase, reason) }
+        advice.skip_case(tcase, reason)
+        return recorder.record(Result.new(test: tcase, kind: :case,
+                                          status: :skip, reason: reason))
       end
 
-      observers.each{ |o| o.begin_case(tcase) }
+      started = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+      before_error = nil
+      begin
+        advice.begin_case(tcase)
+      rescue *OPEN_ERRORS
+        raise
+      rescue Exception => hook_error
+        before_error = hook_error
+      end
+      recorder.begin_case(tcase)
 
       begin
-        if tcase.respond_to?(:call)
+        if before_error
+          raise before_error
+        elsif tcase.respond_to?(:call)
           tcase.call do
             run_thru(tcase)
           end
@@ -212,9 +233,21 @@ module Test
       rescue *OPEN_ERRORS
         raise
       rescue Exception => exception
-        observers.each{ |o| o.error(tcase, exception) }
+        advice.error(tcase, exception)
+        recorder.record(Result.new(test: tcase, kind: :case, status: :error,
+                                   exception: exception, elapsed: elapsed_since(started)))
       ensure
-        observers.each{ |o| o.end_case(tcase) }
+        begin
+          advice.end_case(tcase)
+        rescue *OPEN_ERRORS
+          raise
+        rescue Exception => exception
+          advice.error(tcase, exception)
+          recorder.record(Result.new(test: tcase, kind: :case, status: :error,
+                                     exception: exception, elapsed: elapsed_since(started)))
+        ensure
+          recorder.end_case(tcase)
+        end
       end
     end
 
@@ -225,31 +258,68 @@ module Test
     #
     def run_test(test)
       if test.respond_to?(:skip?) && (reason = test.skip?)
-        return observers.each{ |o| o.skip_test(test, reason) }
+        advice.skip_test(test, reason)
+        return recorder.record(Result.new(test: test, status: :skip, reason: reason))
       end
 
-      observers.each{ |o| o.begin_test(test) }
+      started = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+      exception = nil
       begin
-        exception = nil
+        advice.begin_test(test)
+      rescue *OPEN_ERRORS
+        raise
+      rescue Exception => hook_error
+        exception = hook_error
+      end
+
+      recorder.begin_test(test)
+      report_started = true
+      capture = recorder.capture_output?
+      original_stdout, original_stderr = $stdout, $stderr if capture
+      captured_stdout, captured_stderr = StringIO.new, StringIO.new if capture
+      begin
+        $stdout, $stderr = captured_stdout, captured_stderr if capture
         begin
-          success = test.call
-          raise Assertion, "failure of #{test}" if config.hard? && !success
+          unless exception
+            success = test.call
+            raise Assertion, "failure of #{test}" if config.hard? && !success
+          end
         rescue *OPEN_ERRORS
           raise
-        rescue NotImplementedError => exception
-          result = :todo
         rescue Exception => exception
-          result = exception.assertion? ? :fail : :error
-        else
-          result = :pass
+        ensure
+          begin
+            advice.end_test(test)
+          rescue *OPEN_ERRORS
+            raise
+          rescue Exception => hook_error
+            exception ||= hook_error
+          end
         end
 
-        observers.each do |o|
-          exception ? o.public_send(result, test, exception) : o.pass(test)
+        status = if exception.nil?
+          :pass
+        elsif NotImplementedError === exception
+          :todo
+        else
+          exception.assertion? ? :fail : :error
         end
+        exception ? advice.public_send(status, test, exception) : advice.pass(test)
+        result = Result.new(test: test, status: status, exception: exception,
+                            elapsed: elapsed_since(started),
+                            stdout: captured_stdout&.string,
+                            stderr: captured_stderr&.string)
       ensure
-        observers.each{ |o| o.end_test(test) }
+        $stdout, $stderr = original_stdout, original_stderr if capture
       end
+
+      recorder.record(result)
+    ensure
+      recorder.end_test(test) if report_started
+    end
+
+    def elapsed_since(started)
+      Process.clock_gettime(Process::CLOCK_MONOTONIC) - started
     end
 
     # TODO: Make sure this filtering code is correct for the complex 
