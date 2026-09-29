@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+* Bring summary, outline, and progress reporters into Rubytest and add a TAP 13
+  reporter that counts completed results, including skipped and broken cases.
+* Remove CLI shortcuts for the unbundled TAP-Y and TAP-J formats.
+* Remove the old Recorder status callbacks and status-indexed result table.
+* Preserve test and teardown exceptions together in a result, and turn outcome
+  hook failures into recorded errors.
+* Route structured test results through the recorder to reporters, while
+  retaining Advice hooks and older reporter callbacks.
 * Fail empty runs and unmatched test file requests instead of reporting success.
 * Apply test filters at every suite level and record skipped tests and cases.
 * Record case errors, finish suite callbacks, and restore reporter output after

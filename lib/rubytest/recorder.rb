@@ -1,59 +1,60 @@
 module Test
-
-  # Recorder class is an observer that tracks all tests
-  # that are run and categorizes them according to their
-  # test status.
+  # Owns run results and controls when they reach the reporter.
   class Recorder
+    attr_reader :results, :reporter, :summary
 
-    def initialize
-      @table = Hash.new{ |h,k| h[k] = [] }
+    def initialize(reporter = nil)
+      @reporter = reporter
+      @results = []
     end
 
-    def [](key)
-      @table[key.to_sym]
+    def begin_suite(suite)
+      @suite = suite
+      @started_at = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+      reporter.begin_suite(suite) if reporter&.respond_to?(:begin_suite)
     end
 
-    #
-    def skip_test(test, reason)
-      self[:skip] << [test, reason]
+    def begin_case(test_case)
+      reporter.begin_case(test_case) if reporter&.respond_to?(:begin_case)
     end
 
-    def skip_case(test_case, reason)
-      self[:skip] << [test_case, reason]
+    def begin_test(test)
+      reporter.begin_test(test) if reporter&.respond_to?(:begin_test)
     end
 
-    # Add `test` to pass set.
-    def pass(test)
-      self[:pass] << test
+    def capture_output?
+      !!(reporter && reporter.respond_to?(:capture_output?) && reporter.capture_output?)
     end
 
-    def fail(test, exception)
-      self[:fail] << [test, exception]
+    def record(result)
+      @results << result
+      reporter.record(result) if reporter
+      result
     end
 
-    def error(test, exception)
-      self[:error] << [test, exception]
+    def end_test(test)
+      reporter.end_test(test) if reporter&.respond_to?(:end_test)
     end
 
-    def todo(test, exception)
-      self[:todo] << [test, exception]
+    def end_case(test_case)
+      reporter.end_case(test_case) if reporter&.respond_to?(:end_case)
     end
 
-    #def omit(test, exception)
-    #  self[:omit] << [test, exception]
-    #end
+    def end_suite(suite)
+      @summary = RunSummary.new(suite: suite, results: results, elapsed: elapsed)
+      reporter.finish(@summary) if reporter
+      @summary
+    end
 
-    # Returns true if tests were recorded without errors or failures.
     def success?
-      return false unless self[:error].empty? && self[:fail].empty?
-
-      [:pass, :todo, :skip].any?{ |status| !self[status].empty? }
+      (@summary || RunSummary.new(suite: @suite, results: results, elapsed: elapsed)).success?
     end
 
-    # Ignore any other signals.
-    def method_missing(*a)
-    end
+  private
 
+    def elapsed
+      return 0.0 unless @started_at
+      Process.clock_gettime(Process::CLOCK_MONOTONIC) - @started_at
+    end
   end
-
 end

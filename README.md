@@ -39,6 +39,25 @@ configured to do so.
 That is the crux of Rubytest specification. Rubytest supports some
 additional features that can make its usage even more convenient.
 
+### Results and reporting
+
+The runner turns each completed test into a `Test::Result` with its status,
+exception or skip reason, elapsed time, and captured output when requested.
+If both the test and a hook raise, the result retains both exceptions.
+Skipped and broken cases also produce results. `Test::Recorder` keeps these
+results, calculates the run summary, and forwards reporting events to the
+selected reporter. Advice hooks remain with the runner, where they can affect
+test execution.
+
+Reporters implement `record(result)` for completed outcomes and
+`finish(summary)` for the final totals. Suite and case boundary callbacks are
+available for formats that show nesting.
+
+The built-in formats are `dotprogress` (default), `summary` (one status line per
+test), `outline` (nested cases), `progress` (running count and timing), and
+`tap` (TAP version 13). Select one with `rubytest -f FORMAT`. Formats load only
+when selected; TAP captures test output and emits it as diagnostics.
+
 
 ## Installation
 

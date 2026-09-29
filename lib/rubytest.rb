@@ -12,6 +12,7 @@ end
 require_relative 'rubytest/core_ext'
 require_relative 'rubytest/code_snippet'
 require_relative 'rubytest/config'
+require_relative 'rubytest/result'
 require_relative 'rubytest/recorder'
 require_relative 'rubytest/advice'
 require_relative 'rubytest/runner'

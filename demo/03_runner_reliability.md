@@ -55,8 +55,8 @@ test that matches the selection is still reported.
     selected = Test::Runner.new(suite: [top, other, [nested, skipped]],
                                 match: ['wanted'], format: 'test')
     selected.run.assert == true
-    selected.recorder[:pass].size.assert == 2
-    selected.recorder[:skip].size.assert == 1
+    selected.recorder.summary.counts[:pass].assert == 2
+    selected.recorder.summary.counts[:skip].assert == 1
 
 Skipping an entire case is recorded too.
 
@@ -67,7 +67,7 @@ Skipping an entire case is recorded too.
     end.new
     case_skip_runner = Test::Runner.new(suite: [skipped_case], format: 'test')
     case_skip_runner.run.assert == true
-    case_skip_runner.recorder[:skip].size.assert == 1
+    case_skip_runner.recorder.summary.counts[:skip].assert == 1
 
 ### Case errors and cleanup
 
@@ -84,8 +84,8 @@ A case setup error is recorded, and the next test and suite cleanup still run.
     case_runner.after(:suite) { suite_ended = true }
 
     case_runner.run.assert == false
-    case_runner.recorder[:error].size.assert == 1
-    case_runner.recorder[:pass].size.assert == 1
+    case_runner.recorder.summary.counts[:error].assert == 1
+    case_runner.recorder.summary.counts[:pass].assert == 1
     suite_ended.assert == true
 
 An assertion failure in a hash reporter records the failure and restores
@@ -96,7 +96,7 @@ standard output.
     failure_runner = Test::Runner.new(suite: [failing_test], format: 'test')
 
     failure_runner.run.assert == false
-    failure_runner.recorder[:fail].size.assert == 1
+    failure_runner.recorder.summary.counts[:fail].assert == 1
     ($stdout.equal?(original_stdout)).assert == true
 
 Global assertionless mode treats a false return as a failure.
@@ -107,7 +107,7 @@ Global assertionless mode treats a false return as a failure.
       false_test = RunnerProbe.new('false result') { false }
       hard_runner = Test::Runner.new(suite: [false_test], format: 'test')
       hard_runner.run.assert == false
-      hard_runner.recorder[:fail].size.assert == 1
+      hard_runner.recorder.summary.counts[:fail].assert == 1
     ensure
       Test::Config.assertionless = previous_assertionless
     end

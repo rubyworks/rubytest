@@ -2,10 +2,33 @@
 
 module Test::Reporters
 
-  # Hash Abstract is a base class for the TAP-Y
-  # and TAP-J reporters.
+  # Structured records used by the internal test reporter.
   #
   class AbstractHash < Abstract
+
+    def capture_output?
+      true
+    end
+
+    # Return a structured record of the completed result.
+    def record(result)
+      @current_result = result
+      if result.status == :skip
+        method = result.kind == :case ? :skip_case : :skip_test
+        public_send(method, result.test, result.reason)
+      elsif result.status == :pass
+        pass(result.test)
+      else
+        public_send(result.status, result.test, result.exception)
+      end
+    ensure
+      @current_result = nil if result
+    end
+
+    def finish(summary)
+      @summary = summary
+      end_suite(summary.suite)
+    end
 
     #
     # @return [Hash]
@@ -51,9 +74,6 @@ module Test::Reporters
     #
     def begin_test(test)
       @test_index += 1
-
-      @stdout, @stderr = $stdout, $stderr
-      $stdout, $stderr = StringIO.new, StringIO.new
     end
 
     # Ruby Test use the term "skip", where as TAP-Y/J uses "omit".
@@ -79,6 +99,10 @@ module Test::Reporters
       merge_time         h
 
       return h
+    end
+
+    def skip_case(test_case, reason=nil)
+      skip_test(test_case, reason).merge('type' => 'case')
     end
 
     #
@@ -170,8 +194,6 @@ module Test::Reporters
     #
     def end_test(test)
       super(test)
-    ensure
-      $stdout, $stderr = @stdout, @stderr if @stdout && @stderr
     end
 
     #
@@ -185,14 +207,14 @@ module Test::Reporters
     def end_suite(suite)
       h = {
         'type'  => 'final',
-        'time'  => Time.now - @start_time,
+        'time'  => @summary.elapsed,
         'counts' => {
-          'total' => total,
-          'pass'  => record[:pass].size,
-          'fail'  => record[:fail].size,
-          'error' => record[:error].size,
-          'omit'  => record[:omit].size,
-          'todo'  => record[:todo].size
+          'total' => @summary.total,
+          'pass'  => @summary.counts[:pass],
+          'fail'  => @summary.counts[:fail],
+          'error' => @summary.counts[:error],
+          'omit'  => @summary.counts[:skip],
+          'todo'  => @summary.counts[:todo]
         }
       }
       return h
@@ -253,6 +275,12 @@ module Test::Reporters
       hash['exception']['snippet'  ] = code(exception).to_omap
       hash['exception']['message'  ] = exception.message
       hash['exception']['backtrace'] = clean_backtrace(exception) if bt
+      if @current_result && @current_result.exceptions.size > 1
+        hash['exceptions'] = @current_result.exceptions.map do |error|
+          {'class' => error.class.to_s, 'message' => error.message,
+           'backtrace' => clean_backtrace(error)}
+        end
+      end
     end
 
     # TODO: This is still an "idea in progress" for both RybyTest and Tap-Y/J.
@@ -282,13 +310,13 @@ module Test::Reporters
 
     #
     def merge_output(hash)
-      hash['stdout'] = $stdout.respond_to?(:string) ? $stdout.string : ''
-      hash['stderr'] = $stderr.respond_to?(:string) ? $stderr.string : ''
+      hash['stdout'] = @current_result.stdout
+      hash['stderr'] = @current_result.stderr
     end
 
     #
     def merge_time(hash)
-      hash['time'] = Time.now - @start_time
+      hash['time'] = @current_result.elapsed
     end
 
   end
