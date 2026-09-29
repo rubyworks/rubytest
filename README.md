@@ -63,6 +63,9 @@ test framework or its adapter, e.g.
 
     $ rubytest -r lemon -r ae test/test_*.rb
 
+Rubytest exits unsuccessfully if a requested path matches no files or if the
+selection runs no tests.
+
 Use `-h/--help` to see all available options.
 
 #### Configuration File
@@ -101,7 +104,7 @@ If you are using Rake, shelling out to `rubytest` keeps your test
 environment pristine:
 
     desc "run tests"
-    task :test
+    task :test do
       sh "rubytest"
     end
 

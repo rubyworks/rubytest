@@ -139,20 +139,27 @@ module Test
         # applied and before test files are required.
         config.before.call if config.before
 
-        test_files.each do |test_file|
-          require test_file
+        begin
+          test_files.each do |test_file|
+            require test_file
+          end
+
+          @reporter  = reporter_load(format)
+          @recorder  = Recorder.new
+
+          @observers = [advice, @recorder, @reporter]
+
+          started = false
+          begin
+            observers.each{ |o| o.begin_suite(suite) }
+            started = true
+            run_thru(suite)
+          ensure
+            observers.each{ |o| o.end_suite(suite) } if started
+          end
+        ensure
+          config.after.call if config.after
         end
-
-        @reporter  = reporter_load(format)
-        @recorder  = Recorder.new
-
-        @observers = [advice, @recorder, @reporter]
-
-        observers.each{ |o| o.begin_suite(suite) }
-        run_thru(suite)
-        observers.each{ |o| o.end_suite(suite) }
-
-        config.after.call if config.after
       end
 
       recorder.success?
@@ -174,13 +181,13 @@ module Test
 
     #
     def run_thru(list)
-      list.each do |t|
+      select(list).each do |t|
         if t.respond_to?(:each)
           run_case(t)
         elsif t.respond_to?(:call)
           run_test(t)
         else
-          #run_note(t) ?
+          raise TypeError, "not a test or test case: #{t.inspect}"
         end
       end
     end
@@ -194,15 +201,21 @@ module Test
 
       observers.each{ |o| o.begin_case(tcase) }
 
-      if tcase.respond_to?(:call)
-        tcase.call do
-          run_thru( select(tcase) )
+      begin
+        if tcase.respond_to?(:call)
+          tcase.call do
+            run_thru(tcase)
+          end
+        else
+          run_thru(tcase)
         end
-      else
-        run_thru( select(tcase) )
+      rescue *OPEN_ERRORS
+        raise
+      rescue Exception => exception
+        observers.each{ |o| o.error(tcase, exception) }
+      ensure
+        observers.each{ |o| o.end_case(tcase) }
       end
-
-      observers.each{ |o| o.end_case(tcase) }
     end
 
     # Run a test.
@@ -217,28 +230,26 @@ module Test
 
       observers.each{ |o| o.begin_test(test) }
       begin
-        success = test.call
-        if config.hard? && !success  # TODO: separate run_test method to speed things up?
-          raise Assertion, "failure of #{test}"
+        exception = nil
+        begin
+          success = test.call
+          raise Assertion, "failure of #{test}" if config.hard? && !success
+        rescue *OPEN_ERRORS
+          raise
+        rescue NotImplementedError => exception
+          result = :todo
+        rescue Exception => exception
+          result = exception.assertion? ? :fail : :error
         else
-          observers.each{ |o| o.pass(test) }
+          result = :pass
         end
-      rescue *OPEN_ERRORS => exception
-        raise exception
-      rescue NotImplementedError => exception
-        #if exception.assertion?  # TODO: May require assertion? for todo in future
-          observers.each{ |o| o.todo(test, exception) }
-        #else
-        #  observers.each{ |o| o.error(test, exception) }
-        #end
-      rescue Exception => exception
-        if exception.assertion?
-          observers.each{ |o| o.fail(test, exception) }
-        else
-          observers.each{ |o| o.error(test, exception) }
+
+        observers.each do |o|
+          exception ? o.public_send(result, test, exception) : o.pass(test)
         end
+      ensure
+        observers.each{ |o| o.end_test(test) }
       end
-      observers.each{ |o| o.end_test(test) }
     end
 
     # TODO: Make sure this filtering code is correct for the complex 
@@ -249,29 +260,36 @@ module Test
     #
     # @return [Array] selected test cases
     def select(cases)
+      return cases if cases.respond_to?(:ordered?) && cases.ordered?
+      return cases if config.match.empty? && config.units.empty? && config.tags.empty?
+
       selected = []
-      if cases.respond_to?(:ordered?) && cases.ordered?
-        cases.each do |tc|
-          selected << tc
+      cases.each do |tc|
+        unless tc.respond_to?(:each) || tc.respond_to?(:call)
+          raise TypeError, "not a test or test case: #{tc.inspect}"
         end
-      else
-        cases.each do |tc|
-          next if tc.respond_to?(:skip?) && tc.skip?
-          next if !config.match.empty? && !config.match.any?{ |m| m =~ tc.to_s }
 
-          if !config.units.empty?
-            next unless tc.respond_to?(:unit)
-            next unless config.units.find{ |u| tc.unit.start_with?(u) }
-          end
-
-          if !config.tags.empty?
-            next unless tc.respond_to?(:tags)
-            tc_tags = [tc.tags].flatten.map{ |t| t.to_s }
-            next if (config.tags & tc_tags).empty?
-          end
-
+        # Keep cases so their descendants can be filtered. The case itself
+        # may have a different description, unit, or tags from its tests.
+        if tc.respond_to?(:each)
           selected << tc
+          next
         end
+
+        next if !config.match.empty? && !config.match.any?{ |m| tc.to_s.include?(m) }
+
+        if !config.units.empty?
+          next unless tc.respond_to?(:unit)
+          next unless config.units.any?{ |u| tc.unit.to_s.start_with?(u) }
+        end
+
+        if !config.tags.empty?
+          next unless tc.respond_to?(:tags)
+          tc_tags = [tc.tags].flatten.map{ |t| t.to_s }
+          next if (config.tags & tc_tags).empty?
+        end
+
+        selected << tc
       end
       selected
     end
@@ -320,12 +338,13 @@ module Test
     #
     # @return [Array<String>]
     def resolve_test_files
-      list = config.files.flatten
-      list = list.map{ |f| Dir[f] }.flatten
-      list = list.map{ |f| File.directory?(f) ? Dir[File.join(f, '**/*.rb')] : f }
-      list = list.flatten.uniq
-      list = list.map{ |f| File.expand_path(f) } 
-      list
+      config.files.flatten.flat_map do |pattern|
+        files = Dir[pattern].flat_map do |file|
+          File.directory?(file) ? Dir[File.join(file, '**/*.rb')] : [file]
+        end
+        raise ArgumentError, "no test files match #{pattern.inspect}" if files.empty?
+        files
+      end.uniq.map{ |file| File.expand_path(file) }
     end
 
     # Change to directory and run block.

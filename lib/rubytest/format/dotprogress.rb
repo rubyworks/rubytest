@@ -35,7 +35,7 @@ module Test::Reporters
       puts
 
       if runner.verbose?
-        unless record[:omit].empty?
+        unless record[:skip].empty?
           puts "SKIPPED\n\n"
           record[:skip].each do |test, reason|
             puts "    #{test}".ansi(:bold)
@@ -80,7 +80,11 @@ module Test::Reporters
         end
       end
 
-      puts tally
+      if total.zero?
+        puts 'No tests were run.'
+      else
+        puts tally
+      end
     end
 
   end
