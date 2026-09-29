@@ -4,10 +4,10 @@ module Test
     STATUSES = [:pass, :fail, :error, :todo, :skip].freeze
     KINDS = [:test, :case].freeze
 
-    attr_reader :test, :kind, :status, :exception, :reason, :elapsed, :stdout, :stderr
+    attr_reader :test, :kind, :status, :exception, :exceptions, :reason, :elapsed, :stdout, :stderr
 
     def initialize(test:, status:, kind: :test, exception: nil, reason: nil,
-                   elapsed: 0.0, stdout: '', stderr: '')
+                   elapsed: 0.0, stdout: '', stderr: '', exceptions: nil)
       raise ArgumentError, "unknown result status: #{status.inspect}" unless STATUSES.include?(status)
       raise ArgumentError, "unknown result kind: #{kind.inspect}" unless KINDS.include?(kind)
 
@@ -15,6 +15,7 @@ module Test
       @kind = kind
       @status = status
       @exception = exception
+      @exceptions = (exceptions || (exception ? [exception] : [])).dup.freeze
       @reason = reason
       @elapsed = elapsed
       @stdout = stdout.to_s.dup.freeze

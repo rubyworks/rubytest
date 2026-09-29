@@ -263,13 +263,13 @@ module Test
       end
 
       started = Process.clock_gettime(Process::CLOCK_MONOTONIC)
-      exception = nil
+      exceptions = []
       begin
         advice.begin_test(test)
       rescue *OPEN_ERRORS
         raise
       rescue Exception => hook_error
-        exception = hook_error
+        exceptions << hook_error
       end
 
       recorder.begin_test(test)
@@ -280,32 +280,35 @@ module Test
       begin
         $stdout, $stderr = captured_stdout, captured_stderr if capture
         begin
-          unless exception
+          if exceptions.empty?
             success = test.call
             raise Assertion, "failure of #{test}" if config.hard? && !success
           end
         rescue *OPEN_ERRORS
           raise
-        rescue Exception => exception
+        rescue Exception => error
+          exceptions << error
         ensure
           begin
             advice.end_test(test)
           rescue *OPEN_ERRORS
             raise
           rescue Exception => hook_error
-            exception ||= hook_error
+            exceptions << hook_error
           end
         end
 
-        status = if exception.nil?
-          :pass
-        elsif NotImplementedError === exception
-          :todo
-        else
-          exception.assertion? ? :fail : :error
+        status, exception = outcome_for(exceptions)
+        begin
+          exception ? advice.public_send(status, test, exception) : advice.pass(test)
+        rescue *OPEN_ERRORS
+          raise
+        rescue Exception => hook_error
+          exceptions << hook_error
+          status, exception = outcome_for(exceptions)
         end
-        exception ? advice.public_send(status, test, exception) : advice.pass(test)
         result = Result.new(test: test, status: status, exception: exception,
+                            exceptions: exceptions,
                             elapsed: elapsed_since(started),
                             stdout: captured_stdout&.string,
                             stderr: captured_stderr&.string)
@@ -320,6 +323,23 @@ module Test
 
     def elapsed_since(started)
       Process.clock_gettime(Process::CLOCK_MONOTONIC) - started
+    end
+
+    def outcome_for(exceptions)
+      return [:pass, nil] if exceptions.empty?
+
+      exception = exceptions.find do |error|
+        !(NotImplementedError === error) && !error.assertion?
+      end
+      exception ||= exceptions.find(&:assertion?)
+      exception ||= exceptions.first
+
+      status = if NotImplementedError === exception
+        :todo
+      else
+        exception.assertion? ? :fail : :error
+      end
+      [status, exception]
     end
 
     # TODO: Make sure this filtering code is correct for the complex 
@@ -371,16 +391,25 @@ module Test
     def reporter_load(format)
       format = DEFAULT_REPORT_FORMAT unless format
       format = format.to_s.downcase
-      name   = reporter_list.find{ |r| /^#{format}/ =~ r } || format
+      name   = reporter_list.find{ |r| r.start_with?(format) } || format
 
-      begin
-        require "rubytest/format/#{name}"
-      rescue LoadError
-        raise "mistyped or uninstalled report format" unless format
+      if KNOWN_FORMATS.include?(name)
+        require_relative "format/#{name}"
+      else
+        begin
+          require "rubytest/format/#{name}"
+        rescue LoadError => error
+          raise ArgumentError, "unknown report format #{name.inspect}" if error.path == "rubytest/format/#{name}"
+          raise
+        end
       end
 
       reporter = Test::Reporters.const_get(name.capitalize)
-      reporter.new(self)
+      reporter = reporter.new(self)
+      unless reporter.respond_to?(:record) && reporter.respond_to?(:finish)
+        raise ArgumentError, "report format #{name} does not support result reporting"
+      end
+      reporter
     end
 
     # List of known report formats.
@@ -388,7 +417,7 @@ module Test
     # TODO: Could use finder gem to look these up, but that's yet another dependency.
     #
     KNOWN_FORMATS = %w{
-      dotprogress html progress outline summary tap tapy tapj test
+      dotprogress progress outline summary tap test
     }
 
     # Returns a list of available report types.

@@ -62,12 +62,6 @@ module Test
         opt.on '-f', '--format NAME', 'report format' do |name|
           conf.format = name
         end
-        opt.on '-y', '--tapy', 'shortcut for -f tapy' do
-          conf.format = 'tapy'
-        end
-        opt.on '-j', '--tapj', 'shortcut for -f tapj' do
-          conf.format = 'tapj'
-        end
 
         opt.on '-t', '--tag TAG', 'select tests by tag' do |tag|
           conf.tags.concat makelist(tag)

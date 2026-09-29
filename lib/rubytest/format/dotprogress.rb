@@ -11,9 +11,7 @@ module Test::Reporters
       @verbose = runner.verbose?
     end
 
-    def record(result = nil)
-      return super() unless result # historical access to runner.recorder
-
+    def record(result)
       if result.status == :skip
         method = result.kind == :case ? :skip_case : :skip_test
         public_send(method, result.test, result.reason)
@@ -29,8 +27,11 @@ module Test::Reporters
       end_suite(summary.suite)
     end
 
-    # Keep the old callbacks useful to subclasses of this reporter.
     def skip_test(test, reason)
+      emit('S'.ansi(:cyan)) if @verbose
+    end
+
+    def skip_case(test_case, reason)
       emit('S'.ansi(:cyan)) if @verbose
     end
 
@@ -71,12 +72,14 @@ module Test::Reporters
         next if summary.counts[status].zero?
         @output.puts "#{title}\n\n"
         summary.results_for(status).each do |result|
-          exception = result.exception
           @output.puts "    #{result.test}".ansi(:bold) unless status == :todo && result.test.to_s.empty?
-          @output.puts "    #{exception}"
-          @output.puts "    #{file_and_line(exception)}"
-          @output.puts code(exception)
-          @output.puts "    " + clean_backtrace(exception).join("\n    ") unless status == :todo
+          result.exceptions.each_with_index do |exception, index|
+            prefix = result.exceptions.size > 1 ? "#{index + 1}. " : ''
+            @output.puts "    #{prefix}#{exception.class}: #{exception.message}"
+            @output.puts "    #{file_and_line(exception)}"
+            @output.puts code(exception)
+            @output.puts "    " + clean_backtrace(exception).join("\n    ") unless status == :todo
+          end
           @output.puts
         end
       end

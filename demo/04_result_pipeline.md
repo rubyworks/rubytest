@@ -40,8 +40,8 @@ and forwards the same result objects, along with case boundaries, to a reporter.
     statuses.assert == [:pass, :fail, :error, :todo, :skip, :skip, :error]
     runner.recorder.results.map(&:kind).assert ==
       [:test, :test, :test, :test, :test, :case, :case]
-    runner.recorder[:fail].first.first.assert.equal? failing
-    runner.recorder[:skip].size.assert == 2
+    runner.recorder.results.find { |result| result.status == :fail }.test.assert.equal? failing
+    runner.recorder.summary.counts[:skip].assert == 2
     events.grep(Test::Result).map(&:object_id).assert ==
       runner.recorder.results.map(&:object_id)
     events.count(:begin_case).assert == 2
@@ -65,6 +65,25 @@ that result is recorded.
     hook_runner.run.assert == false
     hook_runner.recorder.results.first.status.assert == :fail
     hook_runner.recorder.results.first.exception.message.include?('verification failed').assert == true
+
+If both a test and teardown fail, the error takes precedence while the result
+keeps both exceptions. An outcome hook that raises also becomes a result.
+
+    double_runner = hook_runner_type.new(suite: [-> { raise Assertion, 'body failed' }],
+                                         format: 'test')
+    double_runner.after(:test) { raise 'cleanup failed' }
+    double_runner.run.assert == false
+    double_result = double_runner.recorder.results.first
+    double_result.status.assert == :error
+    double_result.exception.message.assert == 'cleanup failed'
+    double_result.exceptions.first.message.include?('body failed').assert == true
+    double_result.exceptions.last.message.assert == 'cleanup failed'
+
+    outcome_runner = hook_runner_type.new(suite: [-> { true }], format: 'test')
+    outcome_runner.upon(:pass) { raise 'outcome hook failed' }
+    outcome_runner.run.assert == false
+    outcome_runner.recorder.results.first.status.assert == :error
+    outcome_runner.recorder.results.first.exception.message.assert == 'outcome hook failed'
 
 A failing before hook is recorded as an error; the test body is not called,
 and the after hook still runs.
@@ -106,21 +125,6 @@ still ends.
     case_body_calls.assert == 0
     case_cleanup_ran.assert == true
 
-Reporters that still use the old status callbacks work through the Recorder.
-
-    legacy_events = []
-    legacy_reporter = Object.new
-    legacy_reporter.define_singleton_method(:pass) { |test| legacy_events << [:pass, test] }
-    legacy_reporter.define_singleton_method(:end_suite) { |suite| legacy_events << [:end_suite, suite] }
-    legacy_recorder = Test::Recorder.new(legacy_reporter)
-    legacy_suite = []
-    legacy_recorder.begin_suite(legacy_suite)
-    legacy_result = Test::Result.new(test: passing, status: :pass)
-    legacy_recorder.record(legacy_result)
-    legacy_recorder.end_suite(legacy_suite)
-    legacy_events.assert == [[:pass, passing], [:end_suite, legacy_suite]]
-    legacy_recorder.results.first.assert.equal? legacy_result
-
 The hash reporter receives captured output in its result, and the runner
 restores the process streams after execution.
 
@@ -149,3 +153,8 @@ restores the process streams after execution.
     row['stderr'].assert == "oops\n"
     ($stdout.equal?(original_stdout)).assert == true
     ($stderr.equal?(original_stderr)).assert == true
+
+    case_output_runner = hash_runner_type.new(suite: [skipped_case], format: 'test')
+    case_output_runner.run.assert == true
+    case_output_runner.reporter.rows.first['type'].assert == 'case'
+    case_output_runner.reporter.rows.first['status'].assert == 'omit'

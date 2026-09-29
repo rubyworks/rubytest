@@ -6,12 +6,6 @@ module Test
     def initialize(reporter = nil)
       @reporter = reporter
       @results = []
-      @table = Hash.new { |hash, key| hash[key] = [] }
-    end
-
-    # Keep the historical status-indexed view for callers and older reporters.
-    def [](key)
-      @table[key.to_sym]
     end
 
     def begin_suite(suite)
@@ -34,22 +28,7 @@ module Test
 
     def record(result)
       @results << result
-      case result.status
-      when :pass
-        self[:pass] << result.test
-      when :skip
-        self[:skip] << [result.test, result.reason]
-      else
-        self[result.status] << [result.test, result.exception]
-      end
-
-      return result unless reporter
-
-      if native_reporter?
-        reporter.record(result)
-      else
-        report_legacy_result(result)
-      end
+      reporter.record(result) if reporter
       result
     end
 
@@ -63,13 +42,7 @@ module Test
 
     def end_suite(suite)
       @summary = RunSummary.new(suite: suite, results: results, elapsed: elapsed)
-      if reporter
-        if native_reporter?
-          reporter.finish(@summary)
-        else
-          reporter.end_suite(suite)
-        end
-      end
+      reporter.finish(@summary) if reporter
       @summary
     end
 
@@ -77,51 +50,11 @@ module Test
       (@summary || RunSummary.new(suite: @suite, results: results, elapsed: elapsed)).success?
     end
 
-    # Compatibility for code that sent status callbacks to the recorder.
-    def pass(test)
-      record(Result.new(test: test, status: :pass))
-    end
-
-    def fail(test, exception)
-      record(Result.new(test: test, status: :fail, exception: exception))
-    end
-
-    def error(test, exception)
-      record(Result.new(test: test, status: :error, exception: exception))
-    end
-
-    def todo(test, exception)
-      record(Result.new(test: test, status: :todo, exception: exception))
-    end
-
-    def skip_test(test, reason)
-      record(Result.new(test: test, status: :skip, reason: reason))
-    end
-
-    def skip_case(test_case, reason)
-      record(Result.new(test: test_case, kind: :case, status: :skip, reason: reason))
-    end
-
   private
-
-    def native_reporter?
-      reporter.respond_to?(:record) && reporter.respond_to?(:finish)
-    end
 
     def elapsed
       return 0.0 unless @started_at
       Process.clock_gettime(Process::CLOCK_MONOTONIC) - @started_at
-    end
-
-    def report_legacy_result(result)
-      if result.status == :skip
-        method = result.kind == :case ? :skip_case : :skip_test
-        reporter.public_send(method, result.test, result.reason)
-      elsif result.status == :pass
-        reporter.pass(result.test)
-      else
-        reporter.public_send(result.status, result.test, result.exception)
-      end
     end
   end
 end
