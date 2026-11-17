@@ -120,3 +120,27 @@ The `--config` option accepts an alternate configuration file.
     cli = Test::CLI.new
     cli.options.parse!(['--config', 'custom-test.rb'])
     cli.config_file.assert == 'custom-test.rb'
+
+### Errors outside of tests
+
+An error raised outside of any test, such as one raised while a test file
+loads, ends the run. The report names the error's class, says where it was
+raised, and points to the full backtrace.
+
+    load_error = begin
+      ''.freeze << 'x'
+    rescue FrozenError => error
+      error
+    end
+
+    report = Test.error_report(load_error)
+    lines = report.lines.map(&:chomp)
+
+    lines[0].assert.start_with?('ERROR: FrozenError: ')
+    lines[1].assert.start_with?('  at ')
+    lines[1].include?(load_error.backtrace.first).assert == true
+    lines[2].include?('--debug').assert == true
+
+An error without a message or a backtrace still names its class.
+
+    Test.error_report(RuntimeError.new).lines.first.chomp.assert == 'ERROR: RuntimeError'
