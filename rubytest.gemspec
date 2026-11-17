@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
   s.homepage    = 'https://github.com/rubyworks/rubytest'
   s.license     = 'BSD-2-Clause'
 
-  s.required_ruby_version = '>= 3.1'
+  s.required_ruby_version = '>= 2.7'
 
   s.files       = Dir['lib/**/*', 'bin/*', 'LICENSE.txt', 'README.md', 'HISTORY.md', 'demo/**/*']
   s.bindir      = 'bin'
