@@ -83,26 +83,15 @@ module Test::Reporters
     # @return [Hash]
     #
     def skip_test(test, reason=nil)
-      h = {}
-      h['type'  ] = 'test'
-      h['status'] = 'omit'
-      h['reason'] = reason if reason
-
-      merge_subtype      h, test
-      merge_setup        h, test
-      merge_label        h, test
-      #merge_comparison  h, test, exception
-      #merge_coverage    h, test
-      merge_source       h, test
-      #merge_exception    h, test, exception
-      merge_output       h
-      merge_time         h
-
-      return h
+      skip_record(test, reason)
     end
 
+    # A skipped case is reported like a skipped test, as a case.
+    #
+    # @return [Hash]
+    #
     def skip_case(test_case, reason=nil)
-      skip_test(test_case, reason).merge('type' => 'case')
+      skip_record(test_case, reason).merge('type' => 'case')
     end
 
     #
@@ -221,6 +210,23 @@ module Test::Reporters
     end
 
   private
+
+    # The record of a skipped test or case.
+    def skip_record(test, reason)
+      h = {}
+      h['type'  ] = 'test'
+      h['status'] = 'omit'
+      h['reason'] = reason if reason
+
+      merge_subtype      h, test
+      merge_setup        h, test
+      merge_label        h, test
+      merge_source       h, test
+      merge_output       h
+      merge_time         h
+
+      return h
+    end
 
     # For todo entries in particulr, i.e. NotImplementedError
     # exception, the return value represents the "todo" priority

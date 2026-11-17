@@ -73,3 +73,46 @@ number actually recorded, including the broken and skipped cases.
     lines.grep(/# TODO /).size.assert == 1
     lines.grep(/\A# stdout: ok 999 - injected/).size.assert == 1
     lines.grep(/\Anot ok \d+ - broken case/).size.assert == 1
+
+TAP-Y and TAP-J carry the same results as structured records: one for the
+suite, one for each case and test, and a final tally. TAP-Y is a stream of
+YAML documents, TAP-J a line of JSON for each record.
+
+    require 'yaml'
+    require 'json'
+
+    readers = {
+      'tapy' => lambda { |text| YAML.load_stream(text) },
+      'tapj' => lambda { |text| text.lines.map { |line| JSON.parse(line) } }
+    }
+
+    readers.each do |format, read|
+      success, output, report = render.call(format)
+      success.assert == false
+      records = read.call(output)
+
+      records.first['type'].assert == 'suite'
+      records.first['rev'].assert == 5
+      records.last['type'].assert == 'final'
+      records.last['counts']['total'].assert == report.total
+      records.last['counts']['omit'].assert == 2
+
+      results = records.select { |record| record['status'] }
+      results.size.assert == report.total
+      results.map { |record| record['status'] }.sort.assert == %w[error fail omit omit pass todo]
+      results.select { |record| record['status'] == 'omit' }.map { |record| record['type'] }.sort.assert == %w[case test]
+      records.count { |record| record['type'] == 'case' && !record['status'] }.assert == 2
+    end
+
+A TAP-Y stream ends with the YAML end-of-document marker.
+
+    render.call('tapy')[1].lines.last.chomp.assert == '...'
+
+The command line has a shortcut for each.
+
+    require 'rubytest/cli'
+    { '-y' => 'tapy', '--tapj' => 'tapj' }.each do |flag, format|
+      cli = Test::CLI.new
+      cli.options.parse!([flag])
+      cli.format.assert == format
+    end
