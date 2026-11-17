@@ -1,6 +1,13 @@
 # RELEASE HISTORY
 
-## Unreleased
+## 0.10.0 / 2026-11-17
+
+Results now go through a recorder to the reporters, and the reporters that
+were spun off into separate gems are back in Rubytest, so rubytest-cli,
+rubytest-tap, rubytest-summary and rubytest-progress are no longer needed.
+Supports Ruby 2.7 and later.
+
+Changes:
 
 * Support Ruby 2.7 and 3.0 again (0.9.0 required 3.1).
 * Report an error raised outside of a test, such as while a test file loads,
