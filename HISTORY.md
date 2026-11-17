@@ -1,5 +1,12 @@
 # RELEASE HISTORY
 
+## Unreleased
+
+* Bring the Rake task in from rubytest-rake: `require 'rubytest/rake'` for
+  `Test::Rake::TestTask`. The task now fails when the run does (it always
+  exited 0), runs only the default globs that match a file, and lets `TEST`
+  replace the task's files for one invocation.
+
 ## 0.10.0 / 2026-11-17
 
 Results now go through a recorder to the reporters, and the reporters that
