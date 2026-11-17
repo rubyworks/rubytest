@@ -1,6 +1,12 @@
 # RELEASE HISTORY
 
-## Unreleased
+## 0.11.0 / 2026-11-17
+
+The Rake task and the HTML reporter are back in Rubytest, so rubytest-rake
+and rubytest-html are no longer needed. With this, everything that was spun
+off into a separate gem is part of Rubytest again.
+
+Changes:
 
 * Bring the HTML reporter in from rubytest-html, rewritten for the recorder:
   `rubytest -f html`. It escapes what it writes, reports skipped tests and
