@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+* Support Ruby 2.7 and 3.0 again (0.9.0 required 3.1).
+* Report an error raised outside of a test, such as while a test file loads,
+  with its class, where it was raised, and a pointer to `--debug`, instead of
+  the bare message.
 * Bring summary, outline, and progress reporters into Rubytest and add a TAP 13
   reporter that counts completed results, including skipped and broken cases.
 * Remove CLI shortcuts for the unbundled TAP-Y and TAP-J formats.

@@ -21,9 +21,25 @@ module Test
       exit -1 unless success
     rescue => error
       raise error if $DEBUG
-      $stderr.puts('ERROR: ' + error.to_s)
+      $stderr.puts(error_report(error))
       exit -1
     end
+  end
+
+  # What `run!` prints for an error raised outside of any test, such as one
+  # raised while a test file loads: the error's class and message, where it
+  # was raised, and how to see the rest of the backtrace.
+  #
+  # @return [String]
+  def self.error_report(error)
+    message = error.message.to_s
+    report  = "ERROR: #{error.class}"
+    report << ": #{message}" unless message.empty? || message == error.class.name
+    if location = (error.backtrace || []).first
+      report << "\n  at #{location}"
+    end
+    report << "\n(Use --debug, or ruby -d, for the full backtrace.)"
+    report
   end
 
   # The Test::Runner class handles the execution of tests.
