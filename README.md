@@ -54,9 +54,12 @@ Reporters implement `record(result)` for completed outcomes and
 available for formats that show nesting.
 
 The built-in formats are `dotprogress` (default), `summary` (one status line per
-test), `outline` (nested cases), `progress` (running count and timing), and
-`tap` (TAP version 13). Select one with `rubytest -f FORMAT`. Formats load only
-when selected; TAP captures test output and emits it as diagnostics.
+test), `outline` (nested cases), `progress` (running count and timing), `tap`
+(TAP version 13), and `tapy` and `tapj` (TAP-Y and TAP-J, the structured
+streams that [tapout](https://github.com/rubyworks/tapout) reads). Select one
+with `rubytest -f FORMAT`; `-y` and `-j` are short for `-f tapy` and `-f tapj`.
+Formats load only when selected. The TAP formats capture test output: TAP
+emits it as diagnostics, and TAP-Y and TAP-J record it with each test.
 
 
 ## Installation

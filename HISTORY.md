@@ -8,7 +8,10 @@
   the bare message.
 * Bring summary, outline, and progress reporters into Rubytest and add a TAP 13
   reporter that counts completed results, including skipped and broken cases.
-* Remove CLI shortcuts for the unbundled TAP-Y and TAP-J formats.
+* Bring the TAP-Y and TAP-J reporters in from rubytest-tap, with their `-y` and
+  `-j` shortcuts. The TAP-Y stream now opens with a YAML document (it was
+  JSON), the TAP-J stream no longer ends with a `...` line, and both report
+  skipped tests and cases.
 * Remove the old Recorder status callbacks and status-indexed result table.
 * Preserve test and teardown exceptions together in a result, and turn outcome
   hook failures into recorded errors.
