@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'rubytest'
-  s.version     = '0.10.0'
+  s.version     = '0.11.0'
   s.summary     = 'Ruby Universal Test Harness'
   s.description = 'Rubytest is a universal test harness for Ruby. It can handle any compliant ' \
                   'test framework, even running tests from multiple frameworks in a single pass.'
