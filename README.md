@@ -58,8 +58,10 @@ test), `outline` (nested cases), `progress` (running count and timing), `tap`
 (TAP version 13), and `tapy` and `tapj` (TAP-Y and TAP-J, the structured
 streams that [tapout](https://github.com/rubyworks/tapout) reads). Select one
 with `rubytest -f FORMAT`; `-y` and `-j` are short for `-f tapy` and `-f tapj`.
-Formats load only when selected. The TAP formats capture test output: TAP
-emits it as diagnostics, and TAP-Y and TAP-J record it with each test.
+`html` writes the whole run as one self-contained HTML document
+(`rubytest -f html > report.html`). Formats load only when selected. The TAP
+and HTML formats capture test output: TAP emits it as diagnostics, and TAP-Y,
+TAP-J and HTML record it with each test.
 
 
 ## Installation

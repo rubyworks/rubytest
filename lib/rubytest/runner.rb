@@ -433,7 +433,7 @@ module Test
     # TODO: Could use finder gem to look these up, but that's yet another dependency.
     #
     KNOWN_FORMATS = %w{
-      dotprogress progress outline summary tap tapy tapj test
+      dotprogress progress outline summary tap tapy tapj html test
     }
 
     # Returns a list of available report types.

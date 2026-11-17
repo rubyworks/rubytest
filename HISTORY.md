@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+* Bring the HTML reporter in from rubytest-html, rewritten for the recorder:
+  `rubytest -f html`. It escapes what it writes, reports skipped tests and
+  cases, and shows captured output with each test.
 * Bring the Rake task in from rubytest-rake: `require 'rubytest/rake'` for
   `Test::Rake::TestTask`. The task now fails when the run does (it always
   exited 0), runs only the default globs that match a file, and lets `TEST`

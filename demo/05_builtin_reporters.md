@@ -116,3 +116,27 @@ The command line has a shortcut for each.
       cli.options.parse!([flag])
       cli.format.assert == format
     end
+
+The HTML format writes one self-contained document once the run has
+finished. Names, messages and captured output are escaped.
+
+    markup = probe_type.new('markup <b>&</b>') { print '<script>'; true }
+    html_suite = [Class.new(Array) { def to_s; 'a <case>'; end }.new([markup, failing]),
+                  pending, skipped, skipped_case, broken_case]
+    success, output, report = render.call('html', html_suite)
+    success.assert == false
+
+    output.lines.first.chomp.assert == '<!DOCTYPE html>'
+    output.lines.last.chomp.assert == '</html>'
+    output.scan('<div class="result ').size.assert == report.total
+    output.scan('<section class="case">').size.assert == output.scan('</section>').size
+    %w[pass fail error todo skip].each do |status|
+      output.include?(%[<div class="result #{status}">]).assert == true
+    end
+
+    output.include?('markup &lt;b&gt;&amp;&lt;/b&gt;').assert == true
+    output.include?('<h2>a &lt;case&gt;</h2>').assert == true
+    output.include?('<pre class="stdout">&lt;script&gt;</pre>').assert == true
+    output.include?('<script>').assert == false
+    output.include?('Assertion: ').assert == true
+    output.include?('6 tests: 1 passing, 1 failures, 1 errors, 1 pending, 2 skipped.').assert == true
