@@ -122,8 +122,31 @@ named profile, use the `-p/--profile` option:
 The configuration file can also be at `config/test.rb`, `Testfile`,
 or `.test` (with optional `.rb` extension).
 
-If you are using Rake, shelling out to `rubytest` keeps your test
-environment pristine:
+### Via Rake
+
+Rubytest has a Rake task. In your Rakefile:
+
+    require 'rubytest/rake'
+
+    Test::Rake::TestTask.new do |run|
+      run.loadpath 'lib'
+      run.test_files << 'test/*_test.rb'
+    end
+
+The block takes the same settings as `Test.configure`. With no files, the
+task runs whichever of `test/**/test_*.rb`, `*_test.rb`, `case_*.rb` and
+`*_case.rb` it finds, and with no load path it adds `lib`. The task is named
+`test` unless you give it another name (`TestTask.new('spec')`).
+
+To run only some tests for one invocation, set `TEST`:
+
+    $ rake test TEST=test/foo_test.rb
+
+Where the platform can fork, the tests run in a child process, so what they
+load stays out of Rake's. `rake test` fails if the run does.
+
+A configuration file isn't read by the task. To use one, shell out to
+`rubytest` instead:
 
     desc "run tests"
     task :test do
