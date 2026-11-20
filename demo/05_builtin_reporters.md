@@ -104,6 +104,26 @@ YAML documents, TAP-J a line of JSON for each record.
       records.count { |record| record['type'] == 'case' && !record['status'] }.assert == 2
     end
 
+An exception may have no line of backtrace outside the test framework, as
+when a framework marks a test pending itself. Its record then has the message
+without a source location.
+
+    bare = probe_type.new('bare') do
+      error = NotImplementedError.new('not tested')
+      error.set_backtrace([])
+      raise error
+    end
+
+    readers.each do |format, read|
+      success, output, report = render.call(format, [bare, passing])
+      records = read.call(output)
+      records.last['counts']['total'].assert == 2
+      record = records.find { |r| r['label'] == 'bare' }
+      record['status'].assert == 'todo'
+      record['exception']['message'].assert == 'not tested'
+      record['exception'].key?('file').assert == false
+    end
+
 A TAP-Y stream ends with the YAML end-of-document marker.
 
     render.call('tapy')[1].lines.last.chomp.assert == '...'

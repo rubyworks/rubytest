@@ -275,10 +275,14 @@ module Test::Reporters
     # Add exception subsection of hash.
     def merge_exception(hash, test, exception, bt=false)
       hash['exception'] = {}
-      hash['exception']['file'     ] = code(exception).file
-      hash['exception']['line'     ] = code(exception).line
-      hash['exception']['source'   ] = code(exception).to_str
-      hash['exception']['snippet'  ] = code(exception).to_omap
+      # There is no snippet when every line of the backtrace belongs to
+      # the test framework, or the exception has none.
+      if snippet = code(exception)
+        hash['exception']['file'     ] = snippet.file
+        hash['exception']['line'     ] = snippet.line
+        hash['exception']['source'   ] = snippet.to_str
+        hash['exception']['snippet'  ] = snippet.to_omap
+      end
       hash['exception']['message'  ] = exception.message
       hash['exception']['backtrace'] = clean_backtrace(exception) if bt
       if @current_result && @current_result.exceptions.size > 1

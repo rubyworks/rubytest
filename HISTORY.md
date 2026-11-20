@@ -1,5 +1,16 @@
 # RELEASE HISTORY
 
+## Unreleased
+
+Changes:
+
+* Fix the TAP-Y and TAP-J reporters, which raised NoMethodError
+  ("undefined method 'file' for nil") for a failed, errored or pending test
+  whose exception had no backtrace line outside the test framework. Lemon
+  marks a test pending that way when it doesn't call the method it covers.
+  The run then ended early with wrong counts. The record now has the
+  exception's message without a source location.
+
 ## 0.11.0 / 2026-11-17
 
 The Rake task and the HTML reporter are back in Rubytest, so rubytest-rake
