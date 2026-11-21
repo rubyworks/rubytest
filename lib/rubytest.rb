@@ -6,7 +6,7 @@ $RUBY_IGNORE_CALLERS = [] unless defined?($RUBY_IGNORE_CALLERS)
 require 'ansi/core'
 
 module Test
-  VERSION = '0.11.0'
+  VERSION = '0.11.1'
 end
 
 require_relative 'rubytest/core_ext'
