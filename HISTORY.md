@@ -1,6 +1,8 @@
 # RELEASE HISTORY
 
-## Unreleased
+## 0.11.1 / 2026-11-20
+
+Fixes a crash in the TAP-Y and TAP-J reporters.
 
 Changes:
 
